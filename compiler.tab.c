@@ -172,7 +172,7 @@ union YYSTYPE
     struct STMTSGROUP  *ptr_compoundstmt;
     struct STMT          *ptr_stmt;
     struct ASSIGN        *ptr_assign;
-    struct CALL          *ptr_call;
+    struct FUNC_CALL          *ptr_call;
     struct ARG           *ptr_arg;
     struct WHILE_S       *ptr_while_s;
     struct FOR_STMT         *_for_stmt;
@@ -1514,7 +1514,7 @@ yyreduce:
     {
             struct IDENTIFIER *iden = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             iden->ID = (yyvsp[0].id);
-            iden->intval = 0;   // zero, If scalar
+            iden->int_val = 0;   // zero, If scalar
             iden->prev = NULL;
             (yyval.ptr_identifier) = iden;
           }
@@ -1526,7 +1526,7 @@ yyreduce:
     {
             struct IDENTIFIER *iden = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             iden->ID = (yyvsp[-3].id);
-            iden->intval = (yyvsp[-1].intval);   // zero, If scalar
+            iden->int_val = (yyvsp[-1].intval);   // zero, If scalar
             iden->prev = NULL;
             (yyval.ptr_identifier) = iden;
            }
@@ -1807,7 +1807,7 @@ yyreduce:
   case 39:
 #line 336 "compiler.y" /* yacc.c:1646  */
     {
-        struct CALL *call = (struct CALL*) malloc (sizeof (struct CALL));
+        struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
         call->ID = (yyvsp[-2].id);
         call->arg = NULL;
         (yyval.ptr_call) = call;
@@ -1818,7 +1818,7 @@ yyreduce:
   case 40:
 #line 342 "compiler.y" /* yacc.c:1646  */
     {
-        struct CALL *call = (struct CALL*) malloc (sizeof (struct CALL));
+        struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
         call->ID = (yyvsp[-3].id);
         call->arg = (yyvsp[-1].ptr_arg);
         (yyval.ptr_call) = call;
@@ -1965,7 +1965,7 @@ yyreduce:
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->e = eIntnum;  
-        expr->expression.intval = (yyvsp[0].intval);
+        expr->expression.int_val = (yyvsp[0].intval);
         (yyval.ptr_expr) = expr;
     }
 #line 1972 "compiler.tab.c" /* yacc.c:1646  */

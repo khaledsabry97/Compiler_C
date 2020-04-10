@@ -140,8 +140,8 @@ void visitIdentifier    (struct IDENTIFIER* iden) {
         fprintf(tree_file, ", ");
     }
     fprintf (tree_file, "%s", iden->ID);
-    if(iden->intval > 0) {
-        fprintf (tree_file, "[%d]", iden->intval);
+    if(iden->int_val > 0) {
+        fprintf (tree_file, "[%d]", iden->int_val);
 
 
         if( _needPrinted == true) {
@@ -150,9 +150,9 @@ void visitIdentifier    (struct IDENTIFIER* iden) {
                 curType = "int";
             else
                 curType = "float";
-            fprintf( table_file, "%10d%10s%10s%10d%10s\n", _rowNumber++ , curType, iden->ID, iden->intval, _isParam ? "parameter" : "variable");
+            fprintf( table_file, "%10d%10s%10s%10d%10s\n", _rowNumber++ , curType, iden->ID, iden->int_val, _isParam ? "parameter" : "variable");
         }
-    } else if(iden->intval < 0) {
+    } else if(iden->int_val < 0) {
         fprintf(stderr, "minus array");
     } else { 
         //scalar
@@ -275,7 +275,7 @@ void visitAssignStmt    (struct ASSIGN* assign) {
     fprintf(tree_file, " = ");
     visitExpr(assign->expr);
 }
-void visitCallStmt      (struct CALL* call) {
+void visitCallStmt      (struct FUNC_CALL* call) {
     fprintf(tree_file, "%s(", call->ID);
     if(call->arg != NULL) {
         visitArg(call->arg);
@@ -363,7 +363,7 @@ void visitExpr          (struct EXPR* expr) {
             visitId_s(expr->expression.ID_);
             break;
         case eIntnum:
-            fprintf(tree_file, "%d", expr->expression.intval);
+            fprintf(tree_file, "%d", expr->expression.int_val);
             break;
 
         case eFloatnum:

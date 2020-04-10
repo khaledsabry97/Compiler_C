@@ -7,7 +7,7 @@ void visitStmt          (struct STMT* stmt);
 void visitParameter     (struct PARAMETER* param);
 void visitCompoundStmt  (struct STMTSGROUP* stmts_group);
 void visitAssignStmt    (struct ASSIGN* assign);
-void visitCallStmt      (struct CALL* call);
+void visitCallStmt      (struct FUNC_CALL* call);
 void visitArg           (struct ARG* arg);
 void visitExpr          (struct EXPR* expr);
 void visitWhile_s       (struct WHILE_S* while_s);

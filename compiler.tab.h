@@ -89,7 +89,7 @@ union YYSTYPE
     struct STMTSGROUP  *ptr_compoundstmt;
     struct STMT          *ptr_stmt;
     struct ASSIGN        *ptr_assign;
-    struct CALL          *ptr_call;
+    struct FUNC_CALL          *ptr_call;
     struct ARG           *ptr_arg;
     struct WHILE_S       *ptr_while_s;
     struct FOR_STMT         *_for_stmt;

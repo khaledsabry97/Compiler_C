@@ -35,12 +35,17 @@ struct DECLARATION
 	struct DECLARATION *prev;
 };
 
+/*
+identifier like : int number
+- ID: number
+- int_val: its value
+*/
 struct IDENTIFIER
 {
 	struct IDENTIFIER *prev;
 
 	char *ID;
-	int intval;
+	int int_val;
 };
 
 /*
@@ -48,7 +53,6 @@ struct IDENTIFIER
 - ID: int or float or anything for future work
 - parameters: send paramperter
 - STMTSGROUP: { }
-
 */
 struct FUNCTION 
 {
@@ -73,13 +77,21 @@ struct PARAMETER
 	ID_TYPE id_type;
 	struct IDENTIFIER *id;
 };
-
+/*
+group of statements grouped by {   }
+- declaration : its declaration
+- stmt: last statement pointor on it
+*/
 struct STMTSGROUP // {}
 {
 	struct DECLARATION *declaration;
 	struct STMT *stmt;
 };
+
 /*
+every statment in the code we compile means one of those
+- 
+
 break,semi stmt union stmt -> no value; 
 */
 struct STMT 
@@ -87,7 +99,7 @@ struct STMT
 	STMT_TYPE s;
 	union {
 		struct ASSIGN *assign_; // id=expr;
-		struct CALL *call_; // id(arg) 
+		struct FUNC_CALL *call_; // id(arg) 
 		struct EXPR *return_; // return expr
 		struct WHILE_S *while_; // while()stmt | do_while() stmt
 		struct FOR_STMT *for_; // for()stmt
@@ -106,7 +118,7 @@ struct ASSIGN
 };
 
 /* id(arglist?);  */
-struct CALL
+struct FUNC_CALL
 {
 	char *ID;
 	struct ARG *arg;
@@ -152,14 +164,14 @@ struct EXPR
 	Expr_e e;   // EXPR type (enumeration type)
 	union
 	{
-		int intval; // int
+		int int_val; // int
 		float floatval; // float
 		struct UNOP *unop_; // -expr
 		struct ADDIOP *addiop_; // epxr + expr
 		struct MULTOP *multop_; // expr * expr
 		struct RELAOP *relaop_; // expr >= expr
 		struct EQLTOP *eqltop_; // expr == expr
-		struct CALL *call_; // call 
+		struct FUNC_CALL *call_; // call 
 		struct EXPR *bracket; // (expr)
 		struct ID_S *ID_; // id[expr]
 	} expression;

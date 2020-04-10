@@ -38,7 +38,7 @@ void yyerror(char* text) {
     struct STMTSGROUP  *ptr_compoundstmt;
     struct STMT          *ptr_stmt;
     struct ASSIGN        *ptr_assign;
-    struct CALL          *ptr_call;
+    struct FUNC_CALL          *ptr_call;
     struct ARG           *ptr_arg;
     struct WHILE_S       *ptr_while_s;
     struct FOR_STMT         *_for_stmt;
@@ -161,14 +161,14 @@ IdentList: Identifier {
 Identifier: ID {
             struct IDENTIFIER *iden = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             iden->ID = $1;
-            iden->intval = 0;   // zero, If scalar
+            iden->int_val = 0;   // zero, If scalar
             iden->prev = NULL;
             $$ = iden;
           }
           | ID '[' INTNUM ']' {
             struct IDENTIFIER *iden = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             iden->ID = $1;
-            iden->intval = $3;   // zero, If scalar
+            iden->int_val = $3;   // zero, If scalar
             iden->prev = NULL;
             $$ = iden;
            }
@@ -334,13 +334,13 @@ ArgList의 정의에서 empty가 되지 않도록
 Call의 정의에서 ArgList가 빠진 형태를 추가하였다.
 */
 Call: ID '(' ')' {
-        struct CALL *call = (struct CALL*) malloc (sizeof (struct CALL));
+        struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
         call->ID = $1;
         call->arg = NULL;
         $$ = call;
     }
     | ID '(' ArgList ')' {
-        struct CALL *call = (struct CALL*) malloc (sizeof (struct CALL));
+        struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
         call->ID = $1;
         call->arg = $3;
         $$ = call;
@@ -431,7 +431,7 @@ Expr: MINUS Expr %prec UNARY {
     | INTNUM {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->e = eIntnum;  
-        expr->expression.intval = $1;
+        expr->expression.int_val = $1;
         $$ = expr;
     }    
     | FLOATNUM {
