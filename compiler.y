@@ -41,15 +41,15 @@ void lyyerror(YYLTYPE t, char *s, ...)
     struct CALL          *ptr_call;
     struct ARG           *ptr_arg;
     struct WHILE_S       *ptr_while_s;
-    struct FOR_STMT         *ptr_for_stmt;
-    struct IF_S          *ptr_if_s;
+    struct FOR_STMT         *_for_stmt;
+    struct IF_STMT          *ptr_if_s;
     struct ID_S          *ptr_id_s;
     struct EXPR          *ptr_expr;
     struct ADDIOP        *ptr_addiop;
     struct MULTOP        *ptr_multop;
     struct RELAOP        *ptr_relaop;
     struct EQLTOP        *ptr_eqltop;
-    Type_e type;
+    ID_TYPE type;
     int intval;
     float floatval;
     char* id;
@@ -73,7 +73,7 @@ void lyyerror(YYLTYPE t, char *s, ...)
 %type <ptr_call> Call CallStmt
 %type <ptr_arg> Arg ArgList
 %type <ptr_while_s> While_s
-%type <ptr_for_stmt> ForStmt
+%type <_for_stmt> ForStmt
 %type <ptr_if_s> If_s
 %type <ptr_expr> Expr RetStmt
 %type <ptr_addiop> Addiop
@@ -210,8 +210,8 @@ Function: Type ID '(' ')' CompoundStmt {
         $$ = func;
     }
     ;
-Type: INT { $$ = eInt;}
-    | FLOAT { $$ = eFloat;}
+Type: INT { $$ = Int_Type;}
+    | FLOAT { $$ = Float_Type;}
     ;
 //cf. Stmt 안에 CompoundStmt 존재
 //StmtList 에서 empty 입력을 허용하지 않도록 StmtList 가 없는 Compound 정의
@@ -260,49 +260,49 @@ StmtList: Stmt {
         ;
 Stmt: AssignStmt { 
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eAssign;
+        stmt->s = Equ_Type;
         stmt->stmt.assign_ = $1;
         $$ = stmt;
     }
     | CallStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eCall;
+        stmt->s = Call_Type;
         stmt->stmt.call_ = $1;
         $$ = stmt;
     }
     | RetStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eRet;
+        stmt->s = Return_Type;
         stmt->stmt.return_ = $1;
         $$ = stmt;
     }
     | While_s {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eWhile;
+        stmt->s = While_Type;
         stmt->stmt.while_ = $1;
         $$ = stmt;
     }
     | ForStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eFor;
+        stmt->s = For_Type;
         stmt->stmt.for_ = $1;
         $$ = stmt;
     }
     | If_s {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eIf;
+        stmt->s = If_Type;
         stmt->stmt.if_ = $1;
         $$ = stmt;
     }
     | CompoundStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eCompound;
+        stmt->s = Comp_Type;
         stmt->stmt.cstmt_ = $1;
         $$ = stmt;
     }
     | ';' {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eSemi;
+        stmt->s = Semi_Type;
         $$ = stmt;
     }
     ;
@@ -468,56 +468,56 @@ Id_s: ID {
     ;
 Addiop: MINUS {
          struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
-         addiop->a = eMinus;
+         addiop->a = Minus_Type;
          $$ = addiop;
       }
       | PLUS { 
         struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
-        addiop->a = ePlus;
+        addiop->a = Plus_Type;
       $$ = addiop;
       }
 
       ;
 Multop: MULT {
          struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
-         multop->m = eMult;
+         multop->m = Mul_Type;
          $$ = multop;
       }
       | DIV {
          struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
-         multop->m = eDiv;
+         multop->m = Div_Type;
          $$ = multop;
       }
       ;
 Relaop: LE {
          struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = eLE;
+         relaop->r = Le_Type;
          $$ = relaop;
       }
       | GE {
          struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = eGE;
+         relaop->r = Ge_Type;
          $$ = relaop;
       }
       | GT {
          struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = eGT;
+         relaop->r = Gt_Type;
          $$ = relaop;
       }
       | LT { 
          struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = eLT;
+         relaop->r = Lt_Type;
          $$ = relaop;
       }
       ;
 Eqltop: EQ {
          struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
-         eqltop->e = eEQ;
+         eqltop->e = Eq_Type;
          $$ = eqltop;
       }
       | NE { 
          struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
-         eqltop->e = eNE;
+         eqltop->e = Ne_Type;
          $$ = eqltop;
       }
       ;
@@ -546,18 +546,18 @@ ForStmt: FOR '(' Assign ';' Expr ';' Assign ')' Stmt {
         }
        ;
 If_s: IF '(' Expr ')' Stmt %prec LOWER_THAN_ELSE {
-       struct IF_S *if_s = (struct IF_S*) malloc (sizeof(struct IF_S));
-       if_s->cond=$3;
-       if_s->if_=$5;
-       if_s->else_=NULL;
-       $$ = if_s;
+       struct IF_STMT *if_ptr = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
+       if_ptr->cond=$3;
+       if_ptr->if_=$5;
+       if_ptr->else_=NULL;
+       $$ = if_ptr;
     }
       | IF '(' Expr ')' Stmt ELSE Stmt{
-       struct IF_S *if_s = (struct IF_S*) malloc (sizeof(struct IF_S));
-       if_s->cond=$3;
-       if_s->if_=$5;
-       if_s->else_=$7;
-       $$ = if_s;
+       struct IF_STMT *if_ptr = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
+       if_ptr->cond=$3;
+       if_ptr->if_=$5;
+       if_ptr->else_=$7;
+       $$ = if_ptr;
       }
       ;
 %%

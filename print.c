@@ -10,7 +10,7 @@ extern FILE *table_file;
 
 //global variable for making symboltable
 int _rowNumber;
-Type_e _curType;
+ID_TYPE _curType;
 bool _isParam = false;
 bool _needPrinted = false;
 bool _isTitlePrinted = false;
@@ -82,13 +82,13 @@ void visitDeclaration   (struct DECLARATION* decl) {
     }
 
     switch(decl->t) {
-        case eInt:
+        case Int_Type:
             fprintf (tree_file, "int ");    
-            _curType = eInt;
+            _curType = Int_Type;
             break;
-        case eFloat:
+        case Float_Type:
             fprintf (tree_file, "float ");
-            _curType = eFloat;
+            _curType = Float_Type;
             break;
         default:
             fprintf(stderr, "Declaration does not exist.\n");
@@ -109,10 +109,10 @@ void visitFunction      (struct FUNCTION* func) {
     scopeTail = newScope(sFUNC, scopeTail); //append it to the end of list
 
     switch(func->t) {
-        case eInt:
+        case Int_Type:
             fprintf (tree_file, "int ");    
             break;
-        case eFloat:
+        case Float_Type:
             fprintf (tree_file, "float ");
             break;
         default:
@@ -146,7 +146,7 @@ void visitIdentifier    (struct IDENTIFIER* iden) {
 
         if( _needPrinted == true) {
             char* curType;
-            if(_curType == eInt)
+            if(_curType == Int_Type)
                 curType = "int";
             else
                 curType = "float";
@@ -158,7 +158,7 @@ void visitIdentifier    (struct IDENTIFIER* iden) {
         //scalar
         if( _needPrinted == true) {
             char* curType;
-            if(_curType == eInt)
+            if(_curType == Int_Type)
                 curType = "int";
             else
                 curType = "float";
@@ -171,17 +171,17 @@ void visitStmt          (struct STMT* stmt) {
     if(stmt->prev != NULL)
         visitStmt(stmt->prev);
     switch(stmt->s) {
-        case eAssign:
+        case Equ_Type:
             visitAssignStmt(stmt->stmt.assign_);
             fprintf(tree_file, ";");
             break;
 
-        case eCall:
+        case Call_Type:
             visitCallStmt(stmt->stmt.call_);
             fprintf(tree_file, ";");
             break;
 
-        case eRet:
+        case Return_Type:
             if(stmt->stmt.return_ == NULL){
                 fprintf (tree_file, "return;");
             }
@@ -192,27 +192,27 @@ void visitStmt          (struct STMT* stmt) {
             }
             break;
 
-        case eWhile:
+        case While_Type:
              _isOtherComp = true;
             visitWhile_s(stmt->stmt.while_);
             return;
-        case eFor:
+        case For_Type:
              _isOtherComp = true;
             visitFor_s(stmt->stmt.for_);
             return;
-        case eIf:
+        case If_Type:
              _isOtherComp = true;
             visitIf_s(stmt->stmt.if_);
             return;
 
-        case eCompound:
+        case Comp_Type:
             if(_isOtherComp == false)
                 _isCompound = true;
             visitCompoundStmt(stmt->stmt.cstmt_);
             return;
             //break;
 
-        case eSemi:
+        case Semi_Type:
             fprintf(tree_file, ";");
             break;
 
@@ -226,13 +226,13 @@ void visitParameter     (struct PARAMETER* param) {
         fprintf (tree_file, ", ");
     }
     switch(param->t) {
-        case eInt:
+        case Int_Type:
             fprintf (tree_file, "int ");    
-            _curType = eInt;
+            _curType = Int_Type;
             break;
-        case eFloat:
+        case Float_Type:
             fprintf (tree_file, "float ");
-            _curType = eFloat;
+            _curType = Float_Type;
             break;
         default:
             fprintf(stderr, "Declaration does not exist.\n");
@@ -299,7 +299,7 @@ void visitExpr          (struct EXPR* expr) {
 
         case eAddi:
             visitExpr(expr->expression.addiop_->lhs);
-            if(expr->expression.addiop_->a == ePlus)
+            if(expr->expression.addiop_->a == Plus_Type)
                 fprintf(tree_file, " + ");
             else
                 fprintf(tree_file, " - ");
@@ -309,7 +309,7 @@ void visitExpr          (struct EXPR* expr) {
 
         case eMulti:
             visitExpr(expr->expression.multop_->lhs);
-            if(expr->expression.multop_->m == eMult)
+            if(expr->expression.multop_->m == Mul_Type)
                 fprintf(tree_file, " * ");
             else
                 fprintf(tree_file, " / ");
@@ -319,20 +319,20 @@ void visitExpr          (struct EXPR* expr) {
         case eRela:
             visitExpr(expr->expression.relaop_->lhs);
             switch(expr->expression.relaop_->r) {
-                case eLT:
+                case Lt_Type:
                     fprintf(tree_file, " < ");
                     break;
 
-                case eGT:
+                case Gt_Type:
                     fprintf(tree_file, " > ");
                     break;
 
-                case eLE:
+                case Le_Type:
                     fprintf(tree_file, " <= ");
 
                     break;
 
-                case eGE:
+                case Ge_Type:
                     fprintf(tree_file, " >= ");
                     break;
             }
@@ -341,7 +341,7 @@ void visitExpr          (struct EXPR* expr) {
 
         case eEqlt:
             visitExpr(expr->expression.eqltop_->lhs);
-            if(expr->expression.eqltop_->e == eEQ) {
+            if(expr->expression.eqltop_->e == Eq_Type) {
                 fprintf(tree_file, " == ");
             } else {
                 fprintf(tree_file, " != " );
@@ -417,19 +417,19 @@ void visitFor_s         (struct FOR_STMT* for_s) {
     //deleteCurScope 
     deleteScope(&scopeTail);
 }
-void visitIf_s          (struct IF_S* if_s) {
+void visitIf_s          (struct IF_STMT* if_ptr) {
     //making node for symbol table
     scopeTail = newScope(sIF, scopeTail);
     _isTitlePrinted = false;
     scopeTail->parent->if_n++;
 
     fprintf(tree_file, "if (");
-    visitExpr(if_s->cond);
+    visitExpr(if_ptr->cond);
     fprintf(tree_file, ")\n");
-    visitStmt(if_s->if_);
-    if (if_s->else_ != NULL) {
+    visitStmt(if_ptr->if_);
+    if (if_ptr->else_ != NULL) {
         fprintf(tree_file,"\nelse\n");
-        visitStmt(if_s->else_);
+        visitStmt(if_ptr->else_);
     }
 
     //deleteCurScope 

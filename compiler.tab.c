@@ -175,15 +175,15 @@ union YYSTYPE
     struct CALL          *ptr_call;
     struct ARG           *ptr_arg;
     struct WHILE_S       *ptr_while_s;
-    struct FOR_STMT         *ptr_for_stmt;
-    struct IF_S          *ptr_if_s;
+    struct FOR_STMT         *_for_stmt;
+    struct IF_STMT          *ptr_if_s;
     struct ID_S          *ptr_id_s;
     struct EXPR          *ptr_expr;
     struct ADDIOP        *ptr_addiop;
     struct MULTOP        *ptr_multop;
     struct RELAOP        *ptr_relaop;
     struct EQLTOP        *ptr_eqltop;
-    Type_e type;
+    ID_TYPE type;
     int intval;
     float floatval;
     char* id;
@@ -1596,13 +1596,13 @@ yyreduce:
 
   case 19:
 #line 213 "compiler.y" /* yacc.c:1646  */
-    { (yyval.type) = eInt;}
+    { (yyval.type) = Int_Type;}
 #line 1601 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
 #line 214 "compiler.y" /* yacc.c:1646  */
-    { (yyval.type) = eFloat;}
+    { (yyval.type) = Float_Type;}
 #line 1607 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1681,7 +1681,7 @@ yyreduce:
 #line 261 "compiler.y" /* yacc.c:1646  */
     { 
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eAssign;
+        stmt->s = Equ_Type;
         stmt->stmt.assign_ = (yyvsp[0].ptr_assign);
         (yyval.ptr_stmt) = stmt;
     }
@@ -1692,7 +1692,7 @@ yyreduce:
 #line 267 "compiler.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eCall;
+        stmt->s = Call_Type;
         stmt->stmt.call_ = (yyvsp[0].ptr_call);
         (yyval.ptr_stmt) = stmt;
     }
@@ -1703,7 +1703,7 @@ yyreduce:
 #line 273 "compiler.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eRet;
+        stmt->s = Return_Type;
         stmt->stmt.return_ = (yyvsp[0].ptr_expr);
         (yyval.ptr_stmt) = stmt;
     }
@@ -1714,7 +1714,7 @@ yyreduce:
 #line 279 "compiler.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eWhile;
+        stmt->s = While_Type;
         stmt->stmt.while_ = (yyvsp[0].ptr_while_s);
         (yyval.ptr_stmt) = stmt;
     }
@@ -1725,8 +1725,8 @@ yyreduce:
 #line 285 "compiler.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eFor;
-        stmt->stmt.for_ = (yyvsp[0].ptr_for_stmt);
+        stmt->s = For_Type;
+        stmt->stmt.for_ = (yyvsp[0]._for_stmt);
         (yyval.ptr_stmt) = stmt;
     }
 #line 1733 "compiler.tab.c" /* yacc.c:1646  */
@@ -1736,7 +1736,7 @@ yyreduce:
 #line 291 "compiler.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eIf;
+        stmt->s = If_Type;
         stmt->stmt.if_ = (yyvsp[0].ptr_if_s);
         (yyval.ptr_stmt) = stmt;
     }
@@ -1747,7 +1747,7 @@ yyreduce:
 #line 297 "compiler.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eCompound;
+        stmt->s = Comp_Type;
         stmt->stmt.cstmt_ = (yyvsp[0].ptr_compoundstmt);
         (yyval.ptr_stmt) = stmt;
     }
@@ -1758,7 +1758,7 @@ yyreduce:
 #line 303 "compiler.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = eSemi;
+        stmt->s = Semi_Type;
         (yyval.ptr_stmt) = stmt;
     }
 #line 1765 "compiler.tab.c" /* yacc.c:1646  */
@@ -2030,7 +2030,7 @@ yyreduce:
 #line 469 "compiler.y" /* yacc.c:1646  */
     {
          struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
-         addiop->a = eMinus;
+         addiop->a = Minus_Type;
          (yyval.ptr_addiop) = addiop;
       }
 #line 2037 "compiler.tab.c" /* yacc.c:1646  */
@@ -2040,7 +2040,7 @@ yyreduce:
 #line 474 "compiler.y" /* yacc.c:1646  */
     { 
         struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
-        addiop->a = ePlus;
+        addiop->a = Plus_Type;
       (yyval.ptr_addiop) = addiop;
       }
 #line 2047 "compiler.tab.c" /* yacc.c:1646  */
@@ -2050,7 +2050,7 @@ yyreduce:
 #line 481 "compiler.y" /* yacc.c:1646  */
     {
          struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
-         multop->m = eMult;
+         multop->m = Mul_Type;
          (yyval.ptr_multop) = multop;
       }
 #line 2057 "compiler.tab.c" /* yacc.c:1646  */
@@ -2060,7 +2060,7 @@ yyreduce:
 #line 486 "compiler.y" /* yacc.c:1646  */
     {
          struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
-         multop->m = eDiv;
+         multop->m = Div_Type;
          (yyval.ptr_multop) = multop;
       }
 #line 2067 "compiler.tab.c" /* yacc.c:1646  */
@@ -2070,7 +2070,7 @@ yyreduce:
 #line 492 "compiler.y" /* yacc.c:1646  */
     {
          struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = eLE;
+         relaop->r = Le_Type;
          (yyval.ptr_relaop) = relaop;
       }
 #line 2077 "compiler.tab.c" /* yacc.c:1646  */
@@ -2080,7 +2080,7 @@ yyreduce:
 #line 497 "compiler.y" /* yacc.c:1646  */
     {
          struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = eGE;
+         relaop->r = Ge_Type;
          (yyval.ptr_relaop) = relaop;
       }
 #line 2087 "compiler.tab.c" /* yacc.c:1646  */
@@ -2090,7 +2090,7 @@ yyreduce:
 #line 502 "compiler.y" /* yacc.c:1646  */
     {
          struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = eGT;
+         relaop->r = Gt_Type;
          (yyval.ptr_relaop) = relaop;
       }
 #line 2097 "compiler.tab.c" /* yacc.c:1646  */
@@ -2100,7 +2100,7 @@ yyreduce:
 #line 507 "compiler.y" /* yacc.c:1646  */
     { 
          struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = eLT;
+         relaop->r = Lt_Type;
          (yyval.ptr_relaop) = relaop;
       }
 #line 2107 "compiler.tab.c" /* yacc.c:1646  */
@@ -2110,7 +2110,7 @@ yyreduce:
 #line 513 "compiler.y" /* yacc.c:1646  */
     {
          struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
-         eqltop->e = eEQ;
+         eqltop->e = Eq_Type;
          (yyval.ptr_eqltop) = eqltop;
       }
 #line 2117 "compiler.tab.c" /* yacc.c:1646  */
@@ -2120,7 +2120,7 @@ yyreduce:
 #line 518 "compiler.y" /* yacc.c:1646  */
     { 
          struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
-         eqltop->e = eNE;
+         eqltop->e = Ne_Type;
          (yyval.ptr_eqltop) = eqltop;
       }
 #line 2127 "compiler.tab.c" /* yacc.c:1646  */
@@ -2158,7 +2158,7 @@ yyreduce:
            for_s->cond = (yyvsp[-4].ptr_expr);
            for_s->inc = (yyvsp[-2].ptr_assign);
            for_s->stmt = (yyvsp[0].ptr_stmt);
-           (yyval.ptr_for_stmt) = for_s;
+           (yyval._for_stmt) = for_s;
         }
 #line 2164 "compiler.tab.c" /* yacc.c:1646  */
     break;
@@ -2166,11 +2166,11 @@ yyreduce:
   case 71:
 #line 548 "compiler.y" /* yacc.c:1646  */
     {
-       struct IF_S *if_s = (struct IF_S*) malloc (sizeof(struct IF_S));
-       if_s->cond=(yyvsp[-2].ptr_expr);
-       if_s->if_=(yyvsp[0].ptr_stmt);
-       if_s->else_=NULL;
-       (yyval.ptr_if_s) = if_s;
+       struct IF_STMT *if_ptr = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
+       if_ptr->cond=(yyvsp[-2].ptr_expr);
+       if_ptr->if_=(yyvsp[0].ptr_stmt);
+       if_ptr->else_=NULL;
+       (yyval.ptr_if_s) = if_ptr;
     }
 #line 2176 "compiler.tab.c" /* yacc.c:1646  */
     break;
@@ -2178,11 +2178,11 @@ yyreduce:
   case 72:
 #line 555 "compiler.y" /* yacc.c:1646  */
     {
-       struct IF_S *if_s = (struct IF_S*) malloc (sizeof(struct IF_S));
-       if_s->cond=(yyvsp[-4].ptr_expr);
-       if_s->if_=(yyvsp[-2].ptr_stmt);
-       if_s->else_=(yyvsp[0].ptr_stmt);
-       (yyval.ptr_if_s) = if_s;
+       struct IF_STMT *if_ptr = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
+       if_ptr->cond=(yyvsp[-4].ptr_expr);
+       if_ptr->if_=(yyvsp[-2].ptr_stmt);
+       if_ptr->else_=(yyvsp[0].ptr_stmt);
+       (yyval.ptr_if_s) = if_ptr;
       }
 #line 2188 "compiler.tab.c" /* yacc.c:1646  */
     break;

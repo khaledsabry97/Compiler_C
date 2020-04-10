@@ -5,22 +5,14 @@
 #define true 1 
 #define false 0
 
-typedef enum
-{eInt,eFloat} Type_e;
-typedef enum
-{eNegative} Unop_e;
-typedef enum
-{eAssign,eCall,eRet,eWhile,eFor,eIf,eCompound,eSemi} Stmt_e;
-typedef enum
-{eUnop,eAddi,eMulti,eRela,eEqlt,eCallExpr,eIntnum,eFloatnum,eId,eExpr} Expr_e;
-typedef enum
-{ePlus,eMinus} Addi_e;
-typedef enum
-{eMult,eDiv} Mult_e;
-typedef enum
-{eLT,eGT,eLE,eGE} Rela_e;
-typedef enum
-{eEQ,eNE} Eqlt_e;
+typedef enum {Int_Type,Float_Type} ID_TYPE;
+typedef enum {eNegative} Unop_e;
+typedef enum {Equ_Type,Call_Type,Return_Type,While_Type,For_Type,If_Type,Comp_Type,Semi_Type} STMT_TYPE;
+typedef enum {eUnop,eAddi,eMulti,eRela,eEqlt,eCallExpr,eIntnum,eFloatnum,eId,eExpr} Expr_e;
+typedef enum {Plus_Type,Minus_Type} ADD_TYPE;
+typedef enum {Mul_Type,Div_Type} MUL_TYPE;
+typedef enum {Lt_Type,Gt_Type,Le_Type,Ge_Type} COMP_TYPE;
+typedef enum {Eq_Type,Ne_Type} EQCOM_TYPE;
 
 
 
@@ -32,7 +24,7 @@ struct PROGRAM
 
 struct DECLARATION
 {
-	Type_e t;
+	ID_TYPE t;
 	struct IDENTIFIER *id;
 	struct DECLARATION *prev;
 };
@@ -47,7 +39,7 @@ struct IDENTIFIER
 
 struct FUNCTION  // *prev  type id (parameter) {} 
 {
-	Type_e t;
+	ID_TYPE t;
 	char *ID;
 	struct PARAMETER *param;
 	struct COMPOUNDSTMT *cstmt;
@@ -56,7 +48,7 @@ struct FUNCTION  // *prev  type id (parameter) {}
 
 struct PARAMETER
 {
-	Type_e t;
+	ID_TYPE t;
 	struct IDENTIFIER *id;
 	struct PARAMETER *prev;
 };
@@ -71,14 +63,14 @@ break,semi stmt union stmt -> no value;
 */
 struct STMT 
 {	
-	Stmt_e s;
+	STMT_TYPE s;
 	union {
 		struct ASSIGN *assign_; // id=expr;
 		struct CALL *call_; // id(arg) 
 		struct EXPR *return_; // return expr
 		struct WHILE_S *while_; // while()stmt | do_while() stmt
 		struct FOR_STMT *for_; // for()stmt
-		struct IF_S *if_;  // if()stmt
+		struct IF_STMT *if_;  // if()stmt
 		struct COMPOUNDSTMT *cstmt_; // {}
 	} stmt; 
 	struct STMT *prev;
@@ -126,8 +118,8 @@ struct FOR_STMT
 
 };
 
-/* if(cond)if_s else else_s  */
-struct IF_S
+/* if(cond)if_ptr else else_s  */
+struct IF_STMT
 {
 	struct EXPR *cond;
 	struct STMT *if_;
@@ -161,7 +153,7 @@ struct UNOP
 /* lhs addiop rhs */
 struct ADDIOP
 {
-	Addi_e a;
+	ADD_TYPE a;
 	struct EXPR *lhs;
 	struct EXPR *rhs;
 };
@@ -169,7 +161,7 @@ struct ADDIOP
 /* lhs multiop rhs */
 struct MULTOP
 {
-	Mult_e m;
+	MUL_TYPE m;
 	struct EXPR *lhs;
 	struct EXPR *rhs;
 };
@@ -177,7 +169,7 @@ struct MULTOP
 /* lhs relaop rhs */
 struct RELAOP
 {
-	Rela_e r;
+	COMP_TYPE r;
 	struct EXPR *lhs;
 	struct EXPR *rhs;
 };
@@ -185,7 +177,7 @@ struct RELAOP
 /* lhs eqltop rhs */
 struct EQLTOP
 {
-	Eqlt_e e;
+	EQCOM_TYPE e;
 	struct EXPR *lhs;
 	struct EXPR *rhs;
 };

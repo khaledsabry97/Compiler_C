@@ -92,15 +92,15 @@ union YYSTYPE
     struct CALL          *ptr_call;
     struct ARG           *ptr_arg;
     struct WHILE_S       *ptr_while_s;
-    struct FOR_STMT         *ptr_for_stmt;
-    struct IF_S          *ptr_if_s;
+    struct FOR_STMT         *_for_stmt;
+    struct IF_STMT          *ptr_if_s;
     struct ID_S          *ptr_id_s;
     struct EXPR          *ptr_expr;
     struct ADDIOP        *ptr_addiop;
     struct MULTOP        *ptr_multop;
     struct RELAOP        *ptr_relaop;
     struct EQLTOP        *ptr_eqltop;
-    Type_e type;
+    ID_TYPE type;
     int intval;
     float floatval;
     char* id;
