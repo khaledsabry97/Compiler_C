@@ -77,7 +77,7 @@ struct STMT
 		struct CALL *call_; // id(arg) 
 		struct EXPR *return_; // return expr
 		struct WHILE_S *while_; // while()stmt | do_while() stmt
-		struct FOR_S *for_; // for()stmt
+		struct FOR_STMT *for_; // for()stmt
 		struct IF_S *if_;  // if()stmt
 		struct COMPOUNDSTMT *cstmt_; // {}
 	} stmt; 
@@ -117,7 +117,7 @@ struct WHILE_S
 };
 
 /* for(init;cond;inc)stmt;  */
-struct FOR_S
+struct FOR_STMT
 {
 	struct ASSIGN *init;
 	struct EXPR *cond;

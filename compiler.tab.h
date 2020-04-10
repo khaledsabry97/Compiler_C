@@ -79,7 +79,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 30 "compiler.y" /* yacc.c:1909  */
+#line 32 "compiler.y" /* yacc.c:1909  */
 
     struct PROGRAM       *ptr_program;
     struct DECLARATION   *ptr_declaration;
@@ -92,7 +92,7 @@ union YYSTYPE
     struct CALL          *ptr_call;
     struct ARG           *ptr_arg;
     struct WHILE_S       *ptr_while_s;
-    struct FOR_S         *ptr_for_s;
+    struct FOR_STMT         *ptr_for_stmt;
     struct IF_S          *ptr_if_s;
     struct ID_S          *ptr_id_s;
     struct EXPR          *ptr_expr;
@@ -101,12 +101,11 @@ union YYSTYPE
     struct RELAOP        *ptr_relaop;
     struct EQLTOP        *ptr_eqltop;
     Type_e type;
-    //TODO int, float to char*
     int intval;
     float floatval;
     char* id;
 
-#line 110 "compiler.tab.h" /* yacc.c:1909  */
+#line 109 "compiler.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

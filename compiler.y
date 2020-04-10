@@ -41,7 +41,7 @@ void lyyerror(YYLTYPE t, char *s, ...)
     struct CALL          *ptr_call;
     struct ARG           *ptr_arg;
     struct WHILE_S       *ptr_while_s;
-    struct FOR_S         *ptr_for_s;
+    struct FOR_STMT         *ptr_for_stmt;
     struct IF_S          *ptr_if_s;
     struct ID_S          *ptr_id_s;
     struct EXPR          *ptr_expr;
@@ -73,7 +73,7 @@ void lyyerror(YYLTYPE t, char *s, ...)
 %type <ptr_call> Call CallStmt
 %type <ptr_arg> Arg ArgList
 %type <ptr_while_s> While_s
-%type <ptr_for_s> For_s
+%type <ptr_for_stmt> ForStmt
 %type <ptr_if_s> If_s
 %type <ptr_expr> Expr RetStmt
 %type <ptr_addiop> Addiop
@@ -282,7 +282,7 @@ Stmt: AssignStmt {
         stmt->stmt.while_ = $1;
         $$ = stmt;
     }
-    | For_s {
+    | ForStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = eFor;
         stmt->stmt.for_ = $1;
@@ -536,8 +536,8 @@ While_s: WHILE '(' Expr ')'  Stmt  {
            $$ = while_s;
         }
          ;
-For_s: FOR '(' Assign ';' Expr ';' Assign ')' Stmt {
-           struct FOR_S *for_s = (struct FOR_S*) malloc (sizeof(struct FOR_S));
+ForStmt: FOR '(' Assign ';' Expr ';' Assign ')' Stmt {
+           struct FOR_STMT *for_s = (struct FOR_STMT*) malloc (sizeof(struct FOR_STMT));
            for_s->init = $3;
            for_s->cond = $5;
            for_s->inc = $7;

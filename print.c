@@ -5,8 +5,8 @@
 
 //TODO: delete later
 //extern struct PROGRAM *head;
-extern FILE *fp;
-extern FILE *fp2;
+extern FILE *tree_file;
+extern FILE *table_file;
 
 //global variable for making symboltable
 int _rowNumber;
@@ -20,40 +20,40 @@ bool _isCompound = false;
 void printScopePath() {
     //when printing global variable
     if(scopeTail->type == sGLOBAL) {
-        fprintf( fp2, "Global variables\n");
+        fprintf( table_file, "Global variables\n");
         return;  //print nothing at "location"
     }
    else {
-        fprintf( fp2, "\nFunction name : ");
-       fprintf(fp2, "%s", _curFuncName);
+        fprintf( table_file, "\nFunction name : ");
+       fprintf(table_file, "%s", _curFuncName);
        struct scope* curNode = scopeHead->child;//start from Function node
        while(curNode->child != NULL) {
-           fprintf(fp2, " - ");
+           fprintf(table_file, " - ");
             switch(curNode->child->type) {
                 case sDOWHILE:
-                    fprintf(fp2, "DOWHILE");
+                    fprintf(table_file, "DOWHILE");
                     break;
 
                 case sWHILE:
-                    fprintf(fp2, "WHILE");
+                    fprintf(table_file, "WHILE");
                     break;
 
                 case sFOR:
-                    fprintf(fp2, "FOR");
+                    fprintf(table_file, "FOR");
                     break;
 
                 case sIF:
-                    fprintf(fp2, "IF");
+                    fprintf(table_file, "IF");
                     break;
 
                 case sCOMPOUND:
-                    fprintf(fp2, "COMPOUND");
+                    fprintf(table_file, "COMPOUND");
                     break;
             }
-            fprintf(fp2, "(%d) ", getMyOrder(curNode->child->type, curNode));
+            fprintf(table_file, "(%d) ", getMyOrder(curNode->child->type, curNode));
             curNode = curNode->child;
        }
-       fprintf(fp2, "\n");
+       fprintf(table_file, "\n");
    }
 
 }
@@ -66,7 +66,7 @@ void printTitle() {
     _rowNumber = 1;
 
     printScopePath();
-    fprintf( fp2, "%10s%10s%10s%10s%10s\n", "count","type","name","array","role");
+    fprintf( table_file, "%10s%10s%10s%10s%10s\n", "count","type","name","array","role");
 }
 
 
@@ -83,11 +83,11 @@ void visitDeclaration   (struct DECLARATION* decl) {
 
     switch(decl->t) {
         case eInt:
-            fprintf (fp, "int ");    
+            fprintf (tree_file, "int ");    
             _curType = eInt;
             break;
         case eFloat:
-            fprintf (fp, "float ");
+            fprintf (tree_file, "float ");
             _curType = eFloat;
             break;
         default:
@@ -97,7 +97,7 @@ void visitDeclaration   (struct DECLARATION* decl) {
     _needPrinted = true;
     visitIdentifier(decl->id);
     _needPrinted = false;
-    fprintf (fp, ";\n");
+    fprintf (tree_file, ";\n");
 }
 void visitFunction      (struct FUNCTION* func) {
     if(func->prev != NULL) {
@@ -110,25 +110,25 @@ void visitFunction      (struct FUNCTION* func) {
 
     switch(func->t) {
         case eInt:
-            fprintf (fp, "int ");    
+            fprintf (tree_file, "int ");    
             break;
         case eFloat:
-            fprintf (fp, "float ");
+            fprintf (tree_file, "float ");
             break;
         default:
             fprintf(stderr, "Declaration does not exist.\n");
             exit(1);
     }
-    fprintf (fp, "%s (", func->ID);//function name
+    fprintf (tree_file, "%s (", func->ID);//function name
     _isTitlePrinted = false;
     if(func->param != NULL) {
         printTitle();
         _isTitlePrinted = true;
         visitParameter(func->param);    //parameter 
     }
-    fprintf (fp, ")\n");//function name
+    fprintf (tree_file, ")\n");//function name
     visitCompoundStmt(func->cstmt); //compoundStmt
-    fprintf(fp, "\n");
+    fprintf(tree_file, "\n");
 
     //deleteCurScope 
     deleteScope(&scopeTail);
@@ -137,11 +137,11 @@ void visitFunction      (struct FUNCTION* func) {
 void visitIdentifier    (struct IDENTIFIER* iden) {
     if(iden->prev != NULL) {
         visitIdentifier(iden->prev);
-        fprintf(fp, ", ");
+        fprintf(tree_file, ", ");
     }
-    fprintf (fp, "%s", iden->ID);
+    fprintf (tree_file, "%s", iden->ID);
     if(iden->intval > 0) {
-        fprintf (fp, "[%d]", iden->intval);
+        fprintf (tree_file, "[%d]", iden->intval);
 
 
         if( _needPrinted == true) {
@@ -150,7 +150,7 @@ void visitIdentifier    (struct IDENTIFIER* iden) {
                 curType = "int";
             else
                 curType = "float";
-            fprintf( fp2, "%10d%10s%10s%10d%10s\n", _rowNumber++ , curType, iden->ID, iden->intval, _isParam ? "parameter" : "variable");
+            fprintf( table_file, "%10d%10s%10s%10d%10s\n", _rowNumber++ , curType, iden->ID, iden->intval, _isParam ? "parameter" : "variable");
         }
     } else if(iden->intval < 0) {
         fprintf(stderr, "minus array");
@@ -162,7 +162,7 @@ void visitIdentifier    (struct IDENTIFIER* iden) {
                 curType = "int";
             else
                 curType = "float";
-            fprintf( fp2, "%10d%10s%10s%10s%10s\n", _rowNumber++ , curType, iden->ID, "", _isParam ? "parameter" : "variable"); //_rowNumber(x) ++_rowNumber(x) _rowNumber++(o)
+            fprintf( table_file, "%10d%10s%10s%10s%10s\n", _rowNumber++ , curType, iden->ID, "", _isParam ? "parameter" : "variable"); //_rowNumber(x) ++_rowNumber(x) _rowNumber++(o)
         }
     }
 }
@@ -173,22 +173,22 @@ void visitStmt          (struct STMT* stmt) {
     switch(stmt->s) {
         case eAssign:
             visitAssignStmt(stmt->stmt.assign_);
-            fprintf(fp, ";");
+            fprintf(tree_file, ";");
             break;
 
         case eCall:
             visitCallStmt(stmt->stmt.call_);
-            fprintf(fp, ";");
+            fprintf(tree_file, ";");
             break;
 
         case eRet:
             if(stmt->stmt.return_ == NULL){
-                fprintf (fp, "return;");
+                fprintf (tree_file, "return;");
             }
             else {
-                fprintf (fp, "return ");
+                fprintf (tree_file, "return ");
                 visitExpr(stmt->stmt.return_);
-                fprintf (fp, ";");
+                fprintf (tree_file, ";");
             }
             break;
 
@@ -213,25 +213,25 @@ void visitStmt          (struct STMT* stmt) {
             //break;
 
         case eSemi:
-            fprintf(fp, ";");
+            fprintf(tree_file, ";");
             break;
 
     }
-    fprintf(fp, "\n");
+    fprintf(tree_file, "\n");
 }
 void visitParameter     (struct PARAMETER* param) {
     _isParam = true;
     if(param->prev != NULL) {
         visitParameter(param->prev);
-        fprintf (fp, ", ");
+        fprintf (tree_file, ", ");
     }
     switch(param->t) {
         case eInt:
-            fprintf (fp, "int ");    
+            fprintf (tree_file, "int ");    
             _curType = eInt;
             break;
         case eFloat:
-            fprintf (fp, "float ");
+            fprintf (tree_file, "float ");
             _curType = eFloat;
             break;
         default:
@@ -251,13 +251,13 @@ void visitCompoundStmt  (struct COMPOUNDSTMT* cstmt) {
     }
     _isOtherComp = false;
 
-    fprintf(fp, "{\n");
+    fprintf(tree_file, "{\n");
     if(cstmt->decl != NULL) { 
         visitDeclaration(cstmt->decl);
     }
     if(cstmt->stmt != NULL)
         visitStmt(cstmt->stmt);
-    fprintf(fp, "}\n");
+    fprintf(tree_file, "}\n");
 
     if(_isCompound == true) {
         deleteScope(&scopeTail);
@@ -266,33 +266,33 @@ void visitCompoundStmt  (struct COMPOUNDSTMT* cstmt) {
     _isOtherComp = false;
 }
 void visitAssignStmt    (struct ASSIGN* assign) {
-    fprintf(fp, "%s ",assign->ID);
+    fprintf(tree_file, "%s ",assign->ID);
     if(assign->index != NULL) {
-        fprintf(fp, "[");
+        fprintf(tree_file, "[");
         visitExpr(assign->index);
-        fprintf(fp, "]");
+        fprintf(tree_file, "]");
     }
-    fprintf(fp, " = ");
+    fprintf(tree_file, " = ");
     visitExpr(assign->expr);
 }
 void visitCallStmt      (struct CALL* call) {
-    fprintf(fp, "%s(", call->ID);
+    fprintf(tree_file, "%s(", call->ID);
     if(call->arg != NULL) {
         visitArg(call->arg);
     }
-    fprintf(fp, ")");
+    fprintf(tree_file, ")");
 }
 void visitArg           (struct ARG* arg) {
     if(arg->prev != NULL) {
         visitArg(arg->prev);
-        fprintf(fp,", ");
+        fprintf(tree_file,", ");
     }   
     visitExpr(arg->expr);
 }
 void visitExpr          (struct EXPR* expr) {
     switch(expr->e) {
         case eUnop:
-            fprintf(fp, "-");
+            fprintf(tree_file, "-");
             visitExpr(expr->expression.unop_->expr);
             break;
 
@@ -300,9 +300,9 @@ void visitExpr          (struct EXPR* expr) {
         case eAddi:
             visitExpr(expr->expression.addiop_->lhs);
             if(expr->expression.addiop_->a == ePlus)
-                fprintf(fp, " + ");
+                fprintf(tree_file, " + ");
             else
-                fprintf(fp, " - ");
+                fprintf(tree_file, " - ");
             visitExpr(expr->expression.addiop_->rhs);
             break;
 
@@ -310,9 +310,9 @@ void visitExpr          (struct EXPR* expr) {
         case eMulti:
             visitExpr(expr->expression.multop_->lhs);
             if(expr->expression.multop_->m == eMult)
-                fprintf(fp, " * ");
+                fprintf(tree_file, " * ");
             else
-                fprintf(fp, " / ");
+                fprintf(tree_file, " / ");
             visitExpr(expr->expression.multop_->rhs);
             break;
 
@@ -320,20 +320,20 @@ void visitExpr          (struct EXPR* expr) {
             visitExpr(expr->expression.relaop_->lhs);
             switch(expr->expression.relaop_->r) {
                 case eLT:
-                    fprintf(fp, " < ");
+                    fprintf(tree_file, " < ");
                     break;
 
                 case eGT:
-                    fprintf(fp, " > ");
+                    fprintf(tree_file, " > ");
                     break;
 
                 case eLE:
-                    fprintf(fp, " <= ");
+                    fprintf(tree_file, " <= ");
 
                     break;
 
                 case eGE:
-                    fprintf(fp, " >= ");
+                    fprintf(tree_file, " >= ");
                     break;
             }
             visitExpr(expr->expression.relaop_->rhs);
@@ -342,9 +342,9 @@ void visitExpr          (struct EXPR* expr) {
         case eEqlt:
             visitExpr(expr->expression.eqltop_->lhs);
             if(expr->expression.eqltop_->e == eEQ) {
-                fprintf(fp, " == ");
+                fprintf(tree_file, " == ");
             } else {
-                fprintf(fp, " != " );
+                fprintf(tree_file, " != " );
             }
             visitExpr(expr->expression.eqltop_->rhs);
             break;
@@ -354,20 +354,20 @@ void visitExpr          (struct EXPR* expr) {
             break;
 
         case eExpr:
-            fprintf(fp, "(");
+            fprintf(tree_file, "(");
             visitExpr(expr->expression.bracket);
-            fprintf(fp, ")");
+            fprintf(tree_file, ")");
             break;
 
         case eId:
             visitId_s(expr->expression.ID_);
             break;
         case eIntnum:
-            fprintf(fp, "%d", expr->expression.intval);
+            fprintf(tree_file, "%d", expr->expression.intval);
             break;
 
         case eFloatnum:
-            fprintf(fp, "%f", expr->expression.floatval);
+            fprintf(tree_file, "%f", expr->expression.floatval);
             break;
     }
 
@@ -379,39 +379,39 @@ void visitWhile_s       (struct WHILE_S* while_s) {
         _isTitlePrinted = false;
         scopeTail->parent->dowhile_n++;
 
-        fprintf(fp, "do");
+        fprintf(tree_file, "do");
         visitStmt(while_s->stmt);
-        fprintf(fp, "while (");
+        fprintf(tree_file, "while (");
         visitExpr(while_s->cond);
-        fprintf(fp, ");\n");
+        fprintf(tree_file, ");\n");
     } else {
         //making node for symbol table
         scopeTail = newScope(sWHILE, scopeTail);
         _isTitlePrinted = false;
         scopeTail->parent->while_n++;
 
-        fprintf(fp, "while (");
+        fprintf(tree_file, "while (");
         visitExpr(while_s->cond);
-        fprintf(fp, ")\n");
+        fprintf(tree_file, ")\n");
         visitStmt(while_s->stmt);
     }
 
     //deleteCurScope 
     deleteScope(&scopeTail);
 }
-void visitFor_s         (struct FOR_S* for_s) {
+void visitFor_s         (struct FOR_STMT* for_s) {
     //making node for symbol table
     scopeTail = newScope(sFOR, scopeTail);
     _isTitlePrinted = false;
     scopeTail->parent->for_n++;
 
-    fprintf(fp, "for (");
+    fprintf(tree_file, "for (");
     visitAssignStmt(for_s->init);
-    fprintf(fp, "; ");  
+    fprintf(tree_file, "; ");  
     visitExpr(for_s->cond);
-    fprintf(fp, "; ");  
+    fprintf(tree_file, "; ");  
     visitAssignStmt(for_s->inc);
-    fprintf(fp, ")\n");
+    fprintf(tree_file, ")\n");
     visitStmt(for_s->stmt);
 
     //deleteCurScope 
@@ -423,12 +423,12 @@ void visitIf_s          (struct IF_S* if_s) {
     _isTitlePrinted = false;
     scopeTail->parent->if_n++;
 
-    fprintf(fp, "if (");
+    fprintf(tree_file, "if (");
     visitExpr(if_s->cond);
-    fprintf(fp, ")\n");
+    fprintf(tree_file, ")\n");
     visitStmt(if_s->if_);
     if (if_s->else_ != NULL) {
-        fprintf(fp,"\nelse\n");
+        fprintf(tree_file,"\nelse\n");
         visitStmt(if_s->else_);
     }
 
@@ -436,10 +436,10 @@ void visitIf_s          (struct IF_S* if_s) {
     deleteScope(&scopeTail);
 }
 void visitId_s          (struct ID_S* id_s) {
-   fprintf(fp,"%s",id_s->ID);
+   fprintf(tree_file,"%s",id_s->ID);
    if(id_s->expr != NULL) {
-    fprintf(fp, "[");
+    fprintf(tree_file, "[");
     visitExpr(id_s->expr);
-    fprintf(fp, "]");
+    fprintf(tree_file, "]");
    }
 }
