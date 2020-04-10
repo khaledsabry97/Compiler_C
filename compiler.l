@@ -7,36 +7,19 @@
 %}
 
 
-
-intval [0-9]+
-floatval [0-9]+.[0-9]+
-id [A-Za-z][A-Za-z0-9_]*     
-space [ \t\r\n]
-
-
 %%
 
-int     return INT;
-float   return FLOAT;
-
-if return IF;
-else return ELSE;
-for return FOR;
-while return WHILE;
-do return DO;
-return return RETURN;
-
-"[" |
-"]" |
 "{" |
 "}" |
+"[" |
+"]" |
 "(" |
 ")" |
 ";" |
 "." |
 "," |
-"=" {return yytext[0];} //Return the character
-"\""  {return DQUOT_T;} 
+"=" {return yytext[0];}
+"\""  {return DQUOT_T;}
 "\'"  {return SQUOT_T;}
 "\&"  {return AMP_T;}
 "-"     return MINUS;
@@ -49,20 +32,28 @@ return return RETURN;
 "<"     return LT;
 "=="    return EQ;
 "!="    return NE;
+int     return INT;
+float   return FLOAT;
+if return IF;
+else return ELSE;
+do return DO;
+while return WHILE;
+for return FOR;
+return return RETURN;
 
-{intval} {
+[0-9]+ {
     yylval.intval = atoi(yytext);
     return INTNUM;
 }
-{floatval} {
+[0-9]+.[0-9]+ {
     yylval.floatval = atof(yytext);
     return FLOATNUM;
 }
-{id}   {
+[A-Za-z][A-Za-z0-9_]*   {
     yylval.id = strndup(yytext, yyleng);
     return ID;
 }
 
-{space} { break;}
+[ \t\r\n] { break;}
 
 %%

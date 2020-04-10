@@ -11,7 +11,7 @@ Function name : main - WHILE(1)
 
 Function name : main - WHILE(1)  - WHILE(1) 
      count      type      name     array      role
-         1     float         b            variable
+         1       int         b            variable
 
 Function name : main - WHILE(1)  - WHILE(1)  - FOR(1) 
      count      type      name     array      role
