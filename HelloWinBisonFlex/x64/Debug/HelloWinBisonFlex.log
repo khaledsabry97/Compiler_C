@@ -1,9 +1,0 @@
-﻿  Generating lexical analyzer
-  Generating syntax parser
-  lexer.cpp
-d:\computer\downloads\win_flex_bison\visual studio sample project\00a-winbisonflex-solution\hellowinbisonflex\lexer.cpp(396): warning C4005: 'yywrap': macro redefinition
-  d:\computer\downloads\win_flex_bison\visual studio sample project\00a-winbisonflex-solution\hellowinbisonflex\lexer.cpp(74): note: see previous definition of 'yywrap'
-  parser.cpp
-  Source.cpp
-  Generating Code...
-  HelloWinBisonFlex.vcxproj -> D:\Computer\Downloads\win_flex_bison\Visual Studio Sample Project\00A-WinBisonFlex-Solution\x64\Debug\HelloWinBisonFlex.exe

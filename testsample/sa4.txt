@@ -1,0 +1,21 @@
+int main ()
+{
+    int i, j, k;
+
+    while (i < 10)
+    {
+        int a;
+        while (j<10)
+        {
+            int b;
+            for (k=0;k<10;k=k+1)
+            {
+                int c;
+                c = 3;
+            }
+            b = 5;
+        }
+    }
+
+    return 0;
+}
