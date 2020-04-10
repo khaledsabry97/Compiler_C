@@ -1,7 +1,15 @@
-int main()
+int main ()
 {
-	int a;
+	int i, j;
+	int result;
+
+	for (i=0; i<10; i=i+1) 
 	{
-		int b; // this is wrong because there is no "StmtList".
+		for (j=0; j<10; j=j+1)
+		{
+			result = i + j;
+		}
 	}
+
+	return 0;
 }

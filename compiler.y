@@ -370,7 +370,7 @@ RetStmt: RETURN ';' {
        ;
 Expr: MINUS Expr %prec UNARY {
         struct UNOP *unop = (struct UNOP*) malloc (sizeof (struct UNOP));
-        unop->u = eNegative;
+        unop->u = Neg_Type;
         unop->expr = $2;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));

@@ -1874,7 +1874,7 @@ yyreduce:
 #line 371 "compiler.y" /* yacc.c:1646  */
     {
         struct UNOP *unop = (struct UNOP*) malloc (sizeof (struct UNOP));
-        unop->u = eNegative;
+        unop->u = Neg_Type;
         unop->expr = (yyvsp[0].ptr_expr);
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
