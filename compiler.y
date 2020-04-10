@@ -5,10 +5,12 @@
 #include "AST.h"
 #include "print.h"
 #include "symboltable.h"
+
+FILE *tree_file;   //for AST
+FILE *table_file;  //for symboltable 
+
 //global variables which can be used in other .c .h
 struct PROGRAM *head;
-FILE *fp;   //for AST
-FILE *fp2;  //for symboltable 
 void yyerror(char* text) {
 
     fprintf(stderr, "%s\n", text);
@@ -48,7 +50,6 @@ void lyyerror(YYLTYPE t, char *s, ...)
     struct RELAOP        *ptr_relaop;
     struct EQLTOP        *ptr_eqltop;
     Type_e type;
-    //TODO int, float to char*
     int intval;
     float floatval;
     char* id;
@@ -562,18 +563,17 @@ If_s: IF '(' Expr ')' Stmt %prec LOWER_THAN_ELSE {
 %%
 void doProcess();
 int main(int argc, char* argv[]) {
-    //헤드 초기화, 만일 토큰이 없다면 dfs(), bfs() 를 작동하지 않게 함.
     head = NULL;
     scopeHead = NULL;
     scopeTail = NULL;
     //print AST
-    fp = fopen("tree.txt","w");
-    fp2 = fopen("table.txt","w");
+    tree_file = fopen("tree.txt","w");
+    table_file = fopen("table.txt","w");
     if(!yyparse())
         doProcess();
-    fprintf(fp, "\n");
-    close(fp);
-    close(fp2);
+    fprintf(tree_file, "\n");
+    close(tree_file);
+    close(table_file);
     return 0;
 }
 void doProcess() {
