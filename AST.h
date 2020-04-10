@@ -15,11 +15,12 @@ typedef enum {Lt_Type,Gt_Type,Le_Type,Ge_Type} COMP_TYPE;
 typedef enum {eUnop,eAddi,eMulti,eRela,eEqlt,eCallExpr,eIntnum,eFloatnum,eId,eExpr} Expr_e;
 
 
-
+//start of the program from here
 struct PROGRAM
 {
-	struct DECLARATION *decl;
-	struct FUNCTION *func;
+
+	struct DECLARATION *declaration;
+	struct FUNCTION *function;
 };
 
 struct DECLARATION
@@ -55,7 +56,7 @@ struct PARAMETER
 
 struct COMPOUNDSTMT // {}
 {
-	struct DECLARATION *decl;
+	struct DECLARATION *declaration;
 	struct STMT *stmt;
 };
 /*

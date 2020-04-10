@@ -101,22 +101,22 @@ void lyyerror(YYLTYPE t, char *s, ...)
 //"DeclList" in "Program" denotes global declaration
 Program: DeclList FuncList {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
-            prog->decl = $1;
-            prog->func = $2;
+            prog->declaration = $1;
+            prog->function = $2;
             head = prog;
             $$ = prog;
        }
        | DeclList {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
-            prog->decl = $1;
-            prog->func = NULL;
+            prog->declaration = $1;
+            prog->function = NULL;
             head = prog;
             $$ = prog;
        }
        | FuncList {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
-            prog->decl = NULL;
-            prog->func = $1;
+            prog->declaration = NULL;
+            prog->function = $1;
             head = prog;
             $$ = prog;
        }
@@ -125,27 +125,27 @@ DeclList: Declaration {
             $$ = $1;
         }
         | DeclList Declaration {
-            struct DECLARATION *decl;
-            decl = $2;
-            decl->prev = $1;
-            $$ = decl;
+            struct DECLARATION *declaration;
+            declaration = $2;
+            declaration->prev = $1;
+            $$ = declaration;
         }
         ;
 FuncList: Function {
             $$ = $1;
         }
         | FuncList Function {
-            struct FUNCTION *func;
-            func = $2;
-            func->prev = $1;
-            $$ = func;
+            struct FUNCTION *function;
+            function = $2;
+            function->prev = $1;
+            $$ = function;
         }
         ;
 Declaration: Type IdentList ';' {
-                struct DECLARATION *decl = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
-                decl->t = $1;
-                decl->id = $2;
-                $$ = decl;
+                struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
+                declaration->t = $1;
+                declaration->id = $2;
+                $$ = declaration;
             }
            ;
 IdentList: Identifier {
@@ -193,21 +193,21 @@ Parameter: Type Identifier {
             $$ = param;
         }
 Function: Type ID '(' ')' CompoundStmt {
-            struct FUNCTION *func = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
-            func->t = $1;
-            func->ID = $2;
-            func->param = NULL;
-            func->cstmt = $5;
-            $$ = func;
+            struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
+            function->t = $1;
+            function->ID = $2;
+            function->param = NULL;
+            function->cstmt = $5;
+            $$ = function;
 
         }
         | Type ID '(' ParamList ')' CompoundStmt {
-        struct FUNCTION *func = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
-        func->t = $1;
-        func->ID = $2;
-        func->param = $4;
-        func->cstmt = $6;
-        $$ = func;
+        struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
+        function->t = $1;
+        function->ID = $2;
+        function->param = $4;
+        function->cstmt = $6;
+        $$ = function;
     }
     ;
 Type: INT { $$ = Int_Type;}
@@ -217,7 +217,7 @@ Type: INT { $$ = Int_Type;}
 //StmtList 에서 empty 입력을 허용하지 않도록 StmtList 가 없는 Compound 정의
 CompoundStmt: '{' '}' {
                 struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
-                comp->decl = NULL;
+                comp->declaration = NULL;
                 comp->stmt = NULL;
                 $$ = comp;
                 /*
@@ -228,19 +228,19 @@ CompoundStmt: '{' '}' {
             }
             | '{' StmtList '}'  {
                 struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
-                comp->decl = NULL;
+                comp->declaration = NULL;
                 comp->stmt = $2;
                 $$ = comp;
             }
             |  '{' DeclList StmtList '}' {
                 struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
-                comp->decl = $2;
+                comp->declaration = $2;
                 comp->stmt = $3;
                 $$ = comp;
             }
             |  '{' DeclList '}' {
                 struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
-                comp->decl = $2;
+                comp->declaration = $2;
                 comp->stmt = NULL;
                 $$ = comp;
             }
@@ -583,8 +583,8 @@ void doProcess() {
     //make global node
     scopeHead = newScope(sGLOBAL, NULL);
     scopeTail = scopeHead;
-    if(head->decl != NULL)
-        visitDeclaration(head->decl);
-    if(head->func != NULL)
-        visitFunction(head->func);
+    if(head->declaration != NULL)
+        visitDeclaration(head->declaration);
+    if(head->function != NULL)
+        visitFunction(head->function);
 }

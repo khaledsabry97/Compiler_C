@@ -71,17 +71,17 @@ void printTitle() {
 
 
 
-void visitDeclaration   (struct DECLARATION* decl) {
+void visitDeclaration   (struct DECLARATION* declaration) {
     _isParam = false;   //needed when we have to decide it is parameter or variable.
-    if(decl->prev != NULL) {
-        visitDeclaration(decl->prev);
+    if(declaration->prev != NULL) {
+        visitDeclaration(declaration->prev);
     }
     if(!_isTitlePrinted) {
         printTitle();
         _isTitlePrinted = true;
     }
 
-    switch(decl->t) {
+    switch(declaration->t) {
         case Int_Type:
             fprintf (tree_file, "int ");    
             _curType = Int_Type;
@@ -95,20 +95,20 @@ void visitDeclaration   (struct DECLARATION* decl) {
             exit(1);
     }
     _needPrinted = true;
-    visitIdentifier(decl->id);
+    visitIdentifier(declaration->id);
     _needPrinted = false;
     fprintf (tree_file, ";\n");
 }
-void visitFunction      (struct FUNCTION* func) {
-    if(func->prev != NULL) {
-        visitFunction(func->prev);
+void visitFunction      (struct FUNCTION* function) {
+    if(function->prev != NULL) {
+        visitFunction(function->prev);
     }
     //for symboltable
-    _curFuncName = func->ID;
+    _curFuncName = function->ID;
     //list node
     scopeTail = newScope(sFUNC, scopeTail); //append it to the end of list
 
-    switch(func->t) {
+    switch(function->t) {
         case Int_Type:
             fprintf (tree_file, "int ");    
             break;
@@ -119,15 +119,15 @@ void visitFunction      (struct FUNCTION* func) {
             fprintf(stderr, "Declaration does not exist.\n");
             exit(1);
     }
-    fprintf (tree_file, "%s (", func->ID);//function name
+    fprintf (tree_file, "%s (", function->ID);//function name
     _isTitlePrinted = false;
-    if(func->param != NULL) {
+    if(function->param != NULL) {
         printTitle();
         _isTitlePrinted = true;
-        visitParameter(func->param);    //parameter 
+        visitParameter(function->param);    //parameter 
     }
     fprintf (tree_file, ")\n");//function name
-    visitCompoundStmt(func->cstmt); //compoundStmt
+    visitCompoundStmt(function->cstmt); //compoundStmt
     fprintf(tree_file, "\n");
 
     //deleteCurScope 
@@ -252,8 +252,8 @@ void visitCompoundStmt  (struct COMPOUNDSTMT* cstmt) {
     _isOtherComp = false;
 
     fprintf(tree_file, "{\n");
-    if(cstmt->decl != NULL) { 
-        visitDeclaration(cstmt->decl);
+    if(cstmt->declaration != NULL) { 
+        visitDeclaration(cstmt->declaration);
     }
     if(cstmt->stmt != NULL)
         visitStmt(cstmt->stmt);

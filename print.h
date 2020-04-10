@@ -1,7 +1,7 @@
 #include "AST.h"
 
-void visitDeclaration   (struct DECLARATION* decl);
-void visitFunction      (struct FUNCTION* func);
+void visitDeclaration   (struct DECLARATION* declaration);
+void visitFunction      (struct FUNCTION* function);
 void visitIdentifier    (struct IDENTIFIER* iden);
 void visitStmt          (struct STMT* stmt);
 void visitParameter     (struct PARAMETER* param);

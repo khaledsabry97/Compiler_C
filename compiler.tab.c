@@ -1409,8 +1409,8 @@ yyreduce:
 #line 102 "compiler.y" /* yacc.c:1646  */
     {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
-            prog->decl = (yyvsp[-1].ptr_declaration);
-            prog->func = (yyvsp[0].ptr_function);
+            prog->declaration = (yyvsp[-1].ptr_declaration);
+            prog->function = (yyvsp[0].ptr_function);
             head = prog;
             (yyval.ptr_program) = prog;
        }
@@ -1421,8 +1421,8 @@ yyreduce:
 #line 109 "compiler.y" /* yacc.c:1646  */
     {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
-            prog->decl = (yyvsp[0].ptr_declaration);
-            prog->func = NULL;
+            prog->declaration = (yyvsp[0].ptr_declaration);
+            prog->function = NULL;
             head = prog;
             (yyval.ptr_program) = prog;
        }
@@ -1433,8 +1433,8 @@ yyreduce:
 #line 116 "compiler.y" /* yacc.c:1646  */
     {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
-            prog->decl = NULL;
-            prog->func = (yyvsp[0].ptr_function);
+            prog->declaration = NULL;
+            prog->function = (yyvsp[0].ptr_function);
             head = prog;
             (yyval.ptr_program) = prog;
        }
@@ -1452,10 +1452,10 @@ yyreduce:
   case 6:
 #line 127 "compiler.y" /* yacc.c:1646  */
     {
-            struct DECLARATION *decl;
-            decl = (yyvsp[0].ptr_declaration);
-            decl->prev = (yyvsp[-1].ptr_declaration);
-            (yyval.ptr_declaration) = decl;
+            struct DECLARATION *declaration;
+            declaration = (yyvsp[0].ptr_declaration);
+            declaration->prev = (yyvsp[-1].ptr_declaration);
+            (yyval.ptr_declaration) = declaration;
         }
 #line 1461 "compiler.tab.c" /* yacc.c:1646  */
     break;
@@ -1471,10 +1471,10 @@ yyreduce:
   case 8:
 #line 137 "compiler.y" /* yacc.c:1646  */
     {
-            struct FUNCTION *func;
-            func = (yyvsp[0].ptr_function);
-            func->prev = (yyvsp[-1].ptr_function);
-            (yyval.ptr_function) = func;
+            struct FUNCTION *function;
+            function = (yyvsp[0].ptr_function);
+            function->prev = (yyvsp[-1].ptr_function);
+            (yyval.ptr_function) = function;
         }
 #line 1480 "compiler.tab.c" /* yacc.c:1646  */
     break;
@@ -1482,10 +1482,10 @@ yyreduce:
   case 9:
 #line 144 "compiler.y" /* yacc.c:1646  */
     {
-                struct DECLARATION *decl = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
-                decl->t = (yyvsp[-2].type);
-                decl->id = (yyvsp[-1].ptr_identifier);
-                (yyval.ptr_declaration) = decl;
+                struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
+                declaration->t = (yyvsp[-2].type);
+                declaration->id = (yyvsp[-1].ptr_identifier);
+                (yyval.ptr_declaration) = declaration;
             }
 #line 1491 "compiler.tab.c" /* yacc.c:1646  */
     break;
@@ -1570,12 +1570,12 @@ yyreduce:
   case 17:
 #line 195 "compiler.y" /* yacc.c:1646  */
     {
-            struct FUNCTION *func = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
-            func->t = (yyvsp[-4].type);
-            func->ID = (yyvsp[-3].id);
-            func->param = NULL;
-            func->cstmt = (yyvsp[0].ptr_compoundstmt);
-            (yyval.ptr_function) = func;
+            struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
+            function->t = (yyvsp[-4].type);
+            function->ID = (yyvsp[-3].id);
+            function->param = NULL;
+            function->cstmt = (yyvsp[0].ptr_compoundstmt);
+            (yyval.ptr_function) = function;
 
         }
 #line 1582 "compiler.tab.c" /* yacc.c:1646  */
@@ -1584,12 +1584,12 @@ yyreduce:
   case 18:
 #line 204 "compiler.y" /* yacc.c:1646  */
     {
-        struct FUNCTION *func = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
-        func->t = (yyvsp[-5].type);
-        func->ID = (yyvsp[-4].id);
-        func->param = (yyvsp[-2].ptr_parameter);
-        func->cstmt = (yyvsp[0].ptr_compoundstmt);
-        (yyval.ptr_function) = func;
+        struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
+        function->t = (yyvsp[-5].type);
+        function->ID = (yyvsp[-4].id);
+        function->param = (yyvsp[-2].ptr_parameter);
+        function->cstmt = (yyvsp[0].ptr_compoundstmt);
+        (yyval.ptr_function) = function;
     }
 #line 1595 "compiler.tab.c" /* yacc.c:1646  */
     break;
@@ -1610,7 +1610,7 @@ yyreduce:
 #line 218 "compiler.y" /* yacc.c:1646  */
     {
                 struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
-                comp->decl = NULL;
+                comp->declaration = NULL;
                 comp->stmt = NULL;
                 (yyval.ptr_compoundstmt) = comp;
                 /*
@@ -1626,7 +1626,7 @@ yyreduce:
 #line 229 "compiler.y" /* yacc.c:1646  */
     {
                 struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
-                comp->decl = NULL;
+                comp->declaration = NULL;
                 comp->stmt = (yyvsp[-1].ptr_stmt);
                 (yyval.ptr_compoundstmt) = comp;
             }
@@ -1637,7 +1637,7 @@ yyreduce:
 #line 235 "compiler.y" /* yacc.c:1646  */
     {
                 struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
-                comp->decl = (yyvsp[-2].ptr_declaration);
+                comp->declaration = (yyvsp[-2].ptr_declaration);
                 comp->stmt = (yyvsp[-1].ptr_stmt);
                 (yyval.ptr_compoundstmt) = comp;
             }
@@ -1648,7 +1648,7 @@ yyreduce:
 #line 241 "compiler.y" /* yacc.c:1646  */
     {
                 struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
-                comp->decl = (yyvsp[-1].ptr_declaration);
+                comp->declaration = (yyvsp[-1].ptr_declaration);
                 comp->stmt = NULL;
                 (yyval.ptr_compoundstmt) = comp;
             }
@@ -2440,8 +2440,8 @@ void doProcess() {
     //make global node
     scopeHead = newScope(sGLOBAL, NULL);
     scopeTail = scopeHead;
-    if(head->decl != NULL)
-        visitDeclaration(head->decl);
-    if(head->func != NULL)
-        visitFunction(head->func);
+    if(head->declaration != NULL)
+        visitDeclaration(head->declaration);
+    if(head->function != NULL)
+        visitFunction(head->function);
 }
