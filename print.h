@@ -5,7 +5,7 @@ void visitFunction      (struct FUNCTION* function);
 void visitIdentifier    (struct IDENTIFIER* iden);
 void visitStmt          (struct STMT* stmt);
 void visitParameter     (struct PARAMETER* param);
-void visitCompoundStmt  (struct COMPOUNDSTMT* cstmt);
+void visitCompoundStmt  (struct STMTSGROUP* stmts_group);
 void visitAssignStmt    (struct ASSIGN* assign);
 void visitCallStmt      (struct CALL* call);
 void visitArg           (struct ARG* arg);

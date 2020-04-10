@@ -15,8 +15,8 @@ void yyerror(char* text) {
 
     fprintf(stderr, "%s\n", text);
 }
-/*
-void lyyerror(YYLTYPE t, char *s, ...)
+
+/* void lyyerror(YYLTYPE t, char *s, ...)
 {
     va_list ap;
     va_start(ap, s);
@@ -25,8 +25,8 @@ void lyyerror(YYLTYPE t, char *s, ...)
         fprintf(stderr, "%d.%d-%d.%d: error: ", t.first_line, t.first_column, t.last_line, t.last_column);
     vfprintf(stderr, s, ap);
     fprintf(stderr, "\n");
-}
-*/
+} */
+
 %}
 
 %union{
@@ -35,7 +35,7 @@ void lyyerror(YYLTYPE t, char *s, ...)
     struct IDENTIFIER    *ptr_identifier;
     struct FUNCTION      *ptr_function;
     struct PARAMETER     *ptr_parameter;
-    struct COMPOUNDSTMT  *ptr_compoundstmt;
+    struct STMTSGROUP  *ptr_compoundstmt;
     struct STMT          *ptr_stmt;
     struct ASSIGN        *ptr_assign;
     struct CALL          *ptr_call;
@@ -143,7 +143,7 @@ FuncList: Function {
         ;
 Declaration: Type IdentList ';' {
                 struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
-                declaration->t = $1;
+                declaration->id_type = $1;
                 declaration->id = $2;
                 $$ = declaration;
             }
@@ -187,26 +187,26 @@ ParamList: Parameter {
         }
 Parameter: Type Identifier {
             struct PARAMETER *param = (struct PARAMETER*) malloc (sizeof (struct PARAMETER));
-            param->t = $1;
+            param->id_type = $1;
             param->id = $2;
             param->prev = NULL;
             $$ = param;
         }
 Function: Type ID '(' ')' CompoundStmt {
             struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
-            function->t = $1;
+            function->id_type = $1;
             function->ID = $2;
             function->param = NULL;
-            function->cstmt = $5;
+            function->stmts_group = $5;
             $$ = function;
 
         }
         | Type ID '(' ParamList ')' CompoundStmt {
         struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
-        function->t = $1;
+        function->id_type = $1;
         function->ID = $2;
         function->param = $4;
-        function->cstmt = $6;
+        function->stmts_group = $6;
         $$ = function;
     }
     ;
@@ -216,7 +216,7 @@ Type: INT { $$ = Int_Type;}
 //cf. Stmt 안에 CompoundStmt 존재
 //StmtList 에서 empty 입력을 허용하지 않도록 StmtList 가 없는 Compound 정의
 CompoundStmt: '{' '}' {
-                struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
+                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = NULL;
                 comp->stmt = NULL;
                 $$ = comp;
@@ -227,19 +227,19 @@ CompoundStmt: '{' '}' {
                 
             }
             | '{' StmtList '}'  {
-                struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
+                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = NULL;
                 comp->stmt = $2;
                 $$ = comp;
             }
             |  '{' DeclList StmtList '}' {
-                struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
+                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = $2;
                 comp->stmt = $3;
                 $$ = comp;
             }
             |  '{' DeclList '}' {
-                struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
+                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = $2;
                 comp->stmt = NULL;
                 $$ = comp;

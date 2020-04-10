@@ -86,7 +86,7 @@ union YYSTYPE
     struct IDENTIFIER    *ptr_identifier;
     struct FUNCTION      *ptr_function;
     struct PARAMETER     *ptr_parameter;
-    struct COMPOUNDSTMT  *ptr_compoundstmt;
+    struct STMTSGROUP  *ptr_compoundstmt;
     struct STMT          *ptr_stmt;
     struct ASSIGN        *ptr_assign;
     struct CALL          *ptr_call;

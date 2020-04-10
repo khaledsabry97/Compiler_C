@@ -23,38 +23,58 @@ struct PROGRAM
 	struct FUNCTION *function;
 };
 
+/*
+-
+
+
+*/
 struct DECLARATION
 {
-	ID_TYPE t;
+	ID_TYPE id_type;
 	struct IDENTIFIER *id;
 	struct DECLARATION *prev;
 };
 
 struct IDENTIFIER
 {
-	char *ID;
-	int intval; // zero  , if scalar
 	struct IDENTIFIER *prev;
 
+	char *ID;
+	int intval;
 };
 
-struct FUNCTION  // *prev  type id (parameter) {} 
+/*
+- prev: previous function
+- ID: int or float or anything for future work
+- parameters: send paramperter
+- STMTSGROUP: { }
+
+*/
+struct FUNCTION 
 {
-	ID_TYPE t;
+	struct FUNCTION *prev;
+	
+	ID_TYPE id_type;
 	char *ID;
 	struct PARAMETER *param;
-	struct COMPOUNDSTMT *cstmt;
-	struct FUNCTION *prev;
+	struct STMTSGROUP *stmts_group;
 };
 
+/*
+what we send in the function
+- prev : if there is another parameter
+- id_type: the type of identifier
+- id: pointer on the identifier
+*/
 struct PARAMETER
 {
-	ID_TYPE t;
-	struct IDENTIFIER *id;
 	struct PARAMETER *prev;
+
+	ID_TYPE id_type;
+	struct IDENTIFIER *id;
 };
 
-struct COMPOUNDSTMT // {}
+struct STMTSGROUP // {}
 {
 	struct DECLARATION *declaration;
 	struct STMT *stmt;
@@ -72,7 +92,7 @@ struct STMT
 		struct WHILE_S *while_; // while()stmt | do_while() stmt
 		struct FOR_STMT *for_; // for()stmt
 		struct IF_STMT *if_;  // if()stmt
-		struct COMPOUNDSTMT *cstmt_; // {}
+		struct STMTSGROUP *cstmt_; // {}
 	} stmt; 
 	struct STMT *prev;
 };

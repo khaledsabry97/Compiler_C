@@ -81,7 +81,7 @@ void visitDeclaration   (struct DECLARATION* declaration) {
         _isTitlePrinted = true;
     }
 
-    switch(declaration->t) {
+    switch(declaration->id_type) {
         case Int_Type:
             fprintf (tree_file, "int ");    
             _curType = Int_Type;
@@ -108,7 +108,7 @@ void visitFunction      (struct FUNCTION* function) {
     //list node
     scopeTail = newScope(sFUNC, scopeTail); //append it to the end of list
 
-    switch(function->t) {
+    switch(function->id_type) {
         case Int_Type:
             fprintf (tree_file, "int ");    
             break;
@@ -127,7 +127,7 @@ void visitFunction      (struct FUNCTION* function) {
         visitParameter(function->param);    //parameter 
     }
     fprintf (tree_file, ")\n");//function name
-    visitCompoundStmt(function->cstmt); //compoundStmt
+    visitCompoundStmt(function->stmts_group); //compoundStmt
     fprintf(tree_file, "\n");
 
     //deleteCurScope 
@@ -225,7 +225,7 @@ void visitParameter     (struct PARAMETER* param) {
         visitParameter(param->prev);
         fprintf (tree_file, ", ");
     }
-    switch(param->t) {
+    switch(param->id_type) {
         case Int_Type:
             fprintf (tree_file, "int ");    
             _curType = Int_Type;
@@ -242,7 +242,7 @@ void visitParameter     (struct PARAMETER* param) {
     visitIdentifier(param->id);
     _needPrinted = false;
 }
-void visitCompoundStmt  (struct COMPOUNDSTMT* cstmt) {
+void visitCompoundStmt  (struct STMTSGROUP* stmts_group) {
     if(_isCompound == true) {
         //making node for symbol table
         scopeTail = newScope(sCOMPOUND, scopeTail);
@@ -252,11 +252,11 @@ void visitCompoundStmt  (struct COMPOUNDSTMT* cstmt) {
     _isOtherComp = false;
 
     fprintf(tree_file, "{\n");
-    if(cstmt->declaration != NULL) { 
-        visitDeclaration(cstmt->declaration);
+    if(stmts_group->declaration != NULL) { 
+        visitDeclaration(stmts_group->declaration);
     }
-    if(cstmt->stmt != NULL)
-        visitStmt(cstmt->stmt);
+    if(stmts_group->stmt != NULL)
+        visitStmt(stmts_group->stmt);
     fprintf(tree_file, "}\n");
 
     if(_isCompound == true) {

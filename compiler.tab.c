@@ -80,8 +80,8 @@ void yyerror(char* text) {
 
     fprintf(stderr, "%s\n", text);
 }
-/*
-void lyyerror(YYLTYPE t, char *s, ...)
+
+/* void lyyerror(YYLTYPE t, char *s, ...)
 {
     va_list ap;
     va_start(ap, s);
@@ -90,8 +90,8 @@ void lyyerror(YYLTYPE t, char *s, ...)
         fprintf(stderr, "%d.%d-%d.%d: error: ", t.first_line, t.first_column, t.last_line, t.last_column);
     vfprintf(stderr, s, ap);
     fprintf(stderr, "\n");
-}
-*/
+} */
+
 
 #line 97 "compiler.tab.c" /* yacc.c:339  */
 
@@ -169,7 +169,7 @@ union YYSTYPE
     struct IDENTIFIER    *ptr_identifier;
     struct FUNCTION      *ptr_function;
     struct PARAMETER     *ptr_parameter;
-    struct COMPOUNDSTMT  *ptr_compoundstmt;
+    struct STMTSGROUP  *ptr_compoundstmt;
     struct STMT          *ptr_stmt;
     struct ASSIGN        *ptr_assign;
     struct CALL          *ptr_call;
@@ -1483,7 +1483,7 @@ yyreduce:
 #line 144 "compiler.y" /* yacc.c:1646  */
     {
                 struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
-                declaration->t = (yyvsp[-2].type);
+                declaration->id_type = (yyvsp[-2].type);
                 declaration->id = (yyvsp[-1].ptr_identifier);
                 (yyval.ptr_declaration) = declaration;
             }
@@ -1559,7 +1559,7 @@ yyreduce:
 #line 188 "compiler.y" /* yacc.c:1646  */
     {
             struct PARAMETER *param = (struct PARAMETER*) malloc (sizeof (struct PARAMETER));
-            param->t = (yyvsp[-1].type);
+            param->id_type = (yyvsp[-1].type);
             param->id = (yyvsp[0].ptr_identifier);
             param->prev = NULL;
             (yyval.ptr_parameter) = param;
@@ -1571,10 +1571,10 @@ yyreduce:
 #line 195 "compiler.y" /* yacc.c:1646  */
     {
             struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
-            function->t = (yyvsp[-4].type);
+            function->id_type = (yyvsp[-4].type);
             function->ID = (yyvsp[-3].id);
             function->param = NULL;
-            function->cstmt = (yyvsp[0].ptr_compoundstmt);
+            function->stmts_group = (yyvsp[0].ptr_compoundstmt);
             (yyval.ptr_function) = function;
 
         }
@@ -1585,10 +1585,10 @@ yyreduce:
 #line 204 "compiler.y" /* yacc.c:1646  */
     {
         struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
-        function->t = (yyvsp[-5].type);
+        function->id_type = (yyvsp[-5].type);
         function->ID = (yyvsp[-4].id);
         function->param = (yyvsp[-2].ptr_parameter);
-        function->cstmt = (yyvsp[0].ptr_compoundstmt);
+        function->stmts_group = (yyvsp[0].ptr_compoundstmt);
         (yyval.ptr_function) = function;
     }
 #line 1595 "compiler.tab.c" /* yacc.c:1646  */
@@ -1609,7 +1609,7 @@ yyreduce:
   case 21:
 #line 218 "compiler.y" /* yacc.c:1646  */
     {
-                struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
+                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = NULL;
                 comp->stmt = NULL;
                 (yyval.ptr_compoundstmt) = comp;
@@ -1625,7 +1625,7 @@ yyreduce:
   case 22:
 #line 229 "compiler.y" /* yacc.c:1646  */
     {
-                struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
+                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = NULL;
                 comp->stmt = (yyvsp[-1].ptr_stmt);
                 (yyval.ptr_compoundstmt) = comp;
@@ -1636,7 +1636,7 @@ yyreduce:
   case 23:
 #line 235 "compiler.y" /* yacc.c:1646  */
     {
-                struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
+                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = (yyvsp[-2].ptr_declaration);
                 comp->stmt = (yyvsp[-1].ptr_stmt);
                 (yyval.ptr_compoundstmt) = comp;
@@ -1647,7 +1647,7 @@ yyreduce:
   case 24:
 #line 241 "compiler.y" /* yacc.c:1646  */
     {
-                struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
+                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = (yyvsp[-1].ptr_declaration);
                 comp->stmt = NULL;
                 (yyval.ptr_compoundstmt) = comp;
