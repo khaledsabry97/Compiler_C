@@ -1693,7 +1693,7 @@ yyreduce:
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = Call_Type;
-        stmt->stmt.call_ = (yyvsp[0].ptr_call);
+        stmt->stmt.func_call = (yyvsp[0].ptr_call);
         (yyval.ptr_stmt) = stmt;
     }
 #line 1700 "compiler.tab.c" /* yacc.c:1646  */
@@ -1954,7 +1954,7 @@ yyreduce:
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->e = eCallExpr;  
-        expr->expression.call_ = (yyvsp[0].ptr_call);
+        expr->expression.func_call = (yyvsp[0].ptr_call);
         (yyval.ptr_expr) = expr;
     }
 #line 1961 "compiler.tab.c" /* yacc.c:1646  */

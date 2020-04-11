@@ -99,12 +99,12 @@ struct STMT
 	STMT_TYPE s;
 	union {
 		struct ASSIGN *assign_; // id=expr;
-		struct FUNC_CALL *call_; // id(arg) 
-		struct EXPR *return_; // return expr
+		struct IF_STMT *if_;  // if()stmt
 		struct WHILE_S *while_; // while()stmt | do_while() stmt
 		struct FOR_STMT *for_; // for()stmt
-		struct IF_STMT *if_;  // if()stmt
 		struct STMTSGROUP *cstmt_; // {}
+		struct FUNC_CALL *func_call; // id(arg) 
+		struct EXPR *return_; // return expr
 	} stmt; 
 	struct STMT *prev;
 };
@@ -117,18 +117,26 @@ struct ASSIGN
 	struct EXPR *expr;  // RHS
 };
 
-/* id(arglist?);  */
+/*
+calling a function : doSomething(3)
+- ID: doSomthing
+- arg: 3
+*/
 struct FUNC_CALL
 {
 	char *ID;
 	struct ARG *arg;
 };
 
-/* (expr,expr*)  */
+/*
+the sent arg in the function : doSomethin(3,4==4)
+- prev : 3
+- expr : 4==4
+*/
 struct ARG
 {
-	struct EXPR *expr;
 	struct ARG *prev;
+	struct EXPR *expr;
 
 };
 
@@ -171,7 +179,7 @@ struct EXPR
 		struct MULTOP *multop_; // expr * expr
 		struct RELAOP *relaop_; // expr >= expr
 		struct EQLTOP *eqltop_; // expr == expr
-		struct FUNC_CALL *call_; // call 
+		struct FUNC_CALL *func_call; // call 
 		struct EXPR *bracket; // (expr)
 		struct ID_S *ID_; // id[expr]
 	} expression;

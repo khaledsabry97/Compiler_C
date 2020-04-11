@@ -267,7 +267,7 @@ Stmt: AssignStmt {
     | CallStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = Call_Type;
-        stmt->stmt.call_ = $1;
+        stmt->stmt.func_call = $1;
         $$ = stmt;
     }
     | RetStmt {
@@ -425,7 +425,7 @@ Expr: MINUS Expr %prec UNARY {
     | Call {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->e = eCallExpr;  
-        expr->expression.call_ = $1;
+        expr->expression.func_call = $1;
         $$ = expr;
     }
     | INTNUM {

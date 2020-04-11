@@ -177,7 +177,7 @@ void visitStmt          (struct STMT* stmt) {
             break;
 
         case Call_Type:
-            visitCallStmt(stmt->stmt.call_);
+            visitCallStmt(stmt->stmt.func_call);
             fprintf(tree_file, ";");
             break;
 
@@ -350,7 +350,7 @@ void visitExpr          (struct EXPR* expr) {
             break;
 
         case eCallExpr:
-            visitCallStmt(expr->expression.call_);
+            visitCallStmt(expr->expression.func_call);
             break;
 
         case eExpr:
