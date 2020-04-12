@@ -1878,7 +1878,7 @@ yyreduce:
         unop->expr = (yyvsp[0].ptr_expr);
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eUnop;
+        expr->expr_type = Uni_Type;
         expr->expression.uni_op = unop;
         (yyval.ptr_expr) = expr;
     }
@@ -1894,7 +1894,7 @@ yyreduce:
         addiop->right_side=(yyvsp[0].ptr_expr);
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eAddi;
+        expr->expr_type = Add_Type;
         expr->expression.add_op = addiop;
         (yyval.ptr_expr) = expr;
     }
@@ -1910,7 +1910,7 @@ yyreduce:
         multop->right_side=(yyvsp[0].ptr_expr);
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eMulti;   // eMult와 다름 
+        expr->expr_type = Mult_Type;   // eMult와 다름 
         expr->expression.mul_op = multop;
         (yyval.ptr_expr) = expr;
     }
@@ -1926,7 +1926,7 @@ yyreduce:
         relaop->right_side=(yyvsp[0].ptr_expr);
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eRela;  
+        expr->expr_type = Com_Type;  
         expr->expression.com_op = relaop;
         (yyval.ptr_expr) = expr;
     }
@@ -1942,7 +1942,7 @@ yyreduce:
         eqltop->right_side=(yyvsp[0].ptr_expr);
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eEqlt;  
+        expr->expr_type = Eql_Type;  
         expr->expression.eql_op = eqltop;
         (yyval.ptr_expr) = expr;
     }
@@ -1953,7 +1953,7 @@ yyreduce:
 #line 425 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eCallExpr;  
+        expr->expr_type = CallExpr_Type;  
         expr->expression.func_call = (yyvsp[0].ptr_call);
         (yyval.ptr_expr) = expr;
     }
@@ -1964,7 +1964,7 @@ yyreduce:
 #line 431 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eIntnum;  
+        expr->expr_type = IntNum_Type;  
         expr->expression.int_val = (yyvsp[0].intval);
         (yyval.ptr_expr) = expr;
     }
@@ -1975,7 +1975,7 @@ yyreduce:
 #line 437 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eFloatnum;  
+        expr->expr_type = FloatNum_Type;  
         expr->expression.floatval = (yyvsp[0].floatval);
         (yyval.ptr_expr) = expr;
     }
@@ -1986,7 +1986,7 @@ yyreduce:
 #line 443 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eId;  
+        expr->expr_type = Id_Type;  
         expr->expression.ID_ = (yyvsp[0].ptr_id_s);
         (yyval.ptr_expr) = expr;
     }
@@ -1997,7 +1997,7 @@ yyreduce:
 #line 449 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eExpr;  
+        expr->expr_type = Expr_Type;  
         expr->expression.bracket = (yyvsp[-1].ptr_expr);
         (yyval.ptr_expr) = expr;
     }

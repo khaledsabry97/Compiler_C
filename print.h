@@ -1,5 +1,7 @@
 #include "AST.h"
-
+#define bool char 
+#define true 1 
+#define false 0
 void visitDeclaration   (struct DECLARATION* declaration);
 void visitFunction      (struct FUNCTION* function);
 void visitIdentifier    (struct IDENTIFIER* iden);

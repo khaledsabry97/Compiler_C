@@ -291,13 +291,13 @@ void visitArg           (struct ARG* arg) {
 }
 void visitExpr          (struct EXPR* expr) {
     switch(expr->expr_type) {
-        case eUnop:
+        case Uni_Type:
             fprintf(tree_file, "-");
             visitExpr(expr->expression.uni_op->expr);
             break;
 
 
-        case eAddi:
+        case Add_Type:
             visitExpr(expr->expression.add_op->left_side);
             if(expr->expression.add_op->add_type == Plus_Type)
                 fprintf(tree_file, " + ");
@@ -307,7 +307,7 @@ void visitExpr          (struct EXPR* expr) {
             break;
 
 
-        case eMulti:
+        case Mult_Type:
             visitExpr(expr->expression.mul_op->left_side);
             if(expr->expression.mul_op->mul_type == Mul_Type)
                 fprintf(tree_file, " * ");
@@ -316,7 +316,7 @@ void visitExpr          (struct EXPR* expr) {
             visitExpr(expr->expression.mul_op->right_side);
             break;
 
-        case eRela:
+        case Com_Type:
             visitExpr(expr->expression.com_op->left_side);
             switch(expr->expression.com_op->com_type) {
                 case Lt_Type:
@@ -339,7 +339,7 @@ void visitExpr          (struct EXPR* expr) {
             visitExpr(expr->expression.com_op->right_side);
             break;
 
-        case eEqlt:
+        case Eql_Type:
             visitExpr(expr->expression.eql_op->left_side);
             if(expr->expression.eql_op->eql_type == Eq_Type) {
                 fprintf(tree_file, " == ");
@@ -349,24 +349,24 @@ void visitExpr          (struct EXPR* expr) {
             visitExpr(expr->expression.eql_op->right_side);
             break;
 
-        case eCallExpr:
+        case CallExpr_Type:
             visitCallStmt(expr->expression.func_call);
             break;
 
-        case eExpr:
+        case Expr_Type:
             fprintf(tree_file, "(");
             visitExpr(expr->expression.bracket);
             fprintf(tree_file, ")");
             break;
 
-        case eId:
+        case Id_Type:
             visitId_s(expr->expression.ID_);
             break;
-        case eIntnum:
+        case IntNum_Type:
             fprintf(tree_file, "%d", expr->expression.int_val);
             break;
 
-        case eFloatnum:
+        case FloatNum_Type:
             fprintf(tree_file, "%f", expr->expression.floatval);
             break;
     }

@@ -1,9 +1,7 @@
-#ifndef AST_H
-#define AST_H
+#ifndef HEAD
+#define HEAD
 
 #define bool char 
-#define true 1 
-#define false 0
 
 typedef enum {Int_Type,Float_Type} ID_TYPE;
 typedef enum {Neg_Type} UNI_OP_TYPE;
@@ -12,7 +10,7 @@ typedef enum {Plus_Type,Minus_Type} ADD_TYPE;
 typedef enum {Mul_Type,Div_Type} MUL_TYPE;
 typedef enum {Eq_Type,Ne_Type} EQCOM_TYPE;
 typedef enum {Lt_Type,Gt_Type,Le_Type,Ge_Type} COMP_TYPE;
-typedef enum {eUnop,eAddi,eMulti,eRela,eEqlt,eCallExpr,eIntnum,eFloatnum,eId,eExpr} Expr_e;
+typedef enum {Uni_Type,Add_Type,Mult_Type,Com_Type,Eql_Type,CallExpr_Type,IntNum_Type,FloatNum_Type,Id_Type,Expr_Type} EXPR_TYPE;
 
 
 //start of the program from here
@@ -188,7 +186,7 @@ struct IF_STMT
 
 struct EXPR
 {
-	Expr_e expr_type;   // EXPR type (enumeration type)
+	EXPR_TYPE expr_type;   // EXPR type (enumeration type)
 	union
 	{
 		int int_val; 

@@ -374,7 +374,7 @@ Expr: MINUS Expr %prec UNARY {
         unop->expr = $2;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eUnop;
+        expr->expr_type = Uni_Type;
         expr->expression.uni_op = unop;
         $$ = expr;
     }
@@ -385,7 +385,7 @@ Expr: MINUS Expr %prec UNARY {
         addiop->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eAddi;
+        expr->expr_type = Add_Type;
         expr->expression.add_op = addiop;
         $$ = expr;
     }
@@ -396,7 +396,7 @@ Expr: MINUS Expr %prec UNARY {
         multop->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eMulti;   // eMult와 다름 
+        expr->expr_type = Mult_Type;   // eMult와 다름 
         expr->expression.mul_op = multop;
         $$ = expr;
     }
@@ -407,7 +407,7 @@ Expr: MINUS Expr %prec UNARY {
         relaop->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eRela;  
+        expr->expr_type = Com_Type;  
         expr->expression.com_op = relaop;
         $$ = expr;
     }
@@ -418,37 +418,37 @@ Expr: MINUS Expr %prec UNARY {
         eqltop->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eEqlt;  
+        expr->expr_type = Eql_Type;  
         expr->expression.eql_op = eqltop;
         $$ = expr;
     }
     | Call {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eCallExpr;  
+        expr->expr_type = CallExpr_Type;  
         expr->expression.func_call = $1;
         $$ = expr;
     }
     | INTNUM {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eIntnum;  
+        expr->expr_type = IntNum_Type;  
         expr->expression.int_val = $1;
         $$ = expr;
     }    
     | FLOATNUM {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eFloatnum;  
+        expr->expr_type = FloatNum_Type;  
         expr->expression.floatval = $1;
         $$ = expr;
     }
     | Id_s {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eId;  
+        expr->expr_type = Id_Type;  
         expr->expression.ID_ = $1;
         $$ = expr;
     } 
     | '(' Expr ')' {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = eExpr;  
+        expr->expr_type = Expr_Type;  
         expr->expression.bracket = $2;
         $$ = expr;
     }
