@@ -94,7 +94,7 @@ union YYSTYPE
     struct WHILE_STMT       *ptr_while_s;
     struct FOR_STMT         *_for_stmt;
     struct IF_STMT          *ptr_if_s;
-    struct ID_S          *ptr_id_s;
+    struct ID_EXPR          *ptr_id_s;
     struct EXPR          *ptr_expr;
     struct ADD_OP        *ptr_addiop;
     struct MUL_OP        *ptr_multop;

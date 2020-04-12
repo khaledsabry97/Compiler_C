@@ -15,4 +15,4 @@ void visitExpr          (struct EXPR* expr);
 void visitWhile_s       (struct WHILE_STMT* while_s);
 void visitFor_s         (struct FOR_STMT* for_s);
 void visitIf_s          (struct IF_STMT* if_ptr);
-void visitId_s          (struct ID_S* id_s);
+void visitId_s          (struct ID_EXPR* id_s);

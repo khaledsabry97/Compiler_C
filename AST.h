@@ -1,7 +1,11 @@
 #ifndef HEAD
 #define HEAD
-
 #define bool char 
+
+
+
+
+/******************************************************Enum Types*********************************************************/
 
 typedef enum {Int_Type,Float_Type} ID_TYPE;
 typedef enum {Neg_Type} UNI_OP_TYPE;
@@ -13,6 +17,8 @@ typedef enum {Lt_Type,Gt_Type,Le_Type,Ge_Type} COMP_TYPE;
 typedef enum {Uni_Type,Add_Type,Mult_Type,Com_Type,Eql_Type,CallExpr_Type,IntNum_Type,FloatNum_Type,Id_Type,Expr_Type} EXPR_TYPE;
 
 
+
+/******************************************************Program*********************************************************/
 //start of the program from here
 struct PROGRAM
 {
@@ -75,61 +81,7 @@ struct PARAMETER
 	ID_TYPE id_type;
 	struct IDENTIFIER *id;
 };
-/*
-group of statements grouped by {   }
-- declaration : its declaration
-- stmt: last statement pointor on it
-*/
-struct STMTSGROUP 
-{
-	struct DECLARATION *declaration;
-	struct STMT *stmt;
-};
 
-/*
-every statment in the code we compile means one of those
-*/
-struct STMT 
-{	
-	struct STMT *prev;
-
-	STMT_TYPE s;
-	union {
-		struct ASSIGN_STMT *assign_stmt; // id=expr;
-		struct IF_STMT *if_stmt;  // if()stmt
-		struct WHILE_STMT *while_stmt; // while()stmt | do_while() stmt
-		struct FOR_STMT *for_stmt; // for()stmt
-		struct STMTSGROUP *stmts_group; // {}
-		struct FUNC_CALL *func_call; // id(arg) 
-		struct EXPR *return_expr; // return expr
-	} stmt; 
-
-};
-
-/*
-ASSIGN_STMT Operation
-arr[0] = 5
-- id => arr
-- index => 0 and it could be null if you said " arr = 5"
-- expr => 5
-*/
-struct ASSIGN_STMT
-{
-	char *ID;
-	struct EXPR *index; 
-	struct EXPR *expr;  
-};
-
-/*
-calling a function : doSomething(3)
-- ID: doSomthing
-- arg: 3
-*/
-struct FUNC_CALL
-{
-	char *ID;
-	struct ARG *arg;
-};
 
 /*
 the sent arg in the function : doSomething(3,4==4)
@@ -143,18 +95,32 @@ struct ARG
 
 };
 
-/*
--do_while = true if it's do while operation, false otherwise
-- conditon => between the while
-- stmt inside the while
-*/
-struct WHILE_STMT 
-{
-	bool do_while;
-	struct EXPR *condition;
-	struct STMT *stmt;
+/*********************************************** Statements **************************************************/
 
+/*
+calling a function : doSomething(3)
+- ID: doSomthing
+- arg: 3
+*/
+struct FUNC_CALL
+{
+	char *ID;
+	struct ARG *arg;
 };
+
+
+/*
+if ( condition ) if_statment else else_statemetn
+- there must be condition
+- else statement could be null
+*/
+struct IF_STMT
+{
+	struct EXPR *condition;
+	struct STMT *if_stmt;
+	struct STMT *else_stmt; // NUll, if 'else' not exist
+};
+
 
 /*
 for loop statment : for(i = 1; i <10; i = i+1){}
@@ -171,36 +137,82 @@ struct FOR_STMT
 	struct STMT *stmt; 
 };
 
+
 /*
-if ( condition ) if_statment else else_statemetn
-- there must be condition
-- else statement could be null
+-do_while = true if it's do while operation, false otherwise
+- conditon => between the while
+- stmt inside the while
 */
-
-struct IF_STMT
+struct WHILE_STMT 
 {
+	bool do_while;
 	struct EXPR *condition;
-	struct STMT *if_stmt;
-	struct STMT *else_stmt; // NUll, if 'else' not exist
+	struct STMT *stmt;
+
 };
 
-struct EXPR
+
+/*
+ASSIGN_STMT Operation
+arr[0] = 5
+- id => arr
+- index => 0 and it could be null if you said " arr = 5"
+- expr => 5
+*/
+struct ASSIGN_STMT
 {
-	EXPR_TYPE expr_type;   // EXPR type (enumeration type)
-	union
-	{
-		int int_val; 
-		float floatval; 
-		struct UNI_OP *uni_op; 
-		struct ADD_OP *add_op; 
-		struct MUL_OP *mul_op; // expr * expr
-		struct COM_OP *com_op; // expr >= expr
-		struct EQL_OP *eql_op; // expr == expr
-		struct FUNC_CALL *func_call; // call 
-		struct EXPR *bracket; // (expr)
-		struct ID_S *ID_; // id[expr]
-	} expression;
+	char *ID;
+	struct EXPR *index; 
+	struct EXPR *expr;  
 };
+
+
+
+/*
+group of statements grouped by {   }
+- declaration : its declaration
+- stmt: last statement pointor on it
+*/
+struct STMTSGROUP 
+{
+	struct DECLARATION *declaration;
+	struct STMT *stmt;
+};
+
+
+
+/*
+every statment in the code we compile means one of those
+*/
+struct STMT 
+{	
+	struct STMT *prev;
+
+	STMT_TYPE stmt_type;
+	union {
+		struct FUNC_CALL *func_call; 
+		struct EXPR *return_expr; // return expr
+		struct IF_STMT *if_stmt; 
+		struct FOR_STMT *for_stmt; 
+		struct WHILE_STMT *while_stmt;
+		struct ASSIGN_STMT *assign_stmt;
+		struct STMTSGROUP *stmts_group; 
+	} stmt; 
+};
+
+
+
+/********************************Expressions***************************************/
+
+/* 
+arr[3==3]
+*/
+struct ID_EXPR
+{
+	char *ID;
+	struct EXPR *expr;
+};
+
 
 /*
 -3 or +3 or - expr
@@ -235,15 +247,7 @@ struct MUL_OP
 	struct EXPR *right_side;
 };
 
-/*
-5>=3
-*/
-struct COM_OP
-{
-	COMP_TYPE com_type;
-	struct EXPR *left_side;
-	struct EXPR *right_side;
-};
+
 
 /*
 3==2
@@ -255,13 +259,41 @@ struct EQL_OP
 	struct EXPR *right_side;
 };
 
-/* 
-arr[3==3]
+/*
+5>=3
 */
-struct ID_S
+struct COM_OP
 {
-	char *ID;
-	struct EXPR *expr;
+	COMP_TYPE com_type;
+	struct EXPR *left_side;
+	struct EXPR *right_side;
 };
+
+
+/*
+group all the expressions in the language
+*/
+struct EXPR
+{
+	EXPR_TYPE expr_type;   // EXPR type (enumeration type)
+	union
+	{
+		int int_val; 
+		float floatval; 
+		struct FUNC_CALL *func_call;
+		struct EXPR *bracket; // (expr)
+		struct ID_EXPR *id_expr; 
+
+		struct UNI_OP *uni_op; 
+		struct ADD_OP *add_op; 
+		struct MUL_OP *mul_op; 
+
+		struct EQL_OP *eql_op; 
+		struct COM_OP *com_op; 
+
+	} expression;
+};
+
+
 
 #endif

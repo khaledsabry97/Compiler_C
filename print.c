@@ -170,7 +170,7 @@ void visitStmt          (struct STMT* stmt) {
     //TODO
     if(stmt->prev != NULL)
         visitStmt(stmt->prev);
-    switch(stmt->s) {
+    switch(stmt->stmt_type) {
         case Equ_Type:
             visitAssignStmt(stmt->stmt.assign_stmt);
             fprintf(tree_file, ";");
@@ -360,7 +360,7 @@ void visitExpr          (struct EXPR* expr) {
             break;
 
         case Id_Type:
-            visitId_s(expr->expression.ID_);
+            visitId_s(expr->expression.id_expr);
             break;
         case IntNum_Type:
             fprintf(tree_file, "%d", expr->expression.int_val);
@@ -435,7 +435,7 @@ void visitIf_s          (struct IF_STMT* if_ptr) {
     //deleteCurScope 
     deleteScope(&scopeTail);
 }
-void visitId_s          (struct ID_S* id_s) {
+void visitId_s          (struct ID_EXPR* id_s) {
    fprintf(tree_file,"%s",id_s->ID);
    if(id_s->expr != NULL) {
     fprintf(tree_file, "[");

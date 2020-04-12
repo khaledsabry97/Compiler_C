@@ -43,7 +43,7 @@ void yyerror(char* text) {
     struct WHILE_STMT       *ptr_while_s;
     struct FOR_STMT         *_for_stmt;
     struct IF_STMT          *ptr_if_s;
-    struct ID_S          *ptr_id_s;
+    struct ID_EXPR          *ptr_id_s;
     struct EXPR          *ptr_expr;
     struct ADD_OP        *ptr_addiop;
     struct MUL_OP        *ptr_multop;
@@ -260,49 +260,49 @@ StmtList: Stmt {
         ;
 Stmt: AssignStmt { 
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = Equ_Type;
+        stmt->stmt_type = Equ_Type;
         stmt->stmt.assign_stmt = $1;
         $$ = stmt;
     }
     | CallStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = Call_Type;
+        stmt->stmt_type = Call_Type;
         stmt->stmt.func_call = $1;
         $$ = stmt;
     }
     | RetStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = Return_Type;
+        stmt->stmt_type = Return_Type;
         stmt->stmt.return_expr = $1;
         $$ = stmt;
     }
     | While_s {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = While_Type;
+        stmt->stmt_type = While_Type;
         stmt->stmt.while_stmt = $1;
         $$ = stmt;
     }
     | ForStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = For_Type;
+        stmt->stmt_type = For_Type;
         stmt->stmt.for_stmt = $1;
         $$ = stmt;
     }
     | If_s {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = If_Type;
+        stmt->stmt_type = If_Type;
         stmt->stmt.if_stmt = $1;
         $$ = stmt;
     }
     | CompoundStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = Comp_Type;
+        stmt->stmt_type = Comp_Type;
         stmt->stmt.stmts_group = $1;
         $$ = stmt;
     }
     | ';' {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->s = Semi_Type;
+        stmt->stmt_type = Semi_Type;
         $$ = stmt;
     }
     ;
@@ -443,7 +443,7 @@ Expr: MINUS Expr %prec UNARY {
     | Id_s {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Id_Type;  
-        expr->expression.ID_ = $1;
+        expr->expression.id_expr = $1;
         $$ = expr;
     } 
     | '(' Expr ')' {
@@ -454,13 +454,13 @@ Expr: MINUS Expr %prec UNARY {
     }
     ;
 Id_s: ID {
-        struct ID_S *id_s = (struct ID_S*)malloc(sizeof (struct ID_S));
+        struct ID_EXPR *id_s = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
         id_s->ID = $1;
         id_s->expr = NULL;
         $$ = id_s;
     }
     | ID '[' Expr ']' {
-        struct ID_S *id_s = (struct ID_S*)malloc(sizeof (struct ID_S));
+        struct ID_EXPR *id_s = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
         id_s->ID = $1;
         id_s->expr = $3;
         $$ = id_s;
