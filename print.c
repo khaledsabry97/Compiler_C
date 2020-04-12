@@ -172,7 +172,7 @@ void visitStmt          (struct STMT* stmt) {
         visitStmt(stmt->prev);
     switch(stmt->s) {
         case Equ_Type:
-            visitAssignStmt(stmt->stmt.assign_);
+            visitAssignStmt(stmt->stmt.assign_stmt);
             fprintf(tree_file, ";");
             break;
 
@@ -182,33 +182,33 @@ void visitStmt          (struct STMT* stmt) {
             break;
 
         case Return_Type:
-            if(stmt->stmt.return_ == NULL){
+            if(stmt->stmt.return_expr == NULL){
                 fprintf (tree_file, "return;");
             }
             else {
                 fprintf (tree_file, "return ");
-                visitExpr(stmt->stmt.return_);
+                visitExpr(stmt->stmt.return_expr);
                 fprintf (tree_file, ";");
             }
             break;
 
         case While_Type:
              _isOtherComp = true;
-            visitWhile_s(stmt->stmt.while_);
+            visitWhile_s(stmt->stmt.while_stmt);
             return;
         case For_Type:
              _isOtherComp = true;
-            visitFor_s(stmt->stmt.for_);
+            visitFor_s(stmt->stmt.for_stmt);
             return;
         case If_Type:
              _isOtherComp = true;
-            visitIf_s(stmt->stmt.if_);
+            visitIf_s(stmt->stmt.if_stmt);
             return;
 
         case Comp_Type:
             if(_isOtherComp == false)
                 _isCompound = true;
-            visitCompoundStmt(stmt->stmt.cstmt_);
+            visitCompoundStmt(stmt->stmt.stmts_group);
             return;
             //break;
 
@@ -265,7 +265,7 @@ void visitCompoundStmt  (struct STMTSGROUP* stmts_group) {
     _isCompound = false;
     _isOtherComp = false;
 }
-void visitAssignStmt    (struct ASSIGN* assign) {
+void visitAssignStmt    (struct ASSIGN_STMT* assign) {
     fprintf(tree_file, "%s ",assign->ID);
     if(assign->index != NULL) {
         fprintf(tree_file, "[");
@@ -372,7 +372,7 @@ void visitExpr          (struct EXPR* expr) {
     }
 
 }
-void visitWhile_s       (struct WHILE_S* while_s) {
+void visitWhile_s       (struct WHILE_STMT* while_s) {
     if(while_s->do_while == true) {
         //making node for symbol table
         scopeTail = newScope(sDOWHILE, scopeTail);
@@ -382,7 +382,7 @@ void visitWhile_s       (struct WHILE_S* while_s) {
         fprintf(tree_file, "do");
         visitStmt(while_s->stmt);
         fprintf(tree_file, "while (");
-        visitExpr(while_s->cond);
+        visitExpr(while_s->condition);
         fprintf(tree_file, ");\n");
     } else {
         //making node for symbol table
@@ -391,7 +391,7 @@ void visitWhile_s       (struct WHILE_S* while_s) {
         scopeTail->parent->while_n++;
 
         fprintf(tree_file, "while (");
-        visitExpr(while_s->cond);
+        visitExpr(while_s->condition);
         fprintf(tree_file, ")\n");
         visitStmt(while_s->stmt);
     }
@@ -408,7 +408,7 @@ void visitFor_s         (struct FOR_STMT* for_s) {
     fprintf(tree_file, "for (");
     visitAssignStmt(for_s->init);
     fprintf(tree_file, "; ");  
-    visitExpr(for_s->cond);
+    visitExpr(for_s->condition);
     fprintf(tree_file, "; ");  
     visitAssignStmt(for_s->inc);
     fprintf(tree_file, ")\n");
@@ -424,12 +424,12 @@ void visitIf_s          (struct IF_STMT* if_ptr) {
     scopeTail->parent->if_n++;
 
     fprintf(tree_file, "if (");
-    visitExpr(if_ptr->cond);
+    visitExpr(if_ptr->condition);
     fprintf(tree_file, ")\n");
-    visitStmt(if_ptr->if_);
-    if (if_ptr->else_ != NULL) {
+    visitStmt(if_ptr->if_stmt);
+    if (if_ptr->else_stmt != NULL) {
         fprintf(tree_file,"\nelse\n");
-        visitStmt(if_ptr->else_);
+        visitStmt(if_ptr->else_stmt);
     }
 
     //deleteCurScope 

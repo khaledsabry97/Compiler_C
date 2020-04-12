@@ -82,7 +82,7 @@ group of statements grouped by {   }
 - declaration : its declaration
 - stmt: last statement pointor on it
 */
-struct STMTSGROUP // {}
+struct STMTSGROUP 
 {
 	struct DECLARATION *declaration;
 	struct STMT *stmt;
@@ -90,31 +90,36 @@ struct STMTSGROUP // {}
 
 /*
 every statment in the code we compile means one of those
-- 
-
-break,semi stmt union stmt -> no value; 
 */
 struct STMT 
 {	
+	struct STMT *prev;
+
 	STMT_TYPE s;
 	union {
-		struct ASSIGN *assign_; // id=expr;
-		struct IF_STMT *if_;  // if()stmt
-		struct WHILE_S *while_; // while()stmt | do_while() stmt
-		struct FOR_STMT *for_; // for()stmt
-		struct STMTSGROUP *cstmt_; // {}
+		struct ASSIGN_STMT *assign_stmt; // id=expr;
+		struct IF_STMT *if_stmt;  // if()stmt
+		struct WHILE_STMT *while_stmt; // while()stmt | do_while() stmt
+		struct FOR_STMT *for_stmt; // for()stmt
+		struct STMTSGROUP *stmts_group; // {}
 		struct FUNC_CALL *func_call; // id(arg) 
-		struct EXPR *return_; // return expr
+		struct EXPR *return_expr; // return expr
 	} stmt; 
-	struct STMT *prev;
+
 };
 
-/* id[index]=expr;  */
-struct ASSIGN
+/*
+ASSIGN_STMT Operation
+arr[0] = 5
+- id => arr
+- index => 0 and it could be null if you said " arr = 5"
+- expr => 5
+*/
+struct ASSIGN_STMT
 {
 	char *ID;
-	struct EXPR *index; // Null, if LHS is scalar variable
-	struct EXPR *expr;  // RHS
+	struct EXPR *index; 
+	struct EXPR *expr;  
 };
 
 /*
@@ -129,7 +134,7 @@ struct FUNC_CALL
 };
 
 /*
-the sent arg in the function : doSomethin(3,4==4)
+the sent arg in the function : doSomething(3,4==4)
 - prev : 3
 - expr : 4==4
 */
@@ -140,31 +145,45 @@ struct ARG
 
 };
 
-/* while(cond)stmt;  | do stmt while (cond) */ 
-struct WHILE_S 
+/*
+-do_while = true if it's do while operation, false otherwise
+- conditon => between the while
+- stmt inside the while
+*/
+struct WHILE_STMT 
 {
 	bool do_while;
-	struct EXPR *cond;
+	struct EXPR *condition;
 	struct STMT *stmt;
 
 };
 
-/* for(init;cond;inc)stmt;  */
+/*
+for loop statment : for(i = 1; i <10; i = i+1){}
+- init => i=1
+- condition => i < 10
+- inc => i=i+1
+- stmt => {}
+*/
 struct FOR_STMT
 {
-	struct ASSIGN *init;
-	struct EXPR *cond;
-	struct ASSIGN *inc;
+	struct ASSIGN_STMT *init;
+	struct EXPR *condition;
+	struct ASSIGN_STMT *inc;
 	struct STMT *stmt; 
-
 };
 
-/* if(cond)if_ptr else else_s  */
+/*
+if ( condition ) if_statment else else_statemetn
+- there must be condition
+- else statement could be null
+*/
+
 struct IF_STMT
 {
-	struct EXPR *cond;
-	struct STMT *if_;
-	struct STMT *else_; // NUll, if 'else' not exist
+	struct EXPR *condition;
+	struct STMT *if_stmt;
+	struct STMT *else_stmt; // NUll, if 'else' not exist
 };
 
 struct EXPR

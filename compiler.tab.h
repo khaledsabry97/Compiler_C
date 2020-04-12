@@ -88,10 +88,10 @@ union YYSTYPE
     struct PARAMETER     *ptr_parameter;
     struct STMTSGROUP  *ptr_compoundstmt;
     struct STMT          *ptr_stmt;
-    struct ASSIGN        *ptr_assign;
+    struct ASSIGN_STMT        *ptr_assign;
     struct FUNC_CALL          *ptr_call;
     struct ARG           *ptr_arg;
-    struct WHILE_S       *ptr_while_s;
+    struct WHILE_STMT       *ptr_while_s;
     struct FOR_STMT         *_for_stmt;
     struct IF_STMT          *ptr_if_s;
     struct ID_S          *ptr_id_s;

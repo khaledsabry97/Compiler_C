@@ -37,10 +37,10 @@ void yyerror(char* text) {
     struct PARAMETER     *ptr_parameter;
     struct STMTSGROUP  *ptr_compoundstmt;
     struct STMT          *ptr_stmt;
-    struct ASSIGN        *ptr_assign;
+    struct ASSIGN_STMT        *ptr_assign;
     struct FUNC_CALL          *ptr_call;
     struct ARG           *ptr_arg;
-    struct WHILE_S       *ptr_while_s;
+    struct WHILE_STMT       *ptr_while_s;
     struct FOR_STMT         *_for_stmt;
     struct IF_STMT          *ptr_if_s;
     struct ID_S          *ptr_id_s;
@@ -261,7 +261,7 @@ StmtList: Stmt {
 Stmt: AssignStmt { 
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = Equ_Type;
-        stmt->stmt.assign_ = $1;
+        stmt->stmt.assign_stmt = $1;
         $$ = stmt;
     }
     | CallStmt {
@@ -273,31 +273,31 @@ Stmt: AssignStmt {
     | RetStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = Return_Type;
-        stmt->stmt.return_ = $1;
+        stmt->stmt.return_expr = $1;
         $$ = stmt;
     }
     | While_s {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = While_Type;
-        stmt->stmt.while_ = $1;
+        stmt->stmt.while_stmt = $1;
         $$ = stmt;
     }
     | ForStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = For_Type;
-        stmt->stmt.for_ = $1;
+        stmt->stmt.for_stmt = $1;
         $$ = stmt;
     }
     | If_s {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = If_Type;
-        stmt->stmt.if_ = $1;
+        stmt->stmt.if_stmt = $1;
         $$ = stmt;
     }
     | CompoundStmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = Comp_Type;
-        stmt->stmt.cstmt_ = $1;
+        stmt->stmt.stmts_group = $1;
         $$ = stmt;
     }
     | ';' {
@@ -311,14 +311,14 @@ AssignStmt: Assign ';' {
           }
           ;
 Assign: ID '=' Expr {
-            struct ASSIGN *assign = (struct ASSIGN*) malloc (sizeof (struct ASSIGN));
+            struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
             assign->ID = $1;
             assign->index = NULL; //NUL, if LHS is scalar variable
             assign->expr = $3;
             $$ = assign;
         }
       | ID '[' Expr ']' '=' Expr {
-            struct ASSIGN *assign = (struct ASSIGN*) malloc (sizeof (struct ASSIGN));
+            struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
             assign->ID = $1;
             assign->index = $3; 
             assign->expr = $6;
@@ -522,16 +522,16 @@ Eqltop: EQ {
       }
       ;
 While_s: WHILE '(' Expr ')'  Stmt  {
-           struct WHILE_S* while_s = (struct WHILE_S*) malloc (sizeof(struct WHILE_S));
+           struct WHILE_STMT* while_s = (struct WHILE_STMT*) malloc (sizeof(struct WHILE_STMT));
            while_s->do_while = false;
-           while_s->cond = $3;
+           while_s->condition = $3;
            while_s->stmt = $5;
            $$ = while_s;
         }
          | DO  Stmt  WHILE '(' Expr ')' ';' {
-           struct WHILE_S* while_s = (struct WHILE_S*) malloc (sizeof(struct WHILE_S));
+           struct WHILE_STMT* while_s = (struct WHILE_STMT*) malloc (sizeof(struct WHILE_STMT));
            while_s->do_while = true;
-           while_s->cond = $5;
+           while_s->condition = $5;
            while_s->stmt = $2;
            $$ = while_s;
         }
@@ -539,7 +539,7 @@ While_s: WHILE '(' Expr ')'  Stmt  {
 ForStmt: FOR '(' Assign ';' Expr ';' Assign ')' Stmt {
            struct FOR_STMT *for_s = (struct FOR_STMT*) malloc (sizeof(struct FOR_STMT));
            for_s->init = $3;
-           for_s->cond = $5;
+           for_s->condition = $5;
            for_s->inc = $7;
            for_s->stmt = $9;
            $$ = for_s;
@@ -547,16 +547,16 @@ ForStmt: FOR '(' Assign ';' Expr ';' Assign ')' Stmt {
        ;
 If_s: IF '(' Expr ')' Stmt %prec LOWER_THAN_ELSE {
        struct IF_STMT *if_ptr = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
-       if_ptr->cond=$3;
-       if_ptr->if_=$5;
-       if_ptr->else_=NULL;
+       if_ptr->condition=$3;
+       if_ptr->if_stmt=$5;
+       if_ptr->else_stmt=NULL;
        $$ = if_ptr;
     }
       | IF '(' Expr ')' Stmt ELSE Stmt{
        struct IF_STMT *if_ptr = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
-       if_ptr->cond=$3;
-       if_ptr->if_=$5;
-       if_ptr->else_=$7;
+       if_ptr->condition=$3;
+       if_ptr->if_stmt=$5;
+       if_ptr->else_stmt=$7;
        $$ = if_ptr;
       }
       ;

@@ -171,10 +171,10 @@ union YYSTYPE
     struct PARAMETER     *ptr_parameter;
     struct STMTSGROUP  *ptr_compoundstmt;
     struct STMT          *ptr_stmt;
-    struct ASSIGN        *ptr_assign;
+    struct ASSIGN_STMT        *ptr_assign;
     struct FUNC_CALL          *ptr_call;
     struct ARG           *ptr_arg;
-    struct WHILE_S       *ptr_while_s;
+    struct WHILE_STMT       *ptr_while_s;
     struct FOR_STMT         *_for_stmt;
     struct IF_STMT          *ptr_if_s;
     struct ID_S          *ptr_id_s;
@@ -1682,7 +1682,7 @@ yyreduce:
     { 
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = Equ_Type;
-        stmt->stmt.assign_ = (yyvsp[0].ptr_assign);
+        stmt->stmt.assign_stmt = (yyvsp[0].ptr_assign);
         (yyval.ptr_stmt) = stmt;
     }
 #line 1689 "compiler.tab.c" /* yacc.c:1646  */
@@ -1704,7 +1704,7 @@ yyreduce:
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = Return_Type;
-        stmt->stmt.return_ = (yyvsp[0].ptr_expr);
+        stmt->stmt.return_expr = (yyvsp[0].ptr_expr);
         (yyval.ptr_stmt) = stmt;
     }
 #line 1711 "compiler.tab.c" /* yacc.c:1646  */
@@ -1715,7 +1715,7 @@ yyreduce:
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = While_Type;
-        stmt->stmt.while_ = (yyvsp[0].ptr_while_s);
+        stmt->stmt.while_stmt = (yyvsp[0].ptr_while_s);
         (yyval.ptr_stmt) = stmt;
     }
 #line 1722 "compiler.tab.c" /* yacc.c:1646  */
@@ -1726,7 +1726,7 @@ yyreduce:
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = For_Type;
-        stmt->stmt.for_ = (yyvsp[0]._for_stmt);
+        stmt->stmt.for_stmt = (yyvsp[0]._for_stmt);
         (yyval.ptr_stmt) = stmt;
     }
 #line 1733 "compiler.tab.c" /* yacc.c:1646  */
@@ -1737,7 +1737,7 @@ yyreduce:
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = If_Type;
-        stmt->stmt.if_ = (yyvsp[0].ptr_if_s);
+        stmt->stmt.if_stmt = (yyvsp[0].ptr_if_s);
         (yyval.ptr_stmt) = stmt;
     }
 #line 1744 "compiler.tab.c" /* yacc.c:1646  */
@@ -1748,7 +1748,7 @@ yyreduce:
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = Comp_Type;
-        stmt->stmt.cstmt_ = (yyvsp[0].ptr_compoundstmt);
+        stmt->stmt.stmts_group = (yyvsp[0].ptr_compoundstmt);
         (yyval.ptr_stmt) = stmt;
     }
 #line 1755 "compiler.tab.c" /* yacc.c:1646  */
@@ -1775,7 +1775,7 @@ yyreduce:
   case 36:
 #line 313 "compiler.y" /* yacc.c:1646  */
     {
-            struct ASSIGN *assign = (struct ASSIGN*) malloc (sizeof (struct ASSIGN));
+            struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
             assign->ID = (yyvsp[-2].id);
             assign->index = NULL; //NUL, if LHS is scalar variable
             assign->expr = (yyvsp[0].ptr_expr);
@@ -1787,7 +1787,7 @@ yyreduce:
   case 37:
 #line 320 "compiler.y" /* yacc.c:1646  */
     {
-            struct ASSIGN *assign = (struct ASSIGN*) malloc (sizeof (struct ASSIGN));
+            struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
             assign->ID = (yyvsp[-5].id);
             assign->index = (yyvsp[-3].ptr_expr); 
             assign->expr = (yyvsp[0].ptr_expr);
@@ -2129,9 +2129,9 @@ yyreduce:
   case 68:
 #line 524 "compiler.y" /* yacc.c:1646  */
     {
-           struct WHILE_S* while_s = (struct WHILE_S*) malloc (sizeof(struct WHILE_S));
+           struct WHILE_STMT* while_s = (struct WHILE_STMT*) malloc (sizeof(struct WHILE_STMT));
            while_s->do_while = false;
-           while_s->cond = (yyvsp[-2].ptr_expr);
+           while_s->condition = (yyvsp[-2].ptr_expr);
            while_s->stmt = (yyvsp[0].ptr_stmt);
            (yyval.ptr_while_s) = while_s;
         }
@@ -2141,9 +2141,9 @@ yyreduce:
   case 69:
 #line 531 "compiler.y" /* yacc.c:1646  */
     {
-           struct WHILE_S* while_s = (struct WHILE_S*) malloc (sizeof(struct WHILE_S));
+           struct WHILE_STMT* while_s = (struct WHILE_STMT*) malloc (sizeof(struct WHILE_STMT));
            while_s->do_while = true;
-           while_s->cond = (yyvsp[-2].ptr_expr);
+           while_s->condition = (yyvsp[-2].ptr_expr);
            while_s->stmt = (yyvsp[-5].ptr_stmt);
            (yyval.ptr_while_s) = while_s;
         }
@@ -2155,7 +2155,7 @@ yyreduce:
     {
            struct FOR_STMT *for_s = (struct FOR_STMT*) malloc (sizeof(struct FOR_STMT));
            for_s->init = (yyvsp[-6].ptr_assign);
-           for_s->cond = (yyvsp[-4].ptr_expr);
+           for_s->condition = (yyvsp[-4].ptr_expr);
            for_s->inc = (yyvsp[-2].ptr_assign);
            for_s->stmt = (yyvsp[0].ptr_stmt);
            (yyval._for_stmt) = for_s;
@@ -2167,9 +2167,9 @@ yyreduce:
 #line 548 "compiler.y" /* yacc.c:1646  */
     {
        struct IF_STMT *if_ptr = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
-       if_ptr->cond=(yyvsp[-2].ptr_expr);
-       if_ptr->if_=(yyvsp[0].ptr_stmt);
-       if_ptr->else_=NULL;
+       if_ptr->condition=(yyvsp[-2].ptr_expr);
+       if_ptr->if_stmt=(yyvsp[0].ptr_stmt);
+       if_ptr->else_stmt=NULL;
        (yyval.ptr_if_s) = if_ptr;
     }
 #line 2176 "compiler.tab.c" /* yacc.c:1646  */
@@ -2179,9 +2179,9 @@ yyreduce:
 #line 555 "compiler.y" /* yacc.c:1646  */
     {
        struct IF_STMT *if_ptr = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
-       if_ptr->cond=(yyvsp[-4].ptr_expr);
-       if_ptr->if_=(yyvsp[-2].ptr_stmt);
-       if_ptr->else_=(yyvsp[0].ptr_stmt);
+       if_ptr->condition=(yyvsp[-4].ptr_expr);
+       if_ptr->if_stmt=(yyvsp[-2].ptr_stmt);
+       if_ptr->else_stmt=(yyvsp[0].ptr_stmt);
        (yyval.ptr_if_s) = if_ptr;
       }
 #line 2188 "compiler.tab.c" /* yacc.c:1646  */
