@@ -290,35 +290,35 @@ void visitArg           (struct ARG* arg) {
     visitExpr(arg->expr);
 }
 void visitExpr          (struct EXPR* expr) {
-    switch(expr->e) {
+    switch(expr->expr_type) {
         case eUnop:
             fprintf(tree_file, "-");
-            visitExpr(expr->expression.unop_->expr);
+            visitExpr(expr->expression.uni_op->expr);
             break;
 
 
         case eAddi:
-            visitExpr(expr->expression.addiop_->lhs);
-            if(expr->expression.addiop_->a == Plus_Type)
+            visitExpr(expr->expression.add_op->left_side);
+            if(expr->expression.add_op->add_type == Plus_Type)
                 fprintf(tree_file, " + ");
             else
                 fprintf(tree_file, " - ");
-            visitExpr(expr->expression.addiop_->rhs);
+            visitExpr(expr->expression.add_op->right_side);
             break;
 
 
         case eMulti:
-            visitExpr(expr->expression.multop_->lhs);
-            if(expr->expression.multop_->m == Mul_Type)
+            visitExpr(expr->expression.mul_op->left_side);
+            if(expr->expression.mul_op->mul_type == Mul_Type)
                 fprintf(tree_file, " * ");
             else
                 fprintf(tree_file, " / ");
-            visitExpr(expr->expression.multop_->rhs);
+            visitExpr(expr->expression.mul_op->right_side);
             break;
 
         case eRela:
-            visitExpr(expr->expression.relaop_->lhs);
-            switch(expr->expression.relaop_->r) {
+            visitExpr(expr->expression.com_op->left_side);
+            switch(expr->expression.com_op->com_type) {
                 case Lt_Type:
                     fprintf(tree_file, " < ");
                     break;
@@ -336,17 +336,17 @@ void visitExpr          (struct EXPR* expr) {
                     fprintf(tree_file, " >= ");
                     break;
             }
-            visitExpr(expr->expression.relaop_->rhs);
+            visitExpr(expr->expression.com_op->right_side);
             break;
 
         case eEqlt:
-            visitExpr(expr->expression.eqltop_->lhs);
-            if(expr->expression.eqltop_->e == Eq_Type) {
+            visitExpr(expr->expression.eql_op->left_side);
+            if(expr->expression.eql_op->eql_type == Eq_Type) {
                 fprintf(tree_file, " == ");
             } else {
                 fprintf(tree_file, " != " );
             }
-            visitExpr(expr->expression.eqltop_->rhs);
+            visitExpr(expr->expression.eql_op->right_side);
             break;
 
         case eCallExpr:

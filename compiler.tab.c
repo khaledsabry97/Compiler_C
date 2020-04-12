@@ -179,10 +179,10 @@ union YYSTYPE
     struct IF_STMT          *ptr_if_s;
     struct ID_S          *ptr_id_s;
     struct EXPR          *ptr_expr;
-    struct ADDIOP        *ptr_addiop;
-    struct MULTOP        *ptr_multop;
-    struct RELAOP        *ptr_relaop;
-    struct EQLTOP        *ptr_eqltop;
+    struct ADD_OP        *ptr_addiop;
+    struct MUL_OP        *ptr_multop;
+    struct COM_OP        *ptr_relaop;
+    struct EQL_OP        *ptr_eqltop;
     ID_TYPE type;
     int intval;
     float floatval;
@@ -1873,13 +1873,13 @@ yyreduce:
   case 46:
 #line 371 "compiler.y" /* yacc.c:1646  */
     {
-        struct UNOP *unop = (struct UNOP*) malloc (sizeof (struct UNOP));
-        unop->u = Neg_Type;
+        struct UNI_OP *unop = (struct UNI_OP*) malloc (sizeof (struct UNI_OP));
+        unop->uni_type = Neg_Type;
         unop->expr = (yyvsp[0].ptr_expr);
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eUnop;
-        expr->expression.unop_ = unop;
+        expr->expr_type = eUnop;
+        expr->expression.uni_op = unop;
         (yyval.ptr_expr) = expr;
     }
 #line 1886 "compiler.tab.c" /* yacc.c:1646  */
@@ -1888,14 +1888,14 @@ yyreduce:
   case 47:
 #line 381 "compiler.y" /* yacc.c:1646  */
     {
-        struct ADDIOP *addiop;
+        struct ADD_OP *addiop;
         addiop = (yyvsp[-1].ptr_addiop);
-        addiop->lhs=(yyvsp[-2].ptr_expr);
-        addiop->rhs=(yyvsp[0].ptr_expr);
+        addiop->left_side=(yyvsp[-2].ptr_expr);
+        addiop->right_side=(yyvsp[0].ptr_expr);
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eAddi;
-        expr->expression.addiop_ = addiop;
+        expr->expr_type = eAddi;
+        expr->expression.add_op = addiop;
         (yyval.ptr_expr) = expr;
     }
 #line 1902 "compiler.tab.c" /* yacc.c:1646  */
@@ -1904,14 +1904,14 @@ yyreduce:
   case 48:
 #line 392 "compiler.y" /* yacc.c:1646  */
     {
-        struct MULTOP *multop;
+        struct MUL_OP *multop;
         multop = (yyvsp[-1].ptr_multop);
-        multop->lhs=(yyvsp[-2].ptr_expr);
-        multop->rhs=(yyvsp[0].ptr_expr);
+        multop->left_side=(yyvsp[-2].ptr_expr);
+        multop->right_side=(yyvsp[0].ptr_expr);
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eMulti;   // eMult와 다름 
-        expr->expression.multop_ = multop;
+        expr->expr_type = eMulti;   // eMult와 다름 
+        expr->expression.mul_op = multop;
         (yyval.ptr_expr) = expr;
     }
 #line 1918 "compiler.tab.c" /* yacc.c:1646  */
@@ -1920,14 +1920,14 @@ yyreduce:
   case 49:
 #line 403 "compiler.y" /* yacc.c:1646  */
     {
-        struct RELAOP *relaop;
+        struct COM_OP *relaop;
         relaop = (yyvsp[-1].ptr_relaop);
-        relaop->lhs=(yyvsp[-2].ptr_expr);
-        relaop->rhs=(yyvsp[0].ptr_expr);
+        relaop->left_side=(yyvsp[-2].ptr_expr);
+        relaop->right_side=(yyvsp[0].ptr_expr);
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eRela;  
-        expr->expression.relaop_ = relaop;
+        expr->expr_type = eRela;  
+        expr->expression.com_op = relaop;
         (yyval.ptr_expr) = expr;
     }
 #line 1934 "compiler.tab.c" /* yacc.c:1646  */
@@ -1936,14 +1936,14 @@ yyreduce:
   case 50:
 #line 414 "compiler.y" /* yacc.c:1646  */
     {
-        struct EQLTOP *eqltop;
+        struct EQL_OP *eqltop;
         eqltop = (yyvsp[-1].ptr_eqltop);
-        eqltop->lhs=(yyvsp[-2].ptr_expr);
-        eqltop->rhs=(yyvsp[0].ptr_expr);
+        eqltop->left_side=(yyvsp[-2].ptr_expr);
+        eqltop->right_side=(yyvsp[0].ptr_expr);
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eEqlt;  
-        expr->expression.eqltop_ = eqltop;
+        expr->expr_type = eEqlt;  
+        expr->expression.eql_op = eqltop;
         (yyval.ptr_expr) = expr;
     }
 #line 1950 "compiler.tab.c" /* yacc.c:1646  */
@@ -1953,7 +1953,7 @@ yyreduce:
 #line 425 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eCallExpr;  
+        expr->expr_type = eCallExpr;  
         expr->expression.func_call = (yyvsp[0].ptr_call);
         (yyval.ptr_expr) = expr;
     }
@@ -1964,7 +1964,7 @@ yyreduce:
 #line 431 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eIntnum;  
+        expr->expr_type = eIntnum;  
         expr->expression.int_val = (yyvsp[0].intval);
         (yyval.ptr_expr) = expr;
     }
@@ -1975,7 +1975,7 @@ yyreduce:
 #line 437 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eFloatnum;  
+        expr->expr_type = eFloatnum;  
         expr->expression.floatval = (yyvsp[0].floatval);
         (yyval.ptr_expr) = expr;
     }
@@ -1986,7 +1986,7 @@ yyreduce:
 #line 443 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eId;  
+        expr->expr_type = eId;  
         expr->expression.ID_ = (yyvsp[0].ptr_id_s);
         (yyval.ptr_expr) = expr;
     }
@@ -1997,7 +1997,7 @@ yyreduce:
 #line 449 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eExpr;  
+        expr->expr_type = eExpr;  
         expr->expression.bracket = (yyvsp[-1].ptr_expr);
         (yyval.ptr_expr) = expr;
     }
@@ -2029,8 +2029,8 @@ yyreduce:
   case 58:
 #line 469 "compiler.y" /* yacc.c:1646  */
     {
-         struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
-         addiop->a = Minus_Type;
+         struct ADD_OP *addiop = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
+         addiop->add_type = Minus_Type;
          (yyval.ptr_addiop) = addiop;
       }
 #line 2037 "compiler.tab.c" /* yacc.c:1646  */
@@ -2039,8 +2039,8 @@ yyreduce:
   case 59:
 #line 474 "compiler.y" /* yacc.c:1646  */
     { 
-        struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
-        addiop->a = Plus_Type;
+        struct ADD_OP *addiop = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
+        addiop->add_type = Plus_Type;
       (yyval.ptr_addiop) = addiop;
       }
 #line 2047 "compiler.tab.c" /* yacc.c:1646  */
@@ -2049,8 +2049,8 @@ yyreduce:
   case 60:
 #line 481 "compiler.y" /* yacc.c:1646  */
     {
-         struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
-         multop->m = Mul_Type;
+         struct MUL_OP *multop = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
+         multop->mul_type = Mul_Type;
          (yyval.ptr_multop) = multop;
       }
 #line 2057 "compiler.tab.c" /* yacc.c:1646  */
@@ -2059,8 +2059,8 @@ yyreduce:
   case 61:
 #line 486 "compiler.y" /* yacc.c:1646  */
     {
-         struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
-         multop->m = Div_Type;
+         struct MUL_OP *multop = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
+         multop->mul_type = Div_Type;
          (yyval.ptr_multop) = multop;
       }
 #line 2067 "compiler.tab.c" /* yacc.c:1646  */
@@ -2069,8 +2069,8 @@ yyreduce:
   case 62:
 #line 492 "compiler.y" /* yacc.c:1646  */
     {
-         struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = Le_Type;
+         struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+         relaop->com_type = Le_Type;
          (yyval.ptr_relaop) = relaop;
       }
 #line 2077 "compiler.tab.c" /* yacc.c:1646  */
@@ -2079,8 +2079,8 @@ yyreduce:
   case 63:
 #line 497 "compiler.y" /* yacc.c:1646  */
     {
-         struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = Ge_Type;
+         struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+         relaop->com_type = Ge_Type;
          (yyval.ptr_relaop) = relaop;
       }
 #line 2087 "compiler.tab.c" /* yacc.c:1646  */
@@ -2089,8 +2089,8 @@ yyreduce:
   case 64:
 #line 502 "compiler.y" /* yacc.c:1646  */
     {
-         struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = Gt_Type;
+         struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+         relaop->com_type = Gt_Type;
          (yyval.ptr_relaop) = relaop;
       }
 #line 2097 "compiler.tab.c" /* yacc.c:1646  */
@@ -2099,8 +2099,8 @@ yyreduce:
   case 65:
 #line 507 "compiler.y" /* yacc.c:1646  */
     { 
-         struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = Lt_Type;
+         struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+         relaop->com_type = Lt_Type;
          (yyval.ptr_relaop) = relaop;
       }
 #line 2107 "compiler.tab.c" /* yacc.c:1646  */
@@ -2109,8 +2109,8 @@ yyreduce:
   case 66:
 #line 513 "compiler.y" /* yacc.c:1646  */
     {
-         struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
-         eqltop->e = Eq_Type;
+         struct EQL_OP *eqltop = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
+         eqltop->eql_type = Eq_Type;
          (yyval.ptr_eqltop) = eqltop;
       }
 #line 2117 "compiler.tab.c" /* yacc.c:1646  */
@@ -2119,8 +2119,8 @@ yyreduce:
   case 67:
 #line 518 "compiler.y" /* yacc.c:1646  */
     { 
-         struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
-         eqltop->e = Ne_Type;
+         struct EQL_OP *eqltop = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
+         eqltop->eql_type = Ne_Type;
          (yyval.ptr_eqltop) = eqltop;
       }
 #line 2127 "compiler.tab.c" /* yacc.c:1646  */

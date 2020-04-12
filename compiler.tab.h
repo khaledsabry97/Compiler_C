@@ -96,10 +96,10 @@ union YYSTYPE
     struct IF_STMT          *ptr_if_s;
     struct ID_S          *ptr_id_s;
     struct EXPR          *ptr_expr;
-    struct ADDIOP        *ptr_addiop;
-    struct MULTOP        *ptr_multop;
-    struct RELAOP        *ptr_relaop;
-    struct EQLTOP        *ptr_eqltop;
+    struct ADD_OP        *ptr_addiop;
+    struct MUL_OP        *ptr_multop;
+    struct COM_OP        *ptr_relaop;
+    struct EQL_OP        *ptr_eqltop;
     ID_TYPE type;
     int intval;
     float floatval;

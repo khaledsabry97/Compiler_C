@@ -45,10 +45,10 @@ void yyerror(char* text) {
     struct IF_STMT          *ptr_if_s;
     struct ID_S          *ptr_id_s;
     struct EXPR          *ptr_expr;
-    struct ADDIOP        *ptr_addiop;
-    struct MULTOP        *ptr_multop;
-    struct RELAOP        *ptr_relaop;
-    struct EQLTOP        *ptr_eqltop;
+    struct ADD_OP        *ptr_addiop;
+    struct MUL_OP        *ptr_multop;
+    struct COM_OP        *ptr_relaop;
+    struct EQL_OP        *ptr_eqltop;
     ID_TYPE type;
     int intval;
     float floatval;
@@ -369,86 +369,86 @@ RetStmt: RETURN ';' {
        }
        ;
 Expr: MINUS Expr %prec UNARY {
-        struct UNOP *unop = (struct UNOP*) malloc (sizeof (struct UNOP));
-        unop->u = Neg_Type;
+        struct UNI_OP *unop = (struct UNI_OP*) malloc (sizeof (struct UNI_OP));
+        unop->uni_type = Neg_Type;
         unop->expr = $2;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eUnop;
-        expr->expression.unop_ = unop;
+        expr->expr_type = eUnop;
+        expr->expression.uni_op = unop;
         $$ = expr;
     }
     | Expr Addiop Expr {
-        struct ADDIOP *addiop;
+        struct ADD_OP *addiop;
         addiop = $2;
-        addiop->lhs=$1;
-        addiop->rhs=$3;
+        addiop->left_side=$1;
+        addiop->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eAddi;
-        expr->expression.addiop_ = addiop;
+        expr->expr_type = eAddi;
+        expr->expression.add_op = addiop;
         $$ = expr;
     }
     | Expr Multop Expr {
-        struct MULTOP *multop;
+        struct MUL_OP *multop;
         multop = $2;
-        multop->lhs=$1;
-        multop->rhs=$3;
+        multop->left_side=$1;
+        multop->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eMulti;   // eMult와 다름 
-        expr->expression.multop_ = multop;
+        expr->expr_type = eMulti;   // eMult와 다름 
+        expr->expression.mul_op = multop;
         $$ = expr;
     }
     | Expr Relaop Expr {
-        struct RELAOP *relaop;
+        struct COM_OP *relaop;
         relaop = $2;
-        relaop->lhs=$1;
-        relaop->rhs=$3;
+        relaop->left_side=$1;
+        relaop->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eRela;  
-        expr->expression.relaop_ = relaop;
+        expr->expr_type = eRela;  
+        expr->expression.com_op = relaop;
         $$ = expr;
     }
     | Expr Eqltop Expr {
-        struct EQLTOP *eqltop;
+        struct EQL_OP *eqltop;
         eqltop = $2;
-        eqltop->lhs=$1;
-        eqltop->rhs=$3;
+        eqltop->left_side=$1;
+        eqltop->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eEqlt;  
-        expr->expression.eqltop_ = eqltop;
+        expr->expr_type = eEqlt;  
+        expr->expression.eql_op = eqltop;
         $$ = expr;
     }
     | Call {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eCallExpr;  
+        expr->expr_type = eCallExpr;  
         expr->expression.func_call = $1;
         $$ = expr;
     }
     | INTNUM {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eIntnum;  
+        expr->expr_type = eIntnum;  
         expr->expression.int_val = $1;
         $$ = expr;
     }    
     | FLOATNUM {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eFloatnum;  
+        expr->expr_type = eFloatnum;  
         expr->expression.floatval = $1;
         $$ = expr;
     }
     | Id_s {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eId;  
+        expr->expr_type = eId;  
         expr->expression.ID_ = $1;
         $$ = expr;
     } 
     | '(' Expr ')' {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eExpr;  
+        expr->expr_type = eExpr;  
         expr->expression.bracket = $2;
         $$ = expr;
     }
@@ -467,57 +467,57 @@ Id_s: ID {
     }
     ;
 Addiop: MINUS {
-         struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
-         addiop->a = Minus_Type;
+         struct ADD_OP *addiop = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
+         addiop->add_type = Minus_Type;
          $$ = addiop;
       }
       | PLUS { 
-        struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
-        addiop->a = Plus_Type;
+        struct ADD_OP *addiop = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
+        addiop->add_type = Plus_Type;
       $$ = addiop;
       }
 
       ;
 Multop: MULT {
-         struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
-         multop->m = Mul_Type;
+         struct MUL_OP *multop = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
+         multop->mul_type = Mul_Type;
          $$ = multop;
       }
       | DIV {
-         struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
-         multop->m = Div_Type;
+         struct MUL_OP *multop = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
+         multop->mul_type = Div_Type;
          $$ = multop;
       }
       ;
 Relaop: LE {
-         struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = Le_Type;
+         struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+         relaop->com_type = Le_Type;
          $$ = relaop;
       }
       | GE {
-         struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = Ge_Type;
+         struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+         relaop->com_type = Ge_Type;
          $$ = relaop;
       }
       | GT {
-         struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = Gt_Type;
+         struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+         relaop->com_type = Gt_Type;
          $$ = relaop;
       }
       | LT { 
-         struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = Lt_Type;
+         struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+         relaop->com_type = Lt_Type;
          $$ = relaop;
       }
       ;
 Eqltop: EQ {
-         struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
-         eqltop->e = Eq_Type;
+         struct EQL_OP *eqltop = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
+         eqltop->eql_type = Eq_Type;
          $$ = eqltop;
       }
       | NE { 
-         struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
-         eqltop->e = Ne_Type;
+         struct EQL_OP *eqltop = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
+         eqltop->eql_type = Ne_Type;
          $$ = eqltop;
       }
       ;

@@ -6,7 +6,7 @@
 #define false 0
 
 typedef enum {Int_Type,Float_Type} ID_TYPE;
-typedef enum {Neg_Type} UNIOP_TYPE;
+typedef enum {Neg_Type} UNI_OP_TYPE;
 typedef enum {Equ_Type,If_Type,For_Type,While_Type,Call_Type,Return_Type,Comp_Type,Semi_Type} STMT_TYPE;
 typedef enum {Plus_Type,Minus_Type} ADD_TYPE;
 typedef enum {Mul_Type,Div_Type} MUL_TYPE;
@@ -188,65 +188,82 @@ struct IF_STMT
 
 struct EXPR
 {
-	Expr_e e;   // EXPR type (enumeration type)
+	Expr_e expr_type;   // EXPR type (enumeration type)
 	union
 	{
-		int int_val; // int
-		float floatval; // float
-		struct UNOP *unop_; // -expr
-		struct ADDIOP *addiop_; // epxr + expr
-		struct MULTOP *multop_; // expr * expr
-		struct RELAOP *relaop_; // expr >= expr
-		struct EQLTOP *eqltop_; // expr == expr
+		int int_val; 
+		float floatval; 
+		struct UNI_OP *uni_op; 
+		struct ADD_OP *add_op; 
+		struct MUL_OP *mul_op; // expr * expr
+		struct COM_OP *com_op; // expr >= expr
+		struct EQL_OP *eql_op; // expr == expr
 		struct FUNC_CALL *func_call; // call 
 		struct EXPR *bracket; // (expr)
 		struct ID_S *ID_; // id[expr]
 	} expression;
 };
 
-struct UNOP
+/*
+-3 or +3 or - expr
+*/
+struct UNI_OP
 {
-	UNIOP_TYPE u;
+	UNI_OP_TYPE uni_type;
 	struct EXPR *expr;
 };
 
-/* lhs addiop rhs */
-struct ADDIOP
+/*
+3+4 or (3*2) + (4*2)
+int + int or expr + expr
+*/
+struct ADD_OP
 {
-	ADD_TYPE a;
-	struct EXPR *lhs;
-	struct EXPR *rhs;
+	ADD_TYPE add_type;
+	struct EXPR *left_side;
+	struct EXPR *right_side;
 };
 
-/* lhs multiop rhs */
-struct MULTOP
+/*
+expr * expr
+3*3
+(4+2)*(4+3)
+left_side * right_side
+*/
+struct MUL_OP
 {
-	MUL_TYPE m;
-	struct EXPR *lhs;
-	struct EXPR *rhs;
+	MUL_TYPE mul_type;
+	struct EXPR *left_side;
+	struct EXPR *right_side;
 };
 
-/* lhs relaop rhs */
-struct RELAOP
+/*
+5>=3
+*/
+struct COM_OP
 {
-	COMP_TYPE r;
-	struct EXPR *lhs;
-	struct EXPR *rhs;
+	COMP_TYPE com_type;
+	struct EXPR *left_side;
+	struct EXPR *right_side;
 };
 
-/* lhs eqltop rhs */
-struct EQLTOP
+/*
+3==2
+*/
+struct EQL_OP
 {
-	EQCOM_TYPE e;
-	struct EXPR *lhs;
-	struct EXPR *rhs;
+	EQCOM_TYPE eql_type;
+	struct EXPR *left_side;
+	struct EXPR *right_side;
 };
 
-/* id[expr]  */
+/* 
+arr[3==3]
+*/
 struct ID_S
 {
 	char *ID;
-	struct EXPR *expr; // NULL , if scalar variable
+	struct EXPR *expr;
 };
 
 #endif
