@@ -30,29 +30,36 @@ void yyerror(char* text) {
 %}
 
 %union{
+    ID_TYPE type;
+    char* id;
+    int intval;
+    float floatval;
+    
+
     struct PROGRAM       *ptr_program;
     struct DECLARATION   *ptr_declaration;
     struct IDENTIFIER    *ptr_identifier;
     struct FUNCTION      *ptr_function;
     struct PARAMETER     *ptr_parameter;
+    struct ARG           *ptr_arg;
+
+    struct FUNC_CALL          *ptr_call;
+    struct IF_STMT          *ptr_if_s;
+    struct FOR_STMT         *_for_stmt;
+    struct WHILE_STMT       *ptr_while_s;
+    struct ASSIGN_STMT        *ptr_assign;
     struct STMTSGROUP  *ptr_compoundstmt;
     struct STMT          *ptr_stmt;
-    struct ASSIGN_STMT        *ptr_assign;
-    struct FUNC_CALL          *ptr_call;
-    struct ARG           *ptr_arg;
-    struct WHILE_STMT       *ptr_while_s;
-    struct FOR_STMT         *_for_stmt;
-    struct IF_STMT          *ptr_if_s;
+
     struct ID_EXPR          *ptr_id_s;
-    struct EXPR          *ptr_expr;
     struct ADD_OP        *ptr_addiop;
     struct MUL_OP        *ptr_multop;
-    struct COM_OP        *ptr_relaop;
     struct EQL_OP        *ptr_eqltop;
-    ID_TYPE type;
-    int intval;
-    float floatval;
-    char* id;
+
+    struct COM_OP        *ptr_relaop;
+    struct EXPR          *ptr_expr;
+
+
 }
 
 %token <intval>INTNUM <floatval>FLOATNUM <id>ID
