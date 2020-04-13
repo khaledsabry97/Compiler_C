@@ -62,39 +62,60 @@ void yyerror(char* text) {
 
 }
 
-%token <intval>INTNUM <floatval>FLOATNUM <id>ID
-%token INT FLOAT MINUS PLUS MULT DIV LE GE EQ NE GT LT
-%token IF ELSE FOR WHILE DO RETURN DQUOT_T SQUOT_T AMP_T 
-
 
 %type <type> Type
-
 %type <_program> Program
-%type <_declaration> Declaration DeclList
-%type <_identifier> Identifier IdentList
-%type <_function> Function FuncList
-%type <_parameter> Parameter ParamList 
-%type <_stmtgroup> CompoundStmt
-%type <_stmt> Stmt StmtList
-%type <_assign_stmt> Assign AssignStmt 
-%type <_call> Call CallStmt
-%type <_arg> Arg ArgList
-%type <_while_stmt> While_s
-%type <_for_stmt> ForStmt
-%type <_if_stmt> If_s
-%type <_expr> Expr RetStmt
-%type <_add_op> Addiop
-%type <_mul_op> Multop
-%type <_com_op> Relaop
-%type <_eql_op> Eqltop
-%type <_id_expr> Id_s;
+%type <_declaration> Declaration Declaration_List
+%type <_identifier> Identifier Identifier_List
+%type <_function> Function Function_List
+%type <_parameter> Parameter Parameter_List 
+%type <_stmtgroup> Stmt_Group
+%type <_stmt> Stmt Stmt_List
+%type <_assign_stmt> Assign Assign_Stmt 
+%type <_call> Call Call_Stmt
+%type <_arg> Arg Arg_List
+%type <_while_stmt> While_Stmt
+%type <_for_stmt> For_Stmt
+%type <_if_stmt> If_Stmt
+%type <_expr> Expr Ret_Stmt
+%type <_add_op> Add_Op
+%type <_mul_op> Mul_Op
+%type <_com_op> Com_Op
+%type <_eql_op> Eql_Op
+%type <_id_expr> Id_Expr;
+
+
+%token <id>ID
+%token <intval>INTNUM
+%token <floatval>FLOATNUM
+
+%token INT
+%token FLOAT
+%token MINUS
+%token PLUS
+%token MUL
+%token DIV
+%token LE
+%token GE
+%token EQ
+%token NE
+%token GT
+%token LT
+%token IF
+%token ELSE
+%token FOR
+%token WHILE
+%token DO
+%token RETURN
+%token DOUBLE_QT
+%token SINGLE_QT
 
 
 %right '=' 
 %left EQ NE
 %left LE GE GT LT
 %left PLUS MINUS
-%left MULT DIV
+%left MUL DIV
 %right UNARY
 %left '(' ')' 
 
@@ -105,22 +126,22 @@ void yyerror(char* text) {
 %start Program
 %%
 //입력이 없는 경우는 main() 에서 head = NULL 인 상태로 처리됨.
-//"DeclList" in "Program" denotes global declaration
-Program: DeclList FuncList {
+//"Declaration_List" in "Program" denotes global declaration
+Program: Declaration_List Function_List {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             prog->declaration = $1;
             prog->function = $2;
             head = prog;
             $$ = prog;
        }
-       | DeclList {
+       | Declaration_List {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             prog->declaration = $1;
             prog->function = NULL;
             head = prog;
             $$ = prog;
        }
-       | FuncList {
+       | Function_List {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             prog->declaration = NULL;
             prog->function = $1;
@@ -128,37 +149,37 @@ Program: DeclList FuncList {
             $$ = prog;
        }
        ;
-DeclList: Declaration {
+Declaration_List: Declaration {
             $$ = $1;
         }
-        | DeclList Declaration {
+        | Declaration_List Declaration {
             struct DECLARATION *declaration;
             declaration = $2;
             declaration->prev = $1;
             $$ = declaration;
         }
         ;
-FuncList: Function {
+Function_List: Function {
             $$ = $1;
         }
-        | FuncList Function {
+        | Function_List Function {
             struct FUNCTION *function;
             function = $2;
             function->prev = $1;
             $$ = function;
         }
         ;
-Declaration: Type IdentList ';' {
+Declaration: Type Identifier_List ';' {
                 struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
                 declaration->id_type = $1;
                 declaration->id = $2;
                 $$ = declaration;
             }
            ;
-IdentList: Identifier {
+Identifier_List: Identifier {
             $$ = $1;
         }
-        | IdentList ',' Identifier {
+        | Identifier_List ',' Identifier {
             struct IDENTIFIER *iden;
             iden = $3;
             iden->prev = $1;
@@ -180,13 +201,13 @@ Identifier: ID {
             $$ = iden;
            }
           ;
-ParamList: Parameter {
+Parameter_List: Parameter {
             struct PARAMETER *param;
             param = $1;
             param->prev = NULL;
             $$ = param;
         }
-         | ParamList ',' Parameter {
+         | Parameter_List ',' Parameter {
             struct PARAMETER *param;
             param = $3;
             param->prev = $1;
@@ -199,7 +220,7 @@ Parameter: Type Identifier {
             param->prev = NULL;
             $$ = param;
         }
-Function: Type ID '(' ')' CompoundStmt {
+Function: Type ID '(' ')' Stmt_Group {
             struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
             function->id_type = $1;
             function->ID = $2;
@@ -208,7 +229,7 @@ Function: Type ID '(' ')' CompoundStmt {
             $$ = function;
 
         }
-        | Type ID '(' ParamList ')' CompoundStmt {
+        | Type ID '(' Parameter_List ')' Stmt_Group {
         struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
         function->id_type = $1;
         function->ID = $2;
@@ -220,9 +241,9 @@ Function: Type ID '(' ')' CompoundStmt {
 Type: INT { $$ = Int_Type;}
     | FLOAT { $$ = Float_Type;}
     ;
-//cf. Stmt 안에 CompoundStmt 존재
-//StmtList 에서 empty 입력을 허용하지 않도록 StmtList 가 없는 Compound 정의
-CompoundStmt: '{' '}' {
+//cf. Stmt 안에 Stmt_Group 존재
+//Stmt_List 에서 empty 입력을 허용하지 않도록 Stmt_List 가 없는 Compound 정의
+Stmt_Group: '{' '}' {
                 struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = NULL;
                 comp->stmt = NULL;
@@ -233,75 +254,75 @@ CompoundStmt: '{' '}' {
                 */
                 
             }
-            | '{' StmtList '}'  {
+            | '{' Stmt_List '}'  {
                 struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = NULL;
                 comp->stmt = $2;
                 $$ = comp;
             }
-            |  '{' DeclList StmtList '}' {
+            |  '{' Declaration_List Stmt_List '}' {
                 struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = $2;
                 comp->stmt = $3;
                 $$ = comp;
             }
-            |  '{' DeclList '}' {
+            |  '{' Declaration_List '}' {
                 struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = $2;
                 comp->stmt = NULL;
                 $$ = comp;
             }
             ;
-StmtList: Stmt {
+Stmt_List: Stmt {
             struct STMT *stmt;
             stmt = $1;
             stmt->prev = NULL;
             $$ = stmt;
         }
-        | StmtList Stmt {
+        | Stmt_List Stmt {
             struct STMT *stmt;
             stmt = $2;
             stmt->prev = $1;
             $$ = stmt;
         }
         ;
-Stmt: AssignStmt { 
+Stmt: Assign_Stmt { 
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Equ_Type;
         stmt->stmt.assign_stmt = $1;
         $$ = stmt;
     }
-    | CallStmt {
+    | Call_Stmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Call_Type;
         stmt->stmt.func_call = $1;
         $$ = stmt;
     }
-    | RetStmt {
+    | Ret_Stmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Return_Type;
         stmt->stmt.return_expr = $1;
         $$ = stmt;
     }
-    | While_s {
+    | While_Stmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = While_Type;
         stmt->stmt.while_stmt = $1;
         $$ = stmt;
     }
-    | ForStmt {
+    | For_Stmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = For_Type;
         stmt->stmt.for_stmt = $1;
         $$ = stmt;
     }
-    | If_s {
+    | If_Stmt {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = If_Type;
         stmt->stmt.if_stmt = $1;
         $$ = stmt;
     }
-    | CompoundStmt {
+    | Stmt_Group {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Comp_Type;
         stmt->stmt.stmts_group = $1;
@@ -313,7 +334,7 @@ Stmt: AssignStmt {
         $$ = stmt;
     }
     ;
-AssignStmt: Assign ';' { 
+Assign_Stmt: Assign ';' { 
             $$ = $1;
           }
           ;
@@ -332,7 +353,7 @@ Assign: ID '=' Expr {
             $$ = assign;
         }
       ;
-CallStmt: Call ';' {
+Call_Stmt: Call ';' {
             $$ = $1;
         }
         ;
@@ -346,15 +367,15 @@ Call: ID '(' ')' {
         call->arg = NULL;
         $$ = call;
     }
-    | ID '(' ArgList ')' {
+    | ID '(' Arg_List ')' {
         struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
         call->ID = $1;
         call->arg = $3;
         $$ = call;
     }
     ;
-ArgList: Arg { $$ = $1;}
-       | ArgList ',' Arg {
+Arg_List: Arg { $$ = $1;}
+       | Arg_List ',' Arg {
             struct ARG *arg;
             arg = $3;
             arg->prev = $1;
@@ -368,7 +389,7 @@ Arg: Expr {
     $$ = arg;
    }
    ;
-RetStmt: RETURN ';' {
+Ret_Stmt: RETURN ';' {
         $$ = NULL;
         }
        | RETURN Expr ';' {
@@ -385,7 +406,7 @@ Expr: MINUS Expr %prec UNARY {
         expr->expression.uni_op = unop;
         $$ = expr;
     }
-    | Expr Addiop Expr {
+    | Expr Add_Op Expr {
         struct ADD_OP *addiop;
         addiop = $2;
         addiop->left_side=$1;
@@ -396,7 +417,7 @@ Expr: MINUS Expr %prec UNARY {
         expr->expression.add_op = addiop;
         $$ = expr;
     }
-    | Expr Multop Expr {
+    | Expr Mul_Op Expr {
         struct MUL_OP *multop;
         multop = $2;
         multop->left_side=$1;
@@ -407,7 +428,7 @@ Expr: MINUS Expr %prec UNARY {
         expr->expression.mul_op = multop;
         $$ = expr;
     }
-    | Expr Relaop Expr {
+    | Expr Com_Op Expr {
         struct COM_OP *relaop;
         relaop = $2;
         relaop->left_side=$1;
@@ -418,7 +439,7 @@ Expr: MINUS Expr %prec UNARY {
         expr->expression.com_op = relaop;
         $$ = expr;
     }
-    | Expr Eqltop Expr {
+    | Expr Eql_Op Expr {
         struct EQL_OP *eqltop;
         eqltop = $2;
         eqltop->left_side=$1;
@@ -447,7 +468,7 @@ Expr: MINUS Expr %prec UNARY {
         expr->expression.floatval = $1;
         $$ = expr;
     }
-    | Id_s {
+    | Id_Expr {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Id_Type;  
         expr->expression.id_expr = $1;
@@ -460,7 +481,7 @@ Expr: MINUS Expr %prec UNARY {
         $$ = expr;
     }
     ;
-Id_s: ID {
+Id_Expr: ID {
         struct ID_EXPR *id_s = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
         id_s->ID = $1;
         id_s->expr = NULL;
@@ -473,7 +494,7 @@ Id_s: ID {
         $$ = id_s;
     }
     ;
-Addiop: MINUS {
+Add_Op: MINUS {
          struct ADD_OP *addiop = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
          addiop->add_type = Minus_Type;
          $$ = addiop;
@@ -485,7 +506,7 @@ Addiop: MINUS {
       }
 
       ;
-Multop: MULT {
+Mul_Op: MUL {
          struct MUL_OP *multop = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
          multop->mul_type = Mul_Type;
          $$ = multop;
@@ -496,7 +517,7 @@ Multop: MULT {
          $$ = multop;
       }
       ;
-Relaop: LE {
+Com_Op: LE {
          struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
          relaop->com_type = Le_Type;
          $$ = relaop;
@@ -517,7 +538,7 @@ Relaop: LE {
          $$ = relaop;
       }
       ;
-Eqltop: EQ {
+Eql_Op: EQ {
          struct EQL_OP *eqltop = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
          eqltop->eql_type = Eq_Type;
          $$ = eqltop;
@@ -528,7 +549,7 @@ Eqltop: EQ {
          $$ = eqltop;
       }
       ;
-While_s: WHILE '(' Expr ')'  Stmt  {
+While_Stmt: WHILE '(' Expr ')'  Stmt  {
            struct WHILE_STMT* while_s = (struct WHILE_STMT*) malloc (sizeof(struct WHILE_STMT));
            while_s->do_while = false;
            while_s->condition = $3;
@@ -543,7 +564,7 @@ While_s: WHILE '(' Expr ')'  Stmt  {
            $$ = while_s;
         }
          ;
-ForStmt: FOR '(' Assign ';' Expr ';' Assign ')' Stmt {
+For_Stmt: FOR '(' Assign ';' Expr ';' Assign ')' Stmt {
            struct FOR_STMT *for_s = (struct FOR_STMT*) malloc (sizeof(struct FOR_STMT));
            for_s->init = $3;
            for_s->condition = $5;
@@ -552,7 +573,7 @@ ForStmt: FOR '(' Assign ';' Expr ';' Assign ')' Stmt {
            $$ = for_s;
         }
        ;
-If_s: IF '(' Expr ')' Stmt %prec LOWER_THAN_ELSE {
+If_Stmt: IF '(' Expr ')' Stmt %prec LOWER_THAN_ELSE {
        struct IF_STMT *if_ptr = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
        if_ptr->condition=$3;
        if_ptr->if_stmt=$5;

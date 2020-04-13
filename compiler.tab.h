@@ -45,14 +45,14 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    INTNUM = 258,
-    FLOATNUM = 259,
-    ID = 260,
+    ID = 258,
+    INTNUM = 259,
+    FLOATNUM = 260,
     INT = 261,
     FLOAT = 262,
     MINUS = 263,
     PLUS = 264,
-    MULT = 265,
+    MUL = 265,
     DIV = 266,
     LE = 267,
     GE = 268,
@@ -66,11 +66,10 @@ extern int yydebug;
     WHILE = 276,
     DO = 277,
     RETURN = 278,
-    DQUOT_T = 279,
-    SQUOT_T = 280,
-    AMP_T = 281,
-    UNARY = 282,
-    LOWER_THAN_ELSE = 283
+    DOUBLE_QT = 279,
+    SINGLE_QT = 280,
+    UNARY = 281,
+    LOWER_THAN_ELSE = 282
   };
 #endif
 
@@ -112,7 +111,7 @@ union YYSTYPE
 
 
 
-#line 116 "compiler.tab.h" /* yacc.c:1909  */
+#line 115 "compiler.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

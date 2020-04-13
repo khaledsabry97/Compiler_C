@@ -20,23 +20,23 @@ This project is compiler project using flex and bison.
 
 ## 4. We follow the rule below.
 
-    Program := (DeclList)? (FuncList)?   // DeclList FuncList | DeclList | FuncList | ε
-    DeclList := (Declaration)+          // Declaration | DeclList Declaration
-    FuncList := (Function)+
-    Declaration := Type IdentList ;
-    IdentList := identifier (, identifier)*  // identifier | IdentList , identifier
+    Program := (Declaration_List)? (Function_List)?   // Declaration_List Function_List | Declaration_List | Function_List | ε
+    Declaration_List := (Declaration)+          // Declaration | Declaration_List Declaration
+    Function_List := (Function)+
+    Declaration := Type Identifier_List ;
+    Identifier_List := identifier (, identifier)*  // identifier | Identifier_List , identifier
     identifier := id | id [ intnum ]      // (Note) [, ] are not symbols used in regular expression
-    Function := Type id ( (ParamList)? ) CompoundStmt
-    ParamList := Type identifier (, Type identifier)*
+    Function := Type id ( (Parameter_List)? ) Stmt_Group
+    Parameter_List := Type identifier (, Type identifier)*
     Type := int | float
-    CompoundStmt := { (DeclList)? StmtList }
-    StmtList := (Stmt)*
-    Stmt := AssignStmt | CallStmt | RetStmt | WhileStmt | ForStmt | IfStmt | CompoundStmt | ;
-    AssignStmt :=Assign ; 
+    Stmt_Group := { (Declaration_List)? Stmt_List }
+    Stmt_List := (Stmt)*
+    Stmt := Assign_Stmt | Call_Stmt | Ret_Stmt | WhileStmt | For_Stmt | IfStmt | Stmt_Group | ;
+    Assign_Stmt :=Assign ; 
     Assign := id = Expr | id [ Expr ] = Expr
-    CallStmt := Call ;
-    Call := id ( (ArgList)? )
-    RetStmt := return (Expr)? ; 
+    Call_Stmt := Call ;
+    Call := id ( (Arg_List)? )
+    Ret_Stmt := return (Expr)? ; 
     
     So, Our miniC program doesn't follow the rule below.
         1. ++, --

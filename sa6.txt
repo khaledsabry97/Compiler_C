@@ -2,6 +2,6 @@ int main()
 {
 	int a;
 	{
-		int b; // this is wrong because there is no "StmtList".
+		int b; // this is wrong because there is no "Stmt_List".
 	}
 }

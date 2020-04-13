@@ -20,12 +20,11 @@
 "." |
 "," |
 "=" {return yytext[0];}
-"\""  {return DQUOT_T;}
-"\'"  {return SQUOT_T;}
-"\&"  {return AMP_T;}
+"\""  {return DOUBLE_QT;}
+"\'"  {return SINGLE_QT;}
 "-"     return MINUS;
 "+"     return PLUS;
-"*"     return MULT;
+"*"     return MUL;
 "/"     return DIV;
 "<="    return LE;
 ">="    return GE;
