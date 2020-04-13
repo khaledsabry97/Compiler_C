@@ -87,28 +87,28 @@ union YYSTYPE
     float floatval;
     
 
-    struct PROGRAM       *ptr_program;
-    struct DECLARATION   *ptr_declaration;
-    struct IDENTIFIER    *ptr_identifier;
-    struct FUNCTION      *ptr_function;
-    struct PARAMETER     *ptr_parameter;
-    struct ARG           *ptr_arg;
+    struct PROGRAM       *_program;
+    struct DECLARATION   *_declaration;
+    struct IDENTIFIER    *_identifier;
+    struct FUNCTION      *_function;
+    struct PARAMETER     *_parameter;
+    struct ARG           *_arg;
 
-    struct FUNC_CALL          *ptr_call;
-    struct IF_STMT          *ptr_if_s;
+    struct FUNC_CALL          *_call;
+    struct IF_STMT          *_if_stmt;
     struct FOR_STMT         *_for_stmt;
-    struct WHILE_STMT       *ptr_while_s;
-    struct ASSIGN_STMT        *ptr_assign;
-    struct STMTSGROUP  *ptr_compoundstmt;
-    struct STMT          *ptr_stmt;
+    struct WHILE_STMT       *_while_stmt;
+    struct ASSIGN_STMT        *_assign_stmt;
+    struct STMTSGROUP  *_stmtgroup;
+    struct STMT          *_stmt;
 
-    struct ID_EXPR          *ptr_id_s;
-    struct ADD_OP        *ptr_addiop;
-    struct MUL_OP        *ptr_multop;
-    struct EQL_OP        *ptr_eqltop;
+    struct ID_EXPR          *_id_expr;
+    struct ADD_OP        *_add_op;
+    struct MUL_OP        *_mul_op;
+    struct EQL_OP        *_eql_op;
 
-    struct COM_OP        *ptr_relaop;
-    struct EXPR          *ptr_expr;
+    struct COM_OP        *_com_op;
+    struct EXPR          *_expr;
 
 
 
