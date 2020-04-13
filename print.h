@@ -1,5 +1,4 @@
 #include "AST.h"
-#define bool char 
 #define true 1 
 #define false 0
 void visitDeclaration   (struct DECLARATION* declaration);
