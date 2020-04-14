@@ -3,9 +3,9 @@
 #define false 0
 void visitDeclaration   (struct DECLARATION* declaration);
 void visitFunction      (struct FUNCTION* function);
-void visitIdentifier    (struct IDENTIFIER* iden);
+void visitIdentifier    (struct IDENTIFIER* identifier);
 void visitStmt          (struct STMT* stmt);
-void visitParameter     (struct PARAMETER* param);
+void visitParameter     (struct PARAMETER* parameter);
 void visitCompoundStmt  (struct STMTSGROUP* stmts_group);
 void visitAssignStmt    (struct ASSIGN_STMT* assign);
 void visitCallStmt      (struct FUNC_CALL* call);

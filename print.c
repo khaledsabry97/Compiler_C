@@ -121,10 +121,10 @@ void visitFunction      (struct FUNCTION* function) {
     }
     fprintf (tree_file, "%s (", function->ID);//function name
     _isTitlePrinted = false;
-    if(function->param != NULL) {
+    if(function->parameter != NULL) {
         printTitle();
         _isTitlePrinted = true;
-        visitParameter(function->param);    //parameter 
+        visitParameter(function->parameter);    //parameter 
     }
     fprintf (tree_file, ")\n");//function name
     visitCompoundStmt(function->stmts_group); //compoundStmt
@@ -134,14 +134,14 @@ void visitFunction      (struct FUNCTION* function) {
     deleteScope(&scopeTail);
     _isTitlePrinted = false;
 }
-void visitIdentifier    (struct IDENTIFIER* iden) {
-    if(iden->prev != NULL) {
-        visitIdentifier(iden->prev);
+void visitIdentifier    (struct IDENTIFIER* identifier) {
+    if(identifier->prev != NULL) {
+        visitIdentifier(identifier->prev);
         fprintf(tree_file, ", ");
     }
-    fprintf (tree_file, "%s", iden->ID);
-    if(iden->int_val > 0) {
-        fprintf (tree_file, "[%d]", iden->int_val);
+    fprintf (tree_file, "%s", identifier->ID);
+    if(identifier->int_val > 0) {
+        fprintf (tree_file, "[%d]", identifier->int_val);
 
 
         if( _needPrinted == true) {
@@ -150,9 +150,9 @@ void visitIdentifier    (struct IDENTIFIER* iden) {
                 curType = "int";
             else
                 curType = "float";
-            fprintf( table_file, "%10d%10s%10s%10d%10s\n", _rowNumber++ , curType, iden->ID, iden->int_val, _isParam ? "parameter" : "variable");
+            fprintf( table_file, "%10d%10s%10s%10d%10s\n", _rowNumber++ , curType, identifier->ID, identifier->int_val, _isParam ? "parameter" : "variable");
         }
-    } else if(iden->int_val < 0) {
+    } else if(identifier->int_val < 0) {
         fprintf(stderr, "minus array");
     } else { 
         //scalar
@@ -162,7 +162,7 @@ void visitIdentifier    (struct IDENTIFIER* iden) {
                 curType = "int";
             else
                 curType = "float";
-            fprintf( table_file, "%10d%10s%10s%10s%10s\n", _rowNumber++ , curType, iden->ID, "", _isParam ? "parameter" : "variable"); //_rowNumber(x) ++_rowNumber(x) _rowNumber++(o)
+            fprintf( table_file, "%10d%10s%10s%10s%10s\n", _rowNumber++ , curType, identifier->ID, "", _isParam ? "parameter" : "variable"); //_rowNumber(x) ++_rowNumber(x) _rowNumber++(o)
         }
     }
 }
@@ -219,13 +219,13 @@ void visitStmt          (struct STMT* stmt) {
     }
     fprintf(tree_file, "\n");
 }
-void visitParameter     (struct PARAMETER* param) {
+void visitParameter     (struct PARAMETER* parameter) {
     _isParam = true;
-    if(param->prev != NULL) {
-        visitParameter(param->prev);
+    if(parameter->prev != NULL) {
+        visitParameter(parameter->prev);
         fprintf (tree_file, ", ");
     }
-    switch(param->id_type) {
+    switch(parameter->id_type) {
         case Int_Type:
             fprintf (tree_file, "int ");    
             _curType = Int_Type;
@@ -239,7 +239,7 @@ void visitParameter     (struct PARAMETER* param) {
             exit(1);
     }
     _needPrinted = true;
-    visitIdentifier(param->id);
+    visitIdentifier(parameter->id);
     _needPrinted = false;
 }
 void visitCompoundStmt  (struct STMTSGROUP* stmts_group) {

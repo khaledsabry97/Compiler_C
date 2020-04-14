@@ -66,7 +66,7 @@ struct FUNCTION
 	
 	ID_TYPE id_type;
 	char *ID;
-	struct PARAMETER *param;
+	struct PARAMETER *parameter;
 	struct STMTSGROUP *stmts_group;
 };
 

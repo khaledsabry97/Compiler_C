@@ -69,7 +69,7 @@ extern int yydebug;
     DOUBLE_QT = 279,
     SINGLE_QT = 280,
     UNARY = 281,
-    LOWER_THAN_ELSE = 282
+    NO_ELSE = 282
   };
 #endif
 
@@ -93,22 +93,15 @@ union YYSTYPE
     struct PARAMETER     *_parameter;
     struct ARG           *_arg;
 
-    struct FUNC_CALL          *_call;
-    struct IF_STMT          *_if_stmt;
-    struct FOR_STMT         *_for_stmt;
-    struct WHILE_STMT       *_while_stmt;
-    struct ASSIGN_STMT        *_assign_stmt;
+
     struct STMTSGROUP  *_stmtgroup;
     struct STMT          *_stmt;
-
-    struct ADD_OP        *_add_op;
-    struct MUL_OP        *_mul_op;
 
     struct EXPR          *_expr;
 
 
 
-#line 112 "compiler.tab.h" /* yacc.c:1909  */
+#line 105 "compiler.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
