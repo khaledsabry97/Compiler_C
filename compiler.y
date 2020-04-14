@@ -125,8 +125,7 @@ void yyerror(char* text) {
 
 %start Program
 %%
-//입력이 없는 경우는 main() 에서 head = NULL 인 상태로 처리됨.
-//"Declaration_List" in "Program" denotes global declaration
+
 Program: Declaration_List Function_List {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             prog->declaration = $1;
@@ -159,16 +158,6 @@ Declaration_List: Declaration {
             $$ = declaration;
         }
         ;
-Function_List: Function {
-            $$ = $1;
-        }
-        | Function_List Function {
-            struct FUNCTION *function;
-            function = $2;
-            function->prev = $1;
-            $$ = function;
-        }
-        ;
 Declaration: Type Identifier_List ';' {
                 struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
                 declaration->id_type = $1;
@@ -176,6 +165,8 @@ Declaration: Type Identifier_List ';' {
                 $$ = declaration;
             }
            ;
+
+//extended feature for int x,y,z
 Identifier_List: Identifier {
             $$ = $1;
         }
@@ -201,6 +192,18 @@ Identifier: ID {
             $$ = iden;
            }
           ;
+          
+Function_List: Function {
+            $$ = $1;
+        }
+        | Function_List Function {
+            struct FUNCTION *function;
+            function = $2;
+            function->prev = $1;
+            $$ = function;
+        }
+        ;
+
 Parameter_List: Parameter {
             struct PARAMETER *param;
             param = $1;
