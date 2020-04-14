@@ -51,12 +51,9 @@ void yyerror(char* text) {
     struct STMTSGROUP  *_stmtgroup;
     struct STMT          *_stmt;
 
-    struct ID_EXPR          *_id_expr;
     struct ADD_OP        *_add_op;
     struct MUL_OP        *_mul_op;
-    struct EQL_OP        *_eql_op;
 
-    struct COM_OP        *_com_op;
     struct EXPR          *_expr;
 
 
@@ -66,13 +63,13 @@ void yyerror(char* text) {
 %type <type> Type
 %type <_program> Program
 %type <_declaration> Declaration Declaration_List
-%type <_identifier> Identifier Identifier_List
+%type <_identifier> Identifier
 %type <_function> Function Function_List
 %type <_parameter> Parameter Parameter_List 
 %type <_stmtgroup> Stmt_Group
 %type <_stmt> Stmt Stmt_List
-%type <_assign_stmt> Assign Assign_Stmt 
-%type <_call> Call Call_Stmt
+%type <_assign_stmt> Assign_Stmt 
+%type <_call> Call_Stmt
 %type <_arg> Arg Arg_List
 %type <_while_stmt> While_Stmt
 %type <_for_stmt> For_Stmt
@@ -80,9 +77,7 @@ void yyerror(char* text) {
 %type <_expr> Expr Ret_Stmt
 %type <_add_op> Add_Op
 %type <_mul_op> Mul_Op
-%type <_com_op> Com_Op
-%type <_eql_op> Eql_Op
-%type <_id_expr> Id_Expr;
+;
 
 
 %token <id>ID
@@ -158,7 +153,7 @@ Declaration_List: Declaration {
             $$ = declaration;
         }
         ;
-Declaration: Type Identifier_List ';' {
+Declaration: Type Identifier ';' {
                 struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
                 declaration->id_type = $1;
                 declaration->id = $2;
@@ -166,17 +161,8 @@ Declaration: Type Identifier_List ';' {
             }
            ;
 
-//extended feature for int x,y,z
-Identifier_List: Identifier {
-            $$ = $1;
-        }
-        | Identifier_List ',' Identifier {
-            struct IDENTIFIER *iden;
-            iden = $3;
-            iden->prev = $1;
-            $$ = iden;
-        }
-        ;
+
+
 Identifier: ID {
             struct IDENTIFIER *iden = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             iden->ID = $1;
@@ -244,36 +230,35 @@ Function: Type ID '(' ')' Stmt_Group {
 Type: INT { $$ = Int_Type;}
     | FLOAT { $$ = Float_Type;}
     ;
-//cf. Stmt 안에 Stmt_Group 존재
-//Stmt_List 에서 empty 입력을 허용하지 않도록 Stmt_List 가 없는 Compound 정의
-Stmt_Group: '{' '}' {
-                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-                comp->declaration = NULL;
-                comp->stmt = NULL;
-                $$ = comp;
-                /*
-                { } 안에 { } 만 들어 있는 경우도 표현하기 위하여,
-                NULL을 반환하지 않고 내용이 비어있어도 동적할당을 하였다.
-                */
-                
-            }
-            | '{' Stmt_List '}'  {
-                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-                comp->declaration = NULL;
-                comp->stmt = $2;
-                $$ = comp;
-            }
-            |  '{' Declaration_List Stmt_List '}' {
+
+
+Stmt_Group: '{' Declaration_List Stmt_List '}' {
                 struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = $2;
                 comp->stmt = $3;
                 $$ = comp;
             }
-            |  '{' Declaration_List '}' {
+            | 
+             '{' Stmt_List '}'  {
+                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
+                comp->declaration = NULL;
+                comp->stmt = $2;
+                $$ = comp;
+            }
+            |'{' Declaration_List '}' {
                 struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 comp->declaration = $2;
                 comp->stmt = NULL;
                 $$ = comp;
+            }
+            |
+             '{' '}' {
+                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
+                comp->declaration = NULL;
+                comp->stmt = NULL;
+                $$ = comp;
+           
+                
             }
             ;
 Stmt_List: Stmt {
@@ -337,46 +322,37 @@ Stmt: Assign_Stmt {
         $$ = stmt;
     }
     ;
-Assign_Stmt: Assign ';' { 
-            $$ = $1;
-          }
-          ;
-Assign: ID '=' Expr {
+
+Assign_Stmt: ID '=' Expr ';' { 
             struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
             assign->ID = $1;
-            assign->index = NULL; //NUL, if LHS is scalar variable
+            assign->index = NULL; 
             assign->expr = $3;
             $$ = assign;
-        }
-      | ID '[' Expr ']' '=' Expr {
+          }
+          | ID '[' Expr ']' '=' Expr ';' {
             struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
             assign->ID = $1;
             assign->index = $3; 
             assign->expr = $6;
             $$ = assign;
-        }
-      ;
-Call_Stmt: Call ';' {
-            $$ = $1;
-        }
-        ;
-/*
-ArgList의 정의에서 empty가 되지 않도록
-Call의 정의에서 ArgList가 빠진 형태를 추가하였다.
-*/
-Call: ID '(' ')' {
-        struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
-        call->ID = $1;
-        call->arg = NULL;
-        $$ = call;
-    }
-    | ID '(' Arg_List ')' {
-        struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
-        call->ID = $1;
-        call->arg = $3;
-        $$ = call;
-    }
-    ;
+             }
+            ;
+
+Call_Stmt: ID '(' ')' ';' {
+                struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
+                call->ID = $1;
+                call->arg = NULL;
+                $$ = call;
+                }
+                | ID '(' Arg_List ')' ';' {
+                    struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
+                    call->ID = $1;
+                    call->arg = $3;
+                    $$ = call;
+                }
+            ;
+
 Arg_List: Arg { $$ = $1;}
        | Arg_List ',' Arg {
             struct ARG *arg;
@@ -392,6 +368,8 @@ Arg: Expr {
     $$ = arg;
    }
    ;
+
+//return doesn't have value if it doesn't return something
 Ret_Stmt: RETURN ';' {
         $$ = NULL;
         }
@@ -427,13 +405,13 @@ Expr: MINUS Expr %prec UNARY {
         multop->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Mult_Type;   // eMult와 다름 
+        expr->expr_type = Mult_Type;  
         expr->expression.mul_op = multop;
         $$ = expr;
     }
-    | Expr Com_Op Expr {
-        struct COM_OP *relaop;
-        relaop = $2;
+    | Expr LE Expr {
+        struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+        relaop->com_type = Le_Type;
         relaop->left_side=$1;
         relaop->right_side=$3;
 
@@ -442,9 +420,42 @@ Expr: MINUS Expr %prec UNARY {
         expr->expression.com_op = relaop;
         $$ = expr;
     }
-    | Expr Eql_Op Expr {
-        struct EQL_OP *eqltop;
-        eqltop = $2;
+    | Expr GE Expr {
+        struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+        relaop->com_type = Ge_Type;
+        relaop->left_side=$1;
+        relaop->right_side=$3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = Com_Type;  
+        expr->expression.com_op = relaop;
+        $$ = expr;
+    }
+    | Expr GT Expr {
+        struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+        relaop->com_type = Gt_Type;
+        relaop->left_side=$1;
+        relaop->right_side=$3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = Com_Type;  
+        expr->expression.com_op = relaop;
+        $$ = expr;
+    }
+    | Expr LT Expr {
+        struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+        relaop->com_type = Lt_Type;
+        relaop->left_side=$1;
+        relaop->right_side=$3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = Com_Type;  
+        expr->expression.com_op = relaop;
+        $$ = expr;
+    }
+    | Expr EQ Expr {
+        struct EQL_OP *eqltop = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
+        eqltop->eql_type = Eq_Type;
         eqltop->left_side=$1;
         eqltop->right_side=$3;
 
@@ -453,10 +464,15 @@ Expr: MINUS Expr %prec UNARY {
         expr->expression.eql_op = eqltop;
         $$ = expr;
     }
-    | Call {
+    | Expr NE Expr {
+        struct EQL_OP *eqltop = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
+        eqltop->eql_type = Ne_Type;
+        eqltop->left_side=$1;
+        eqltop->right_side=$3;
+
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = CallExpr_Type;  
-        expr->expression.func_call = $1;
+        expr->expr_type = Eql_Type;  
+        expr->expression.eql_op = eqltop;
         $$ = expr;
     }
     | INTNUM {
@@ -471,10 +487,24 @@ Expr: MINUS Expr %prec UNARY {
         expr->expression.floatval = $1;
         $$ = expr;
     }
-    | Id_Expr {
+    | ID {
+        struct ID_EXPR *id_s = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
+        id_s->ID = $1;
+        id_s->expr = NULL;
+
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Id_Type;  
-        expr->expression.id_expr = $1;
+        expr->expression.id_expr = id_s;
+        $$ = expr;
+    } 
+    | ID '[' Expr ']' {
+        struct ID_EXPR *id_s = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
+        id_s->ID = $1;
+        id_s->expr = $3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = Id_Type;  
+        expr->expression.id_expr = id_s;
         $$ = expr;
     } 
     | '(' Expr ')' {
@@ -483,20 +513,28 @@ Expr: MINUS Expr %prec UNARY {
         expr->expression.bracket = $2;
         $$ = expr;
     }
-    ;
-Id_Expr: ID {
-        struct ID_EXPR *id_s = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
-        id_s->ID = $1;
-        id_s->expr = NULL;
-        $$ = id_s;
+    | ID '(' ')' {
+        struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
+        call->ID = $1;
+        call->arg = NULL;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = CallExpr_Type;  
+        expr->expression.func_call = call;
+        $$ = expr;
     }
-    | ID '[' Expr ']' {
-        struct ID_EXPR *id_s = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
-        id_s->ID = $1;
-        id_s->expr = $3;
-        $$ = id_s;
+    | ID '(' Arg_List ')' {
+        struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
+        call->ID = $1;
+        call->arg = $3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = CallExpr_Type;  
+        expr->expression.func_call = call;
+        $$ = expr;
     }
     ;
+
 Add_Op: MINUS {
          struct ADD_OP *addiop = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
          addiop->add_type = Minus_Type;
@@ -520,38 +558,8 @@ Mul_Op: MUL {
          $$ = multop;
       }
       ;
-Com_Op: LE {
-         struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
-         relaop->com_type = Le_Type;
-         $$ = relaop;
-      }
-      | GE {
-         struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
-         relaop->com_type = Ge_Type;
-         $$ = relaop;
-      }
-      | GT {
-         struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
-         relaop->com_type = Gt_Type;
-         $$ = relaop;
-      }
-      | LT { 
-         struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
-         relaop->com_type = Lt_Type;
-         $$ = relaop;
-      }
-      ;
-Eql_Op: EQ {
-         struct EQL_OP *eqltop = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
-         eqltop->eql_type = Eq_Type;
-         $$ = eqltop;
-      }
-      | NE { 
-         struct EQL_OP *eqltop = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
-         eqltop->eql_type = Ne_Type;
-         $$ = eqltop;
-      }
-      ;
+
+
 While_Stmt: WHILE '(' Expr ')'  Stmt  {
            struct WHILE_STMT* while_s = (struct WHILE_STMT*) malloc (sizeof(struct WHILE_STMT));
            while_s->do_while = false;
@@ -567,12 +575,24 @@ While_Stmt: WHILE '(' Expr ')'  Stmt  {
            $$ = while_s;
         }
          ;
-For_Stmt: FOR '(' Assign ';' Expr ';' Assign ')' Stmt {
+For_Stmt: FOR '(' ID '=' Expr ';' Expr ';' ID '=' Expr ')' Stmt {
+            struct ASSIGN_STMT *assign1 = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
+            struct ASSIGN_STMT *assign2 = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
+
+            assign1->ID = $3;
+            assign1->index = NULL; 
+            assign1->expr = $5;
+
+            assign2->ID = $9;
+            assign2->index = NULL; 
+            assign2->expr = $11;
+            
+          
            struct FOR_STMT *for_s = (struct FOR_STMT*) malloc (sizeof(struct FOR_STMT));
-           for_s->init = $3;
-           for_s->condition = $5;
-           for_s->inc = $7;
-           for_s->stmt = $9;
+           for_s->init = assign1;
+           for_s->condition = $7;
+           for_s->inc = assign2;
+           for_s->stmt = $13;
            $$ = for_s;
         }
        ;

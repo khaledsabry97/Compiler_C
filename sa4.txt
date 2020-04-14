@@ -1,6 +1,8 @@
 int main ()
 {
-    int i, j, k;
+    int i;
+    int j;
+    int k;
 
     while (i < 10)
     {

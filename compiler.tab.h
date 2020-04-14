@@ -101,17 +101,14 @@ union YYSTYPE
     struct STMTSGROUP  *_stmtgroup;
     struct STMT          *_stmt;
 
-    struct ID_EXPR          *_id_expr;
     struct ADD_OP        *_add_op;
     struct MUL_OP        *_mul_op;
-    struct EQL_OP        *_eql_op;
 
-    struct COM_OP        *_com_op;
     struct EXPR          *_expr;
 
 
 
-#line 115 "compiler.tab.h" /* yacc.c:1909  */
+#line 112 "compiler.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
