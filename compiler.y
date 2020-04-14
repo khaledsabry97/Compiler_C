@@ -217,16 +217,17 @@ Parameter_List: Type Identifier {
             $$ = parameter;
         };
 
-Arg_List: Expr { struct ARG *arg = (struct ARG*) malloc (sizeof (struct ARG));
+Arg_List: Expr { 
+    struct ARG *arg = (struct ARG*) malloc (sizeof (struct ARG));
     arg->expr = $1;
     arg->prev = NULL;
     $$ = arg;
     }
-       | Arg_List ',' Expr {
-            struct ARG *arg = (struct ARG*) malloc (sizeof (struct ARG));
-            arg->expr = $3;
-            arg->prev = $1;
-            $$ = arg;
+    | Arg_List ',' Expr {
+    struct ARG *arg = (struct ARG*) malloc (sizeof (struct ARG));
+    arg->expr = $3;
+    arg->prev = $1;
+    $$ = arg;
         }
        ;
 
@@ -295,25 +296,25 @@ Stmt: ID '=' Expr ';' {
         $$ = stmt;
        } 
     | IF '(' Expr ')' Stmt %prec NO_ELSE {
-       struct IF_STMT *if_ptr = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
-       if_ptr->condition=$3;
-       if_ptr->if_stmt=$5;
-       if_ptr->else_stmt=NULL;
+       struct IF_STMT *if_stmt = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
+       if_stmt->condition=$3;
+       if_stmt->if_stmt=$5;
+       if_stmt->else_stmt=NULL;
        
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = If_Type;
-        stmt->stmt.if_stmt = if_ptr;
+        stmt->stmt.if_stmt = if_stmt;
         $$ = stmt;
     }
       | IF '(' Expr ')' Stmt ELSE Stmt{
-       struct IF_STMT *if_ptr = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
-       if_ptr->condition=$3;
-       if_ptr->if_stmt=$5;
-       if_ptr->else_stmt=$7;
+       struct IF_STMT *if_stmt = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
+       if_stmt->condition=$3;
+       if_stmt->if_stmt=$5;
+       if_stmt->else_stmt=$7;
        
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = If_Type;
-        stmt->stmt.if_stmt = if_ptr;
+        stmt->stmt.if_stmt = if_stmt;
         $$ = stmt;
       }
     | FOR '(' ID '=' Expr ';' Expr ';' ID '=' Expr ')' Stmt {
@@ -329,80 +330,80 @@ Stmt: ID '=' Expr ';' {
             assign2->expr = $11;
             
           
-           struct FOR_STMT *for_s = (struct FOR_STMT*) malloc (sizeof(struct FOR_STMT));
-           for_s->init = assign1;
-           for_s->condition = $7;
-           for_s->inc = assign2;
-           for_s->stmt = $13;
+           struct FOR_STMT *for_stmt = (struct FOR_STMT*) malloc (sizeof(struct FOR_STMT));
+           for_stmt->init = assign1;
+           for_stmt->condition = $7;
+           for_stmt->inc = assign2;
+           for_stmt->stmt = $13;
            
            struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = For_Type;
-        stmt->stmt.for_stmt = for_s;
+        stmt->stmt.for_stmt = for_stmt;
         $$ = stmt;
         } 
     | WHILE '(' Expr ')'  Stmt  {
-        struct WHILE_STMT* while_s = (struct WHILE_STMT*) malloc (sizeof(struct WHILE_STMT));
-        while_s->do_while = false;
-        while_s->condition = $3;
-        while_s->stmt = $5;
+        struct WHILE_STMT* while_stmt = (struct WHILE_STMT*) malloc (sizeof(struct WHILE_STMT));
+        while_stmt->do_while = false;
+        while_stmt->condition = $3;
+        while_stmt->stmt = $5;
 
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = While_Type;
-        stmt->stmt.while_stmt = while_s;
+        stmt->stmt.while_stmt = while_stmt;
         $$ = stmt;
         }
          | DO  Stmt  WHILE '(' Expr ')' ';' {
-        struct WHILE_STMT* while_s = (struct WHILE_STMT*) malloc (sizeof(struct WHILE_STMT));
-        while_s->do_while = true;
-        while_s->condition = $5;
-        while_s->stmt = $2;
+        struct WHILE_STMT* while_stmt = (struct WHILE_STMT*) malloc (sizeof(struct WHILE_STMT));
+        while_stmt->do_while = true;
+        while_stmt->condition = $5;
+        while_stmt->stmt = $2;
            
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = While_Type;
-        stmt->stmt.while_stmt = while_s;
+        stmt->stmt.while_stmt = while_stmt;
         $$ = stmt;
         }
         
     | '{' Declaration_List Stmt_List '}' {
-        struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-        comp->declaration = $2;
-        comp->stmt = $3;
+        struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
+        stmts_group->declaration = $2;
+        stmts_group->stmt = $3;
         
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Comp_Type;
-        stmt->stmt.stmts_group = comp;
+        stmt->stmt.stmts_group = stmts_group;
         $$ = stmt;
             }
             | 
              '{' Stmt_List '}'  {
-        struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-        comp->declaration = NULL;
-        comp->stmt = $2;
+        struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
+        stmts_group->declaration = NULL;
+        stmts_group->stmt = $2;
         
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Comp_Type;
-        stmt->stmt.stmts_group = comp;
+        stmt->stmt.stmts_group = stmts_group;
         $$ = stmt;
             }
             |'{' Declaration_List '}' {
-        struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-        comp->declaration = $2;
-        comp->stmt = NULL;
+        struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
+        stmts_group->declaration = $2;
+        stmts_group->stmt = NULL;
         
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Comp_Type;
-        stmt->stmt.stmts_group = comp;
+        stmt->stmt.stmts_group = stmts_group;
         $$ = stmt;
             }
             |
              '{' '}' {
-        struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-        comp->declaration = NULL;
-        comp->stmt = NULL;
+        struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
+        stmts_group->declaration = NULL;
+        stmts_group->stmt = NULL;
         
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Comp_Type;
-        stmt->stmt.stmts_group = comp;
+        stmt->stmt.stmts_group = stmts_group;
         $$ = stmt;
            
                 
@@ -418,30 +419,30 @@ Stmt: ID '=' Expr ';' {
 
 
 Stmt_Group: '{' Declaration_List Stmt_List '}' {
-                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-                comp->declaration = $2;
-                comp->stmt = $3;
-                $$ = comp;
+                struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
+                stmts_group->declaration = $2;
+                stmts_group->stmt = $3;
+                $$ = stmts_group;
             }
             | 
              '{' Stmt_List '}'  {
-                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-                comp->declaration = NULL;
-                comp->stmt = $2;
-                $$ = comp;
+                struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
+                stmts_group->declaration = NULL;
+                stmts_group->stmt = $2;
+                $$ = stmts_group;
             }
             |'{' Declaration_List '}' {
-                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-                comp->declaration = $2;
-                comp->stmt = NULL;
-                $$ = comp;
+                struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
+                stmts_group->declaration = $2;
+                stmts_group->stmt = NULL;
+                $$ = stmts_group;
             }
             |
              '{' '}' {
-                struct STMTSGROUP *comp = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-                comp->declaration = NULL;
-                comp->stmt = NULL;
-                $$ = comp;
+                struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
+                stmts_group->declaration = NULL;
+                stmts_group->stmt = NULL;
+                $$ = stmts_group;
            
                 
             }
@@ -463,123 +464,123 @@ Stmt_List: Stmt {
 /********************************Expressions***************************************/
 
 Expr: MINUS Expr %prec UNARY {
-        struct UNI_OP *unop = (struct UNI_OP*) malloc (sizeof (struct UNI_OP));
-        unop->uni_type = Neg_Type;
-        unop->expr = $2;
+        struct UNI_OP *uni_op = (struct UNI_OP*) malloc (sizeof (struct UNI_OP));
+        uni_op->uni_type = Neg_Type;
+        uni_op->expr = $2;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Uni_Type;
-        expr->expression.uni_op = unop;
+        expr->expression.uni_op = uni_op;
         $$ = expr;
     }
     | Expr MINUS Expr {
-        struct ADD_OP *addiop = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
-        addiop->add_type = Minus_Type;
-        addiop->left_side=$1;
-        addiop->right_side=$3;
+        struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
+        add_op->add_type = Minus_Type;
+        add_op->left_side=$1;
+        add_op->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Add_Type;
-        expr->expression.add_op = addiop;
+        expr->expression.add_op = add_op;
         $$ = expr;
     }
     | Expr PLUS Expr {
-        struct ADD_OP *addiop = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
-        addiop->add_type = Plus_Type;
-        addiop->left_side=$1;
-        addiop->right_side=$3;
+        struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
+        add_op->add_type = Plus_Type;
+        add_op->left_side=$1;
+        add_op->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Add_Type;
-        expr->expression.add_op = addiop;
+        expr->expression.add_op = add_op;
         $$ = expr;
     }
     | Expr MUL Expr {
-        struct MUL_OP *multop = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
-        multop->mul_type = Mul_Type;
-        multop->left_side=$1;
-        multop->right_side=$3;
+        struct MUL_OP *mul_op = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
+        mul_op->mul_type = Mul_Type;
+        mul_op->left_side=$1;
+        mul_op->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Mult_Type;  
-        expr->expression.mul_op = multop;
+        expr->expression.mul_op = mul_op;
         $$ = expr;
     }
     | Expr DIV Expr {
-        struct MUL_OP *multop = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
-        multop->mul_type = Div_Type;
-        multop->left_side=$1;
-        multop->right_side=$3;
+        struct MUL_OP *mul_op = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
+        mul_op->mul_type = Div_Type;
+        mul_op->left_side=$1;
+        mul_op->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Mult_Type;  
-        expr->expression.mul_op = multop;
+        expr->expression.mul_op = mul_op;
         $$ = expr;
     }
     | Expr LE Expr {
-        struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
-        relaop->com_type = Le_Type;
-        relaop->left_side=$1;
-        relaop->right_side=$3;
+        struct COM_OP *com_op = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+        com_op->com_type = Le_Type;
+        com_op->left_side=$1;
+        com_op->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Com_Type;  
-        expr->expression.com_op = relaop;
+        expr->expression.com_op = com_op;
         $$ = expr;
     }
     | Expr GE Expr {
-        struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
-        relaop->com_type = Ge_Type;
-        relaop->left_side=$1;
-        relaop->right_side=$3;
+        struct COM_OP *com_op = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+        com_op->com_type = Ge_Type;
+        com_op->left_side=$1;
+        com_op->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Com_Type;  
-        expr->expression.com_op = relaop;
+        expr->expression.com_op = com_op;
         $$ = expr;
     }
     | Expr GT Expr {
-        struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
-        relaop->com_type = Gt_Type;
-        relaop->left_side=$1;
-        relaop->right_side=$3;
+        struct COM_OP *com_op = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+        com_op->com_type = Gt_Type;
+        com_op->left_side=$1;
+        com_op->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Com_Type;  
-        expr->expression.com_op = relaop;
+        expr->expression.com_op = com_op;
         $$ = expr;
     }
     | Expr LT Expr {
-        struct COM_OP *relaop = (struct COM_OP*) malloc (sizeof (struct COM_OP));
-        relaop->com_type = Lt_Type;
-        relaop->left_side=$1;
-        relaop->right_side=$3;
+        struct COM_OP *com_op = (struct COM_OP*) malloc (sizeof (struct COM_OP));
+        com_op->com_type = Lt_Type;
+        com_op->left_side=$1;
+        com_op->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Com_Type;  
-        expr->expression.com_op = relaop;
+        expr->expression.com_op = com_op;
         $$ = expr;
     }
     | Expr EQ Expr {
-        struct EQL_OP *eqltop = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
-        eqltop->eql_type = Eq_Type;
-        eqltop->left_side=$1;
-        eqltop->right_side=$3;
+        struct EQL_OP *eql_op = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
+        eql_op->eql_type = Eq_Type;
+        eql_op->left_side=$1;
+        eql_op->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Eql_Type;  
-        expr->expression.eql_op = eqltop;
+        expr->expression.eql_op = eql_op;
         $$ = expr;
     }
     | Expr NE Expr {
-        struct EQL_OP *eqltop = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
-        eqltop->eql_type = Ne_Type;
-        eqltop->left_side=$1;
-        eqltop->right_side=$3;
+        struct EQL_OP *eql_op = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
+        eql_op->eql_type = Ne_Type;
+        eql_op->left_side=$1;
+        eql_op->right_side=$3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Eql_Type;  
-        expr->expression.eql_op = eqltop;
+        expr->expression.eql_op = eql_op;
         $$ = expr;
     }
     | INTNUM {
@@ -595,23 +596,23 @@ Expr: MINUS Expr %prec UNARY {
         $$ = expr;
     }
     | ID {
-        struct ID_EXPR *id_s = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
-        id_s->ID = $1;
-        id_s->expr = NULL;
+        struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
+        id_expr->ID = $1;
+        id_expr->expr = NULL;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Id_Type;  
-        expr->expression.id_expr = id_s;
+        expr->expression.id_expr = id_expr;
         $$ = expr;
     } 
     | ID '[' Expr ']' {
-        struct ID_EXPR *id_s = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
-        id_s->ID = $1;
-        id_s->expr = $3;
+        struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
+        id_expr->ID = $1;
+        id_expr->expr = $3;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Id_Type;  
-        expr->expression.id_expr = id_s;
+        expr->expression.id_expr = id_expr;
         $$ = expr;
     } 
     | '(' Expr ')' {

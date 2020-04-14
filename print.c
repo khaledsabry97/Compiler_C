@@ -372,17 +372,17 @@ void visitExpr          (struct EXPR* expr) {
     }
 
 }
-void visitWhile_s       (struct WHILE_STMT* while_s) {
-    if(while_s->do_while == true) {
+void visitWhile_s       (struct WHILE_STMT* while_stmt) {
+    if(while_stmt->do_while == true) {
         //making node for symbol table
         scopeTail = newScope(sDOWHILE, scopeTail);
         _isTitlePrinted = false;
         scopeTail->parent->dowhile_n++;
 
         fprintf(tree_file, "do");
-        visitStmt(while_s->stmt);
+        visitStmt(while_stmt->stmt);
         fprintf(tree_file, "while (");
-        visitExpr(while_s->condition);
+        visitExpr(while_stmt->condition);
         fprintf(tree_file, ");\n");
     } else {
         //making node for symbol table
@@ -391,55 +391,55 @@ void visitWhile_s       (struct WHILE_STMT* while_s) {
         scopeTail->parent->while_n++;
 
         fprintf(tree_file, "while (");
-        visitExpr(while_s->condition);
+        visitExpr(while_stmt->condition);
         fprintf(tree_file, ")\n");
-        visitStmt(while_s->stmt);
+        visitStmt(while_stmt->stmt);
     }
 
     //deleteCurScope 
     deleteScope(&scopeTail);
 }
-void visitFor_s         (struct FOR_STMT* for_s) {
+void visitFor_s         (struct FOR_STMT* for_stmt) {
     //making node for symbol table
     scopeTail = newScope(sFOR, scopeTail);
     _isTitlePrinted = false;
     scopeTail->parent->for_n++;
 
     fprintf(tree_file, "for (");
-    visitAssignStmt(for_s->init);
+    visitAssignStmt(for_stmt->init);
     fprintf(tree_file, "; ");  
-    visitExpr(for_s->condition);
+    visitExpr(for_stmt->condition);
     fprintf(tree_file, "; ");  
-    visitAssignStmt(for_s->inc);
+    visitAssignStmt(for_stmt->inc);
     fprintf(tree_file, ")\n");
-    visitStmt(for_s->stmt);
+    visitStmt(for_stmt->stmt);
 
     //deleteCurScope 
     deleteScope(&scopeTail);
 }
-void visitIf_s          (struct IF_STMT* if_ptr) {
+void visitIf_s          (struct IF_STMT* if_stmt) {
     //making node for symbol table
     scopeTail = newScope(sIF, scopeTail);
     _isTitlePrinted = false;
     scopeTail->parent->if_n++;
 
     fprintf(tree_file, "if (");
-    visitExpr(if_ptr->condition);
+    visitExpr(if_stmt->condition);
     fprintf(tree_file, ")\n");
-    visitStmt(if_ptr->if_stmt);
-    if (if_ptr->else_stmt != NULL) {
+    visitStmt(if_stmt->if_stmt);
+    if (if_stmt->else_stmt != NULL) {
         fprintf(tree_file,"\nelse\n");
-        visitStmt(if_ptr->else_stmt);
+        visitStmt(if_stmt->else_stmt);
     }
 
     //deleteCurScope 
     deleteScope(&scopeTail);
 }
-void visitId_s          (struct ID_EXPR* id_s) {
-   fprintf(tree_file,"%s",id_s->ID);
-   if(id_s->expr != NULL) {
+void visitId_s          (struct ID_EXPR* id_expr) {
+   fprintf(tree_file,"%s",id_expr->ID);
+   if(id_expr->expr != NULL) {
     fprintf(tree_file, "[");
-    visitExpr(id_s->expr);
+    visitExpr(id_expr->expr);
     fprintf(tree_file, "]");
    }
 }
