@@ -1,7 +1,7 @@
 all:
 	flex compiler.l
 	bison -d compiler.y
-	gcc -o compiler compiler.tab.c print.c symboltable.c lex.yy.c -g -lfl 
+	g++ -o compiler compiler.tab.c print.c symboltable.c lex.yy.c -g -lfl 
 	./compiler < sa1.txt
 	./compiler < sa2.txt
 	./compiler < sa3.txt

@@ -154,14 +154,12 @@ Identifier: ID {
             struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             identifier->ID = $1;
             identifier->int_val = 0;   // zero, If scalar
-            identifier->prev = NULL;
             $$ = identifier;
           }
           | ID '[' INTNUM ']' {
             struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             identifier->ID = $1;
             identifier->int_val = $3;   // zero, If scalar
-            identifier->prev = NULL;
             $$ = identifier;
            }
           ;
@@ -669,7 +667,7 @@ void doProcess() {
     scopeHead = newScope(sGLOBAL, NULL);
     scopeTail = scopeHead;
     if(head->declaration != NULL)
-        visitDeclaration(head->declaration);
+        printDeclaration(head->declaration);
     if(head->function != NULL)
         visitFunction(head->function);
 }

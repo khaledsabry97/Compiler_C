@@ -48,8 +48,6 @@ identifier like : int number
 */
 struct IDENTIFIER
 {
-	struct IDENTIFIER *prev;
-
 	char *ID;
 	int int_val;
 };
