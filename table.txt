@@ -1,20 +1,20 @@
 
 Function name : func1
-     count      type      name     array      role
+     countscope_type      name     array      role
          1       int         n           parameter
 
 Function name : func2
-     count      type      name     array      role
+     countscope_type      name     array      role
          1       int         n           parameter
 
 Function name : main
-     count      type      name     array      role
+     countscope_type      name     array      role
          1       int    result            variable
 
 Function name : main - COMPOUND(1) 
-     count      type      name     array      role
+     countscope_type      name     array      role
          1       int     comp1            variable
 
 Function name : main - COMPOUND(1)  - COMPOUND(1) 
-     count      type      name     array      role
+     countscope_type      name     array      role
          1       int     comp2            variable

@@ -20,9 +20,9 @@ bool _isCompound = false;
 
 
 //make node
-struct scope* newScope(SCOPETYPE type, struct scope* parent) {
+struct scope* newScope(SCOPE_TYPE scope_type, struct scope* parent) {
     struct scope* node = (struct scope*) malloc (sizeof(struct scope));
-    node->type = type;
+    node->scope_type = scope_type;
     node->dowhile_n = 0;
     node->while_n = 0;
     node->for_n  = 0;
@@ -54,21 +54,21 @@ void deleteScope(struct scope** scopeTail) {
 }
 
 //returns the order of current scope
-int getMyOrder(SCOPETYPE type, struct scope* parent) {
-    switch(type) {
-        case sDOWHILE:
+int getMyOrder(SCOPE_TYPE scope_type, struct scope* parent) {
+    switch(scope_type) {
+        case Scope_Do_While_Type:
             return (parent->dowhile_n);
 
-        case sWHILE:
+        case Scope_While_Type:
             return (parent->while_n);
 
-        case sFOR:
+        case Scope_For_Type:
             return (parent->for_n);
 
-        case sIF:
+        case Scope_If_Type:
             return (parent->if_n);
 
-        case sCOMPOUND:
+        case Scope_Stmt_Group_Type:
             return (parent->compound_n);
     }
 }
@@ -80,26 +80,10 @@ int getMyOrder(SCOPETYPE type, struct scope* parent) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void printScopePath()
 {
     //when printing global variable
-    if (scopeTail->type == sGLOBAL)
+    if (scopeTail->scope_type == Scope_Global_Type)
     {
         fprintf(table_file, "Global variables\n");
         return; //print nothing at "location"
@@ -112,29 +96,29 @@ void printScopePath()
         while (curNode->child != NULL)
         {
             fprintf(table_file, " - ");
-            switch (curNode->child->type)
+            switch (curNode->child->scope_type)
             {
-            case sDOWHILE:
+            case Scope_Do_While_Type:
                 fprintf(table_file, "DOWHILE");
                 break;
 
-            case sWHILE:
+            case Scope_While_Type:
                 fprintf(table_file, "WHILE");
                 break;
 
-            case sFOR:
+            case Scope_For_Type:
                 fprintf(table_file, "FOR");
                 break;
 
-            case sIF:
+            case Scope_If_Type:
                 fprintf(table_file, "IF");
                 break;
 
-            case sCOMPOUND:
+            case Scope_Stmt_Group_Type:
                 fprintf(table_file, "COMPOUND");
                 break;
             }
-            fprintf(table_file, "(%d) ", getMyOrder(curNode->child->type, curNode));
+            fprintf(table_file, "(%d) ", getMyOrder(curNode->child->scope_type, curNode));
             curNode = curNode->child;
         }
         fprintf(table_file, "\n");
@@ -148,7 +132,7 @@ void printTitle()
     row_no = 1;
 
     printScopePath();
-    fprintf(table_file, "%10s%10s%10s%10s%10s\n", "count", "type", "name", "array", "role");
+    fprintf(table_file, "%10s%10s%10s%10s%10s\n", "count", "scope_type", "name", "array", "role");
 }
 
 void printDeclaration(struct DECLARATION *declaration)
@@ -191,7 +175,7 @@ void visitFunction(struct FUNCTION *function)
     //for symboltable
     _curFuncName = function->ID;
     //list node
-    scopeTail = newScope(sFUNC, scopeTail); //append it to the end of list
+    scopeTail = newScope(Scope_Func_Type, scopeTail); //append it to the end of list
 
     switch (function->id_type)
     {
@@ -349,7 +333,7 @@ void visitCompoundStmt(struct STMTSGROUP *stmts_group)
     if (_isCompound == true)
     {
         //making node for symbol table
-        scopeTail = newScope(sCOMPOUND, scopeTail);
+        scopeTail = newScope(Scope_Stmt_Group_Type, scopeTail);
         _isTitlePrinted = false;
         scopeTail->parent->compound_n++;
     }
@@ -492,7 +476,7 @@ void visitWhile_s(struct WHILE_STMT *while_stmt)
     if (while_stmt->do_while == true)
     {
         //making node for symbol table
-        scopeTail = newScope(sDOWHILE, scopeTail);
+        scopeTail = newScope(Scope_Do_While_Type, scopeTail);
         _isTitlePrinted = false;
         scopeTail->parent->dowhile_n++;
 
@@ -505,7 +489,7 @@ void visitWhile_s(struct WHILE_STMT *while_stmt)
     else
     {
         //making node for symbol table
-        scopeTail = newScope(sWHILE, scopeTail);
+        scopeTail = newScope(Scope_While_Type, scopeTail);
         _isTitlePrinted = false;
         scopeTail->parent->while_n++;
 
@@ -521,7 +505,7 @@ void visitWhile_s(struct WHILE_STMT *while_stmt)
 void visitFor_s(struct FOR_STMT *for_stmt)
 {
     //making node for symbol table
-    scopeTail = newScope(sFOR, scopeTail);
+    scopeTail = newScope(Scope_For_Type, scopeTail);
     _isTitlePrinted = false;
     scopeTail->parent->for_n++;
 
@@ -540,7 +524,7 @@ void visitFor_s(struct FOR_STMT *for_stmt)
 void visitIf_s(struct IF_STMT *if_stmt)
 {
     //making node for symbol table
-    scopeTail = newScope(sIF, scopeTail);
+    scopeTail = newScope(Scope_If_Type, scopeTail);
     _isTitlePrinted = false;
     scopeTail->parent->if_n++;
 

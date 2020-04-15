@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include "symboltable.h"
 //make node
-struct scope* newScope(SCOPETYPE type, struct scope* parent) {
+struct scope* newScope(SCOPE_TYPE scope_type, struct scope* parent) {
     struct scope* node = (struct scope*) malloc (sizeof(struct scope));
-    node->type = type;
+    node->scope_type = scope_type;
     node->dowhile_n = 0;
     node->while_n = 0;
     node->for_n  = 0;
@@ -35,21 +35,21 @@ void deleteScope(struct scope** scopeTail) {
 }
 
 //returns the order of current scope
-int getMyOrder(SCOPETYPE type, struct scope* parent) {
-    switch(type) {
-        case sDOWHILE:
+int getMyOrder(SCOPE_TYPE scope_type, struct scope* parent) {
+    switch(scope_type) {
+        case Scope_Do_While_Type:
             return (parent->dowhile_n);
 
-        case sWHILE:
+        case Scope_While_Type:
             return (parent->while_n);
 
-        case sFOR:
+        case Scope_For_Type:
             return (parent->for_n);
 
-        case sIF:
+        case Scope_If_Type:
             return (parent->if_n);
 
-        case sCOMPOUND:
+        case Scope_Stmt_Group_Type:
             return (parent->compound_n);
     }
 }

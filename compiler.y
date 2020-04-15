@@ -657,7 +657,7 @@ int main(int argc, char* argv[]) {
 void print(struct PROGRAM* head) {
     if(head == NULL)
         exit(1);
-    scopeHead = newScope(sGLOBAL, NULL);
+    scopeHead = newScope(Scope_Global_Type, NULL);
     scopeTail = scopeHead;
     if(head->declaration != NULL)
         printDeclaration(head->declaration);
