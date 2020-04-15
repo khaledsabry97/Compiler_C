@@ -17,4 +17,5 @@ void visitCompoundStmt  (struct STMTSGROUP* stmts_group);
 void visitStmt          (struct STMT* stmt);
 
 void visitId_s          (struct ID_EXPR* id_expr);
-void visitId_s          (struct ID_EXPR* id_expr);
+void visitExpr          (struct EXPR *expr);
+
