@@ -4,19 +4,19 @@
 #include <string.h>
 #include "AST.h"
 #include "print.h"
-#include "symboltable.h"
 
-FILE *tree_file;   //for AST
-FILE *table_file;  //for symboltable 
-
-//global variables which can be used in other .c .h
-struct PROGRAM *head;
+FILE *tree_file; 
+FILE *table_file; 
+void print(struct PROGRAM* head);
+void openFiles();
+void closeFiles();
 void yyerror(char* text) {
 
     fprintf(stderr, "%s\n", text);
 }
 
-/* void lyyerror(YYLTYPE t, char *s, ...)
+/*
+void yyerror(YYLTYPE t, char *s, ...)
 {
     va_list ap;
     va_start(ap, s);
@@ -25,8 +25,8 @@ void yyerror(char* text) {
         fprintf(stderr, "%d.%d-%d.%d: error: ", t.first_line, t.first_column, t.last_line, t.last_column);
     vfprintf(stderr, s, ap);
     fprintf(stderr, "\n");
-} */
-
+} 
+*/
 %}
 
 %union{
@@ -114,21 +114,21 @@ Program: Declaration_List Function_List {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = $1;
             program->function = $2;
-            head = program;
+            print(program);
             $$ = program;
        }
        | Declaration_List {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = $1;
             program->function = NULL;
-            head = program;
+            print(program);
             $$ = program;
        }
        | Function_List {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = NULL;
             program->function = $1;
-            head = program;
+            print(program);
             $$ = program;
        }
        ;
@@ -644,30 +644,36 @@ Expr: MINUS Expr %prec UNARY {
 
 
 %%
-void doProcess();
+
+
+
+
 int main(int argc, char* argv[]) {
-    head = NULL;
-    scopeHead = NULL;
-    scopeTail = NULL;
-    //print AST
-    tree_file = fopen("tree.txt","w");
-    table_file = fopen("table.txt","w");
-    if(!yyparse())
-        doProcess();
-    fprintf(tree_file, "\n");
-    close(tree_file);
-    close(table_file);
+    openFiles();
+    yyparse();
+    closeFiles();
     return 0;
 }
-void doProcess() {
-    //TODO
+void print(struct PROGRAM* head) {
     if(head == NULL)
         exit(1);
-    //make global node
     scopeHead = newScope(sGLOBAL, NULL);
     scopeTail = scopeHead;
     if(head->declaration != NULL)
         printDeclaration(head->declaration);
     if(head->function != NULL)
         visitFunction(head->function);
+}
+
+
+void openFiles()
+{
+    tree_file = fopen("tree.txt","w");
+    table_file = fopen("table.txt","w");
+}
+void closeFiles()
+{
+    fprintf(tree_file, "\n");
+    pclose(tree_file);
+    pclose(table_file);
 }
