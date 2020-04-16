@@ -660,9 +660,9 @@ void print(struct PROGRAM* head) {
     scopeHead = newScope(Scope_Global_Type, NULL);
     scopeTail = scopeHead;
     if(head->declaration != NULL)
-        printDeclaration(head->declaration);
+        processDeclaration(head->declaration);
     if(head->function != NULL)
-        printFunction(head->function);
+        processFunction(head->function);
 }
 
 

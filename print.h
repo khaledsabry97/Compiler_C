@@ -27,20 +27,15 @@ void deleteScope(struct SCOPE** scopeTail);
 //returns the order of current SCOPE
 int getMyOrder(SCOPE_TYPE scope_type, struct SCOPE* parent_scope);
 
-void printDeclaration   (struct DECLARATION* declaration);
-void printIdentifier    (struct IDENTIFIER* identifier);
-void printFunction      (struct FUNCTION* function);
-void printParameter     (struct PARAMETER* parameter);
-void visitArg           (struct ARG* arg);
+void processDeclaration   (struct DECLARATION* declaration);
+void processIdentifier    (struct IDENTIFIER* identifier);
+void processFunction      (struct FUNCTION* function);
+void processParameter     (struct PARAMETER* parameter);
+void processArg           (struct ARG* arg);
 
-void visitCallStmt      (struct FUNC_CALL* call);
-void visitIf_s          (struct IF_STMT* if_stmt);
-void visitFor_s         (struct FOR_STMT* for_stmt);
-void visitWhile_s       (struct WHILE_STMT* while_stmt);
-void visitAssignStmt    (struct ASSIGN_STMT* assign);
-void printStmtGroup  (struct STMTSGROUP* stmts_group);
-void visitStmt          (struct STMT* stmt);
+void processAssignStmt    (struct ASSIGN_STMT* assign);
+void processStmtGroup  (struct STMTSGROUP* stmts_group);
+void processStmt          (struct STMT* stmt);
 
-void visitId_s          (struct ID_EXPR* id_expr);
-void visitExpr          (struct EXPR *expr);
+void processExpr          (struct EXPR *expr);
 
