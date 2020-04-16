@@ -9,7 +9,7 @@
 
 typedef enum {Int_Type,Float_Type} ID_TYPE;
 
-typedef enum {Equ_Type,If_Type,For_Type,While_Type,Call_Type,Return_Type,Comp_Type,Semi_Type} STMT_TYPE;
+typedef enum {Equ_Type,If_Type,For_Type,While_Type,Call_Type,Return_Type,Stmt_Group_Type,Semi_Colon_Type} STMT_TYPE;
 
 typedef enum {Neg_Type} UNI_OP_TYPE;
 typedef enum {Plus_Type,Minus_Type} ADD_TYPE;

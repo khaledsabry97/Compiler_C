@@ -11,6 +11,7 @@ int func2(int n)
 int main ()
 {
     int result;
+    result = 5 * 2 + 5 * 3;
 
     result = (3 + 2) / 4 * 10 + 2 + 100;
 

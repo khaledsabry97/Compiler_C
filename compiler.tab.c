@@ -1803,7 +1803,7 @@ yyreduce:
         stmts_group->stmt = (yyvsp[-1]._stmt);
         
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Comp_Type;
+        stmt->stmt_type = Stmt_Group_Type;
         stmt->stmt.stmts_group = stmts_group;
         (yyval._stmt) = stmt;
             }
@@ -1818,7 +1818,7 @@ yyreduce:
         stmts_group->stmt = (yyvsp[-1]._stmt);
         
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Comp_Type;
+        stmt->stmt_type = Stmt_Group_Type;
         stmt->stmt.stmts_group = stmts_group;
         (yyval._stmt) = stmt;
             }
@@ -1833,7 +1833,7 @@ yyreduce:
         stmts_group->stmt = NULL;
         
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Comp_Type;
+        stmt->stmt_type = Stmt_Group_Type;
         stmt->stmt.stmts_group = stmts_group;
         (yyval._stmt) = stmt;
             }
@@ -1848,7 +1848,7 @@ yyreduce:
         stmts_group->stmt = NULL;
         
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Comp_Type;
+        stmt->stmt_type = Stmt_Group_Type;
         stmt->stmt.stmts_group = stmts_group;
         (yyval._stmt) = stmt;
            
@@ -1861,7 +1861,7 @@ yyreduce:
 #line 409 "compiler.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Semi_Type;
+        stmt->stmt_type = Semi_Colon_Type;
         (yyval._stmt) = stmt;
     }
 #line 1868 "compiler.tab.c" /* yacc.c:1646  */
@@ -2452,7 +2452,7 @@ void print(struct PROGRAM* head) {
     if(head->declaration != NULL)
         printDeclaration(head->declaration);
     if(head->function != NULL)
-        visitFunction(head->function);
+        printFunction(head->function);
 }
 
 

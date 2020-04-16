@@ -368,7 +368,7 @@ Stmt: ID '=' Expr ';' {
         stmts_group->stmt = $3;
         
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Comp_Type;
+        stmt->stmt_type = Stmt_Group_Type;
         stmt->stmt.stmts_group = stmts_group;
         $$ = stmt;
             }
@@ -379,7 +379,7 @@ Stmt: ID '=' Expr ';' {
         stmts_group->stmt = $2;
         
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Comp_Type;
+        stmt->stmt_type = Stmt_Group_Type;
         stmt->stmt.stmts_group = stmts_group;
         $$ = stmt;
             }
@@ -389,7 +389,7 @@ Stmt: ID '=' Expr ';' {
         stmts_group->stmt = NULL;
         
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Comp_Type;
+        stmt->stmt_type = Stmt_Group_Type;
         stmt->stmt.stmts_group = stmts_group;
         $$ = stmt;
             }
@@ -400,7 +400,7 @@ Stmt: ID '=' Expr ';' {
         stmts_group->stmt = NULL;
         
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Comp_Type;
+        stmt->stmt_type = Stmt_Group_Type;
         stmt->stmt.stmts_group = stmts_group;
         $$ = stmt;
            
@@ -408,7 +408,7 @@ Stmt: ID '=' Expr ';' {
             }  
     | ';' {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Semi_Type;
+        stmt->stmt_type = Semi_Colon_Type;
         $$ = stmt;
     }
     ;
@@ -662,7 +662,7 @@ void print(struct PROGRAM* head) {
     if(head->declaration != NULL)
         printDeclaration(head->declaration);
     if(head->function != NULL)
-        visitFunction(head->function);
+        printFunction(head->function);
 }
 
 

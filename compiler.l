@@ -54,6 +54,6 @@ return return RETURN;
     return ID;
 }
 
-[ \t\com_type\n] { break;}
+[ \t\c\n] { break;}
 
 %%

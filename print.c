@@ -2,26 +2,26 @@
 #include <stdlib.h>
 #include "print.h"
 
-//TODO: delete later
-//extern struct PROGRAM *head;
+
 extern FILE *tree_file;
 extern FILE *table_file;
+
 
 //global variable for making symboltable
 int row_no;
 ID_TYPE current_type;
 bool is_parameter = false;
 bool printed = false;
-bool _isTitlePrinted = false;
+bool print_title = false;
 bool _isOtherComp = false;
-bool _isCompound = false;
+bool is_it_group_stmt = false;
 
 
 
 
 //make node
-struct scope* newScope(SCOPE_TYPE scope_type, struct scope* parent) {
-    struct scope* node = (struct scope*) malloc (sizeof(struct scope));
+struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
+    struct SCOPE* node = (struct SCOPE*) malloc (sizeof(struct SCOPE));
     node->scope_type = scope_type;
     node->dowhile_n = 0;
     node->while_n = 0;
@@ -29,47 +29,47 @@ struct scope* newScope(SCOPE_TYPE scope_type, struct scope* parent) {
     node->if_n = 0;
     node->compound_n = 0;
 
-    if(parent != NULL) {
-        node->parent = parent;
-        parent->child = node;
+    if(parent_scope != NULL) {
+        node->parent_scope = parent_scope;
+        parent_scope->child_scope = node;
     } else {
-        node->parent = NULL;
+        node->parent_scope = NULL;
     }
 
-    node->child = NULL;
+    node->child_scope = NULL;
     return node;
 }
 
 //scopeTail denotes curScope node
-void deleteScope(struct scope** scopeTail) {
-    struct scope* curScope = *scopeTail;
-    struct scope* parent = curScope->parent;
-    if(parent != NULL) {
-        parent->child = NULL;
-        (*scopeTail) = parent;
+void deleteScope(struct SCOPE** scopeTail) {
+    struct SCOPE* curScope = *scopeTail;
+    struct SCOPE* parent_scope = curScope->parent_scope;
+    if(parent_scope != NULL) {
+        parent_scope->child_scope = NULL;
+        (*scopeTail) = parent_scope;
         free(curScope);
       } 
       
 //    free(curScope);
 }
 
-//returns the order of current scope
-int getMyOrder(SCOPE_TYPE scope_type, struct scope* parent) {
+//returns the order of current SCOPE
+int getMyOrder(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
     switch(scope_type) {
         case Scope_Do_While_Type:
-            return (parent->dowhile_n);
+            return (parent_scope->dowhile_n);
 
         case Scope_While_Type:
-            return (parent->while_n);
+            return (parent_scope->while_n);
 
         case Scope_For_Type:
-            return (parent->for_n);
+            return (parent_scope->for_n);
 
         case Scope_If_Type:
-            return (parent->if_n);
+            return (parent_scope->if_n);
 
         case Scope_Stmt_Group_Type:
-            return (parent->compound_n);
+            return (parent_scope->compound_n);
     }
 }
 
@@ -91,41 +91,41 @@ void printScopePath()
     else
     {
         fprintf(table_file, "\nFunction name : ");
-        fprintf(table_file, "%s", _curFuncName);
-        struct scope *curNode = scopeHead->child; //start from Function node
-        while (curNode->child != NULL)
+        fprintf(table_file, "%s", current_func_name);
+        struct SCOPE *curNode = scopeHead->child_scope; //start from Function node
+        while (curNode->child_scope != NULL)
         {
             fprintf(table_file, " - ");
-            switch (curNode->child->scope_type)
+            switch (curNode->child_scope->scope_type)
             {
             case Scope_Do_While_Type:
-                fprintf(table_file, "DOWHILE");
+                fprintf(table_file, "do_while");
                 break;
 
             case Scope_While_Type:
-                fprintf(table_file, "WHILE");
+                fprintf(table_file, "while");
                 break;
 
             case Scope_For_Type:
-                fprintf(table_file, "FOR");
+                fprintf(table_file, "for");
                 break;
 
             case Scope_If_Type:
-                fprintf(table_file, "IF");
+                fprintf(table_file, "if");
                 break;
 
             case Scope_Stmt_Group_Type:
-                fprintf(table_file, "COMPOUND");
+                fprintf(table_file, "group_stmt");
                 break;
             }
-            fprintf(table_file, "(%d) ", getMyOrder(curNode->child->scope_type, curNode));
-            curNode = curNode->child;
+            fprintf(table_file, "(%d) ", getMyOrder(curNode->child_scope->scope_type, curNode));
+            curNode = curNode->child_scope;
         }
         fprintf(table_file, "\n");
     }
 }
 
-//print symboltable, called before entering printDeclaration
+//print symboltable
 void printTitle()
 {
 
@@ -135,16 +135,15 @@ void printTitle()
     fprintf(table_file, "%10s%10s%10s%10s%10s\n", "count", "scope_type", "name", "array", "role");
 }
 
-void printDeclaration(struct DECLARATION *declaration)
-{
+void printDeclaration(struct DECLARATION *declaration){
     is_parameter = false;
     if (declaration->prev != NULL)
         printDeclaration(declaration->prev);
 
-    if (!_isTitlePrinted)
+    if (!print_title)
     {
         printTitle();
-        _isTitlePrinted = true;
+        print_title = true;
     }
 
     switch (declaration->id_type)
@@ -162,18 +161,58 @@ void printDeclaration(struct DECLARATION *declaration)
         exit(1);
     }
     printed = true;
-    visitIdentifier(declaration->id);
+    printIdentifier(declaration->id);
     printed = false;
-    fprintf(tree_file, ";\n");
-}
-void visitFunction(struct FUNCTION *function)
-{
+    fprintf(tree_file, ";\n");}
+
+void printIdentifier(struct IDENTIFIER *identifier){
+    fprintf(tree_file, "%s", identifier->ID);
+    if (identifier->int_val > 0) //int arr[n]; n must be >0 to be valid
+    {
+        fprintf(tree_file, "[%d]", identifier->int_val);
+
+        if (printed)
+        {
+            char *cur_type;
+            if (current_type == Int_Type)
+                cur_type = "int";
+            else if (current_type == Float_Type)
+                cur_type = "float";
+
+            if (is_parameter)
+                fprintf(table_file, "%10d%10s%10s%10d%10s\n", row_no++, cur_type, identifier->ID, identifier->int_val,"parameter");
+            else
+                fprintf(table_file, "%10d%10s%10s%10d%10s\n", row_no++, cur_type, identifier->ID, identifier->int_val,"variable");
+            
+        }
+    }
+    else if (identifier->int_val < 0) // int arr[-1]; there is no n = 0 is valid
+    {
+        fprintf(stderr, "error");
+    }
+    else //n = 0 this means int x;
+    {
+        if (!printed)
+             return;
+        
+        char *cur_type;
+        if (current_type == Int_Type)
+            cur_type = "int";
+        else if(current_type == Float_Type)
+            cur_type = "float";
+        fprintf(table_file, "%10d%10s%10s%10s%10s\n", row_no++, cur_type, identifier->ID, "", is_parameter ? "parameter" : "variable"); //row_no(x) ++row_no(x) row_no++(o)
+    
+    }}
+
+
+
+void printFunction(struct FUNCTION *function){
     if (function->prev != NULL)
     {
-        visitFunction(function->prev);
+        printFunction(function->prev);
     }
-    //for symboltable
-    _curFuncName = function->ID;
+    current_func_name = function->ID;     //for symboltable
+
     //list node
     scopeTail = newScope(Scope_Func_Type, scopeTail); //append it to the end of list
 
@@ -189,79 +228,41 @@ void visitFunction(struct FUNCTION *function)
         fprintf(stderr, "Declaration does not exist.\n");
         exit(1);
     }
-    fprintf(tree_file, "%s (", function->ID); //function name
-    _isTitlePrinted = false;
+    fprintf(tree_file, "%s (", function->ID); //add function name
+    print_title = false;
     if (function->parameter != NULL)
     {
         printTitle();
-        _isTitlePrinted = true;
-        visitParameter(function->parameter); //parameter
+        print_title = true;
+        printParameter(function->parameter); //parameter
     }
     fprintf(tree_file, ")\n");                //function name
-    visitCompoundStmt(function->stmts_group); //compoundStmt
+    printStmtGroup(function->stmts_group); //compoundStmt
     fprintf(tree_file, "\n");
 
     //deleteCurScope
     deleteScope(&scopeTail);
-    _isTitlePrinted = false;
-}
-void visitIdentifier(struct IDENTIFIER *identifier)
-{
+    print_title = false;}
 
-    fprintf(tree_file, "%s", identifier->ID);
-    if (identifier->int_val > 0)
-    {
-        fprintf(tree_file, "[%d]", identifier->int_val);
 
-        if (printed)
-        {
-            char *curType;
-            if (current_type == Int_Type)
-                curType = "int";
-            else if (current_type == Float_Type)
-                curType = "float";
 
-            if (is_parameter)
-                fprintf(table_file, "%10d%10s%10s%10d%10s\n", row_no++, curType, identifier->ID, identifier->int_val,"parameter");
-            else
-                fprintf(table_file, "%10d%10s%10s%10d%10s\n", row_no++, curType, identifier->ID, identifier->int_val,"variable");
-            
-        }
-    }
-    else if (identifier->int_val < 0)
-    {
-        fprintf(stderr, "error");
-    }
-    else
-    {
-        //scalar
-        if (printed == true)
-        {
-            char *curType;
-            if (current_type == Int_Type)
-                curType = "int";
-            else
-                curType = "float";
-            fprintf(table_file, "%10d%10s%10s%10s%10s\n", row_no++, curType, identifier->ID, "", is_parameter ? "parameter" : "variable"); //row_no(x) ++row_no(x) row_no++(o)
-        }
-    }
-}
-void visitStmt(struct STMT *stmt)
-{
-    //TODO
+void visitStmt(struct STMT *stmt){
     if (stmt->prev != NULL)
         visitStmt(stmt->prev);
     switch (stmt->stmt_type)
     {
-    case Equ_Type:
-        visitAssignStmt(stmt->stmt.assign_stmt);
+    
+    case Call_Type:
+        
+        fprintf(tree_file, "%s(", stmt->stmt.func_call->ID);
+        if (stmt->stmt.func_call->arg != NULL)
+        {
+            visitArg(stmt->stmt.func_call->arg);
+        }
+        fprintf(tree_file, ")");
         fprintf(tree_file, ";");
         break;
 
-    case Call_Type:
-        visitCallStmt(stmt->stmt.func_call);
-        fprintf(tree_file, ";");
-        break;
 
     case Return_Type:
         if (stmt->stmt.return_expr == NULL)
@@ -276,38 +277,109 @@ void visitStmt(struct STMT *stmt)
         }
         break;
 
-    case While_Type:
-        _isOtherComp = true;
-        visitWhile_s(stmt->stmt.while_stmt);
-        return;
-    case For_Type:
-        _isOtherComp = true;
-        visitFor_s(stmt->stmt.for_stmt);
-        return;
     case If_Type:
         _isOtherComp = true;
-        visitIf_s(stmt->stmt.if_stmt);
+        struct IF_STMT *if_stmt  = stmt->stmt.if_stmt;
+        //making node for symbol table
+        scopeTail = newScope(Scope_If_Type, scopeTail);
+        print_title = false;
+        scopeTail->parent_scope->if_n++;
+
+        fprintf(tree_file, "if (");
+        visitExpr(if_stmt->condition);
+        fprintf(tree_file, ")\n");
+        visitStmt(if_stmt->if_stmt);
+        if (if_stmt->else_stmt != NULL)
+        {
+            fprintf(tree_file, "\nelse\n");
+            visitStmt(if_stmt->else_stmt);
+        }
+
+        //deleteCurScope
+        deleteScope(&scopeTail);        
         return;
 
-    case Comp_Type:
+    case For_Type:
+        _isOtherComp = true;
+        struct FOR_STMT *for_stmt = stmt->stmt.for_stmt;
+         //making node for symbol table
+        scopeTail = newScope(Scope_For_Type, scopeTail);
+        print_title = false;
+        scopeTail->parent_scope->for_n++;
+
+        fprintf(tree_file, "for (");
+        visitAssignStmt(for_stmt->init);
+        fprintf(tree_file, "; ");
+        visitExpr(for_stmt->condition);
+        fprintf(tree_file, "; ");
+        visitAssignStmt(for_stmt->inc);
+        fprintf(tree_file, ")\n");
+        visitStmt(for_stmt->stmt);
+
+        //deleteCurScope
+        deleteScope(&scopeTail);
+
+        
+        return;
+
+     case While_Type:
+        _isOtherComp = true;
+        struct WHILE_STMT *while_stmt = stmt->stmt.while_stmt;
+        if (while_stmt->do_while == true)
+        {
+            //making node for symbol table
+            scopeTail = newScope(Scope_Do_While_Type, scopeTail);
+            print_title = false;
+            scopeTail->parent_scope->dowhile_n++;
+
+            fprintf(tree_file, "do");
+            visitStmt(while_stmt->stmt);
+            fprintf(tree_file, "while (");
+            visitExpr(while_stmt->condition);
+            fprintf(tree_file, ");\n");
+        }
+        else
+        {
+            //making node for symbol table
+            scopeTail = newScope(Scope_While_Type, scopeTail);
+            print_title = false;
+            scopeTail->parent_scope->while_n++;
+
+            fprintf(tree_file, "while (");
+            visitExpr(while_stmt->condition);
+            fprintf(tree_file, ")\n");
+            visitStmt(while_stmt->stmt);
+        }
+
+        //deleteCurScope
+        deleteScope(&scopeTail);
+        return;
+ 
+ 
+    case Equ_Type:
+        visitAssignStmt(stmt->stmt.assign_stmt);
+        fprintf(tree_file, ";");
+        break;
+
+    case Stmt_Group_Type:
         if (_isOtherComp == false)
-            _isCompound = true;
-        visitCompoundStmt(stmt->stmt.stmts_group);
+            is_it_group_stmt = true;
+        printStmtGroup(stmt->stmt.stmts_group);
         return;
         //break;
 
-    case Semi_Type:
+    case Semi_Colon_Type:
         fprintf(tree_file, ";");
         break;
     }
-    fprintf(tree_file, "\n");
-}
-void visitParameter(struct PARAMETER *parameter)
-{
+    fprintf(tree_file, "\n");}
+
+
+void printParameter(struct PARAMETER *parameter){
     is_parameter = true;
     if (parameter->prev != NULL)
     {
-        visitParameter(parameter->prev);
+        printParameter(parameter->prev);
         fprintf(tree_file, ", ");
     }
     switch (parameter->id_type)
@@ -325,17 +397,15 @@ void visitParameter(struct PARAMETER *parameter)
         exit(1);
     }
     printed = true;
-    visitIdentifier(parameter->id);
-    printed = false;
-}
-void visitCompoundStmt(struct STMTSGROUP *stmts_group)
-{
-    if (_isCompound == true)
+    printIdentifier(parameter->id);
+    printed = false;}
+void printStmtGroup(struct STMTSGROUP *stmts_group){
+    if (is_it_group_stmt == true)
     {
         //making node for symbol table
         scopeTail = newScope(Scope_Stmt_Group_Type, scopeTail);
-        _isTitlePrinted = false;
-        scopeTail->parent->compound_n++;
+        print_title = false;
+        scopeTail->parent_scope->compound_n++;
     }
     _isOtherComp = false;
 
@@ -348,11 +418,11 @@ void visitCompoundStmt(struct STMTSGROUP *stmts_group)
         visitStmt(stmts_group->stmt);
     fprintf(tree_file, "}\n");
 
-    if (_isCompound == true)
+    if (is_it_group_stmt == true)
     {
         deleteScope(&scopeTail);
     }
-    _isCompound = false;
+    is_it_group_stmt = false;
     _isOtherComp = false;
 }
 void visitAssignStmt(struct ASSIGN_STMT *assign)
@@ -477,8 +547,8 @@ void visitWhile_s(struct WHILE_STMT *while_stmt)
     {
         //making node for symbol table
         scopeTail = newScope(Scope_Do_While_Type, scopeTail);
-        _isTitlePrinted = false;
-        scopeTail->parent->dowhile_n++;
+        print_title = false;
+        scopeTail->parent_scope->dowhile_n++;
 
         fprintf(tree_file, "do");
         visitStmt(while_stmt->stmt);
@@ -490,8 +560,8 @@ void visitWhile_s(struct WHILE_STMT *while_stmt)
     {
         //making node for symbol table
         scopeTail = newScope(Scope_While_Type, scopeTail);
-        _isTitlePrinted = false;
-        scopeTail->parent->while_n++;
+        print_title = false;
+        scopeTail->parent_scope->while_n++;
 
         fprintf(tree_file, "while (");
         visitExpr(while_stmt->condition);
@@ -506,8 +576,8 @@ void visitFor_s(struct FOR_STMT *for_stmt)
 {
     //making node for symbol table
     scopeTail = newScope(Scope_For_Type, scopeTail);
-    _isTitlePrinted = false;
-    scopeTail->parent->for_n++;
+    print_title = false;
+    scopeTail->parent_scope->for_n++;
 
     fprintf(tree_file, "for (");
     visitAssignStmt(for_stmt->init);
@@ -525,8 +595,8 @@ void visitIf_s(struct IF_STMT *if_stmt)
 {
     //making node for symbol table
     scopeTail = newScope(Scope_If_Type, scopeTail);
-    _isTitlePrinted = false;
-    scopeTail->parent->if_n++;
+    print_title = false;
+    scopeTail->parent_scope->if_n++;
 
     fprintf(tree_file, "if (");
     visitExpr(if_stmt->condition);
