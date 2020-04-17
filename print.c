@@ -231,11 +231,11 @@ void processDeclaration(struct DECLARATION *declaration){
     switch (declaration->id_type)
     {
     case Int_Type:
-        fprintf(tree_file, "int ");
+        //fprintf(tree_file, "int ");
         current_type = Int_Type;
         break;
     case Float_Type:
-        fprintf(tree_file, "float ");
+        //fprintf(tree_file, "float ");
         current_type = Float_Type;
         break;
     default:
@@ -245,11 +245,12 @@ void processDeclaration(struct DECLARATION *declaration){
     printed = true;
     processIdentifier(declaration->id);
     printed = false;
-    fprintf(tree_file, ";\n");}
+    //fprintf(tree_file, ";\n");
+    }
 
 void processIdentifier(struct IDENTIFIER *identifier){
-    fprintf(tree_file, "%s", identifier->ID);
-    if (identifier->int_val > 0) //int arr[n]; n must be >0 to be valid
+    //fprintf(tree_file, "%s", identifier->ID);
+    /*if (identifier->int_val > 0) //int arr[n]; n must be >0 to be valid
     {
         fprintf(tree_file, "[%d]", identifier->int_val);
 
@@ -267,12 +268,12 @@ void processIdentifier(struct IDENTIFIER *identifier){
                 fprintf(table_file, "%10d%10s%10s%10d%10s\n", row_no++, cur_type, identifier->ID, identifier->int_val,"variable");
             
         }
-    }
-    else if (identifier->int_val < 0) // int arr[-1]; there is no n = 0 is valid
+    }*/
+    if (identifier->int_val < 0) // int arr[-1]; there is no n = 0 is valid
     {
         fprintf(stderr, "error");
     }
-    else //n = 0 this means int x;
+    if (identifier->int_val == 0) //n = 0 this means int x;
     {
         if (!printed)
              return;
@@ -540,14 +541,14 @@ void processStmtGroup(struct STMTSGROUP *stmts_group){
     }
     _isOtherComp = false;
 
-    fprintf(tree_file, "{\n");
+    fprintf(tree_file, "\n");
     if (stmts_group->declaration != NULL)
     {
         processDeclaration(stmts_group->declaration);
     }
     if (stmts_group->stmt != NULL)
         processStmt(stmts_group->stmt);
-    fprintf(tree_file, "}\n");
+    fprintf(tree_file, "\n");
 
     if (is_it_group_stmt == true)
     {
