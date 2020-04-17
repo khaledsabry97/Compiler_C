@@ -418,14 +418,22 @@ void processStmt(struct STMT *stmt){
         print_title = false;
         scopeTail->parent_scope->for_n++;
 
-        fprintf(tree_file, "for (");
+        //fprintf(tree_file, "for (");
+        int first_jump_lable = counter;
+        fprintf(tree_file, "\n FOR%d:",counter++);
         processAssignStmt(for_stmt->init);
-        fprintf(tree_file, "; ");
+        //fprintf(tree_file, "; ");
         processExpr(for_stmt->condition);
-        fprintf(tree_file, "; ");
+        int jump_lable = counter;
+        struct Assembly* temp_expr = pop();
+        fprintf(tree_file, "\n JIFN %s , END_FOR%d",temp_expr->str,counter++);
+
+        //fprintf(tree_file, "; ");
         processAssignStmt(for_stmt->inc);
-        fprintf(tree_file, ")\n");
+        //fprintf(tree_file, ")\n");
         processStmt(for_stmt->stmt);
+        fprintf(tree_file, "\n JMP FOR%d",first_jump_lable);
+        fprintf(tree_file,"\n END_FOR%d:",jump_lable);
 
         //deleteCurScope
         deleteScope(&scopeTail);
@@ -766,9 +774,9 @@ void processExpr(struct EXPR *expr)
     }
     case Expr_Type:
     {
-        fprintf(tree_file, "(");
+        //fprintf(tree_file, "(");
         processExpr(expr->expression.bracket);
-        fprintf(tree_file, ")");
+        //fprintf(tree_file, ")");
         break;
 
 
