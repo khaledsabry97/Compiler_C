@@ -349,13 +349,27 @@ void processStmt(struct STMT *stmt){
     case Return_Type:
         if (stmt->stmt.return_expr == NULL)
         {
-            fprintf(tree_file, "return;");
+            if(isEmpty()) //then it's the main return
+                fprintf(tree_file,"\n HALT");
+            else
+            {
+                            //fprintf(tree_file, "return;");
+
+            }
+            
         }
         else
         {
-            fprintf(tree_file, "return ");
-            processExpr(stmt->stmt.return_expr);
-            fprintf(tree_file, ";");
+            if(isEmpty()) //then it's the main return
+                fprintf(tree_file,"\n HALT");
+            else
+            {
+                fprintf(tree_file, "return ");
+                processExpr(stmt->stmt.return_expr);
+                fprintf(tree_file, ";");
+            }
+            
+         
         }
         break;
 
@@ -368,15 +382,26 @@ void processStmt(struct STMT *stmt){
         print_title = false;
         scopeTail->parent_scope->if_n++;
 
-        fprintf(tree_file, "if (");
+        //fprintf(tree_file, "if (");
+        fprintf(tree_file, "\n IF%d:",counter++);
         processExpr(if_stmt->condition);
-        fprintf(tree_file, ")\n");
+        int jump_lable = counter;
+        struct Assembly* temp_expr = pop();
+        fprintf(tree_file, "\n JIFN %s , END_IF%d",temp_expr->str,counter++);
+
+        //fprintf(tree_file, ")\n");
         processStmt(if_stmt->if_stmt);
+        int sec_jump_lable = counter;
+        fprintf(tree_file,"\n JMP END_IF%d:",counter++);
+        fprintf(tree_file,"\n END_IF%d:",jump_lable);
         if (if_stmt->else_stmt != NULL)
         {
-            fprintf(tree_file, "\nelse\n");
+            //fprintf(tree_file, "\nelse\n");
             processStmt(if_stmt->else_stmt);
         }
+
+        fprintf(tree_file,"\n END_IF%d:",sec_jump_lable);
+
 
         //deleteCurScope
         deleteScope(&scopeTail);        
@@ -438,16 +463,18 @@ void processStmt(struct STMT *stmt){
             scopeTail->parent_scope->while_n++;
 
             /*fprintf(tree_file, "while (");*/
+            int first_jump_lable = counter;
             fprintf(tree_file, "\n WHILE%d:",counter++);
            
             processExpr(while_stmt->condition);
             int jump_lable = counter;
             struct Assembly* temp_expr = pop();
             
-            fprintf(tree_file, "\n JIF %s , END_WHILE%d",temp->str,counter++);
+            fprintf(tree_file, "\n JIFN %s , END_WHILE%d",temp_expr->str,counter++);
 
             //fprintf(tree_file, ")\n");
             processStmt(while_stmt->stmt);
+            fprintf(tree_file, "\n JMP WHILE%d",first_jump_lable);
             fprintf(tree_file,"\n END_WHILE%d:",jump_lable);
 
 
@@ -461,7 +488,7 @@ void processStmt(struct STMT *stmt){
     case Equ_Type:
     {
         processAssignStmt(stmt->stmt.assign_stmt);
-        fprintf(tree_file, ";");
+        //fprintf(tree_file, ";");
         break;
     }
     case Stmt_Group_Type:
@@ -475,7 +502,8 @@ void processStmt(struct STMT *stmt){
         fprintf(tree_file, ";");
         break;
     }
-    fprintf(tree_file, "\n");}
+    //fprintf(tree_file, "\n");
+    }
 
 
 void processParameter(struct PARAMETER *parameter){
@@ -530,15 +558,18 @@ void processStmtGroup(struct STMTSGROUP *stmts_group){
 }
 void processAssignStmt(struct ASSIGN_STMT *assign)
 {
-    fprintf(tree_file, "%s ", assign->ID);
-    if (assign->index != NULL)
+    //fprintf(tree_file, "%s ", assign->ID);
+    /*if (assign->index != NULL)
     {
         fprintf(tree_file, "[");
         processExpr(assign->index);
         fprintf(tree_file, "]");
     }
-    fprintf(tree_file, " = ");
+    */
+    //fprintf(tree_file, " = ");
     processExpr(assign->expr);
+    fprintf(tree_file, "\n MOV %s , %s",pop()->str,assign->ID);
+
 }
 
 void processArg(struct ARG *arg)
@@ -560,15 +591,19 @@ void processExpr(struct EXPR *expr)
     {
         printf("\n Id_Type \n");
 
-        fprintf(tree_file,"");
         struct ID_EXPR *id_expr = expr->expression.id_expr;
-        fprintf(tree_file, "%s", id_expr->ID);
-        if (id_expr->expr != NULL)
+        //fprintf(tree_file, "%s", id_expr->ID);
+        /*if (id_expr->expr != NULL)
         {
             fprintf(tree_file, "[");
             processExpr(id_expr->expr);
             fprintf(tree_file, "]");
         }
+        */
+        temp = newAssembly();
+        sprintf(temp->str, "%s", id_expr->ID);
+        push(temp);
+    
 
         break;
     }
@@ -576,45 +611,80 @@ void processExpr(struct EXPR *expr)
 
     {
         //fprintf(tree_file, "%d", expr->expression.int_val);
-        fprintf(tree_file, "");
         temp = newAssembly();
-        temp->int_val = expr->expression.int_val;
-        //temp->str = expr->expression.int_val;
         sprintf(temp->str, "%d", expr->expression.int_val);
-
         push(temp);
         break;
     }
 
     case FloatNum_Type:
-        fprintf(tree_file, "%f", expr->expression.floatval);
+        //fprintf(tree_file, "%f", expr->expression.floatval);
+        temp = newAssembly();
+        sprintf(temp->str, "%d", expr->expression.floatval);
+        push(temp);
         break;
 
     case Uni_Type:
-        fprintf(tree_file, "-");
+    {
+        //fprintf(tree_file, "-");
         processExpr(expr->expression.uni_op->expr);
+        struct Assembly* right = pop();
+        int ret_counter = counter;
+        temp = newAssembly();
+        sprintf(temp->str, "UNI_RES%d", ret_counter);
+        push(temp);
+        fprintf(tree_file, "\n MUL %s , %s , UNI_RES%d ",right->str,"-1",counter++);
         break;
+    }
 
     case Add_Type:
         processExpr(expr->expression.add_op->left_side);
         processExpr(expr->expression.add_op->right_side);
-
+        struct Assembly* right = pop();
+        struct Assembly* left = pop();
+        int ret_counter = counter;
+        temp = newAssembly();
         if (expr->expression.add_op->add_type == Plus_Type)
-            fprintf(tree_file, " + ");
+        {
+            //fprintf(tree_file, " + ");
+            sprintf(temp->str, "ADD_RES%d", ret_counter);
+            fprintf(tree_file, "\n ADD %s , %s , ADD_RES%d ",left->str,right->str,counter++);
+        }
         else
-            fprintf(tree_file, " - ");
+        {
+            //fprintf(tree_file, " - ");
+            sprintf(temp->str, "SUB_RES%d", ret_counter);
+
+            fprintf(tree_file, "\n SUB %s , %s , SUB_RES%d ",left->str,right->str,counter++);
+        }
+        push(temp);
+
         break;
 
     case Mult_Type:
-
+{
         processExpr(expr->expression.mul_op->left_side);
-        if (expr->expression.mul_op->mul_type == Mul_Type)
-            fprintf(tree_file, " * ");
-        else
-            fprintf(tree_file, " / ");
         processExpr(expr->expression.mul_op->right_side);
-        break;
+        struct Assembly* right = pop();
+        struct Assembly* left = pop();
+        int ret_counter = counter;
+        temp = newAssembly();
+        if (expr->expression.mul_op->mul_type == Mul_Type)
+        {
+            //fprintf(tree_file, " * ");
+            sprintf(temp->str, "MUL_RES%d", ret_counter);
+            fprintf(tree_file, "\n MUL %s , %s , MUL_RES%d ",left->str,right->str,counter++);
+        }
+        else
+        {
+            //fprintf(tree_file, " / ");
+            sprintf(temp->str, "DIV_RES%d", ret_counter);
+            fprintf(tree_file, "\n DIV %s , %s , DIV_RES%d ",left->str,right->str,counter++);
+        }
+        push(temp);
 
+        break;
+}
     case Com_Type:
     {
         //printf("compare");
@@ -708,9 +778,20 @@ void processExpr(struct EXPR *expr)
 
 
 //JIF RES,JUMB_LABLE // JUMP IF RES > 0 to JUMB_LABLE
+//JIFN RES,JUMB_LABLE // JUMP IF RES < 0 to JUMB_LABLE
+
 //CMPG X,Y,Z //COMPARE IF X GREATER THAN Y SET Z = 1 ELSE SET Z =-1
 //CMPL X,Y,Z //COMPARE IF X LOWER THAN Y SET Z = 1 ELSE SET Z =-1
 //CMPGE X,Y,Z //COMPARE IF X GREATER THAN OR EQUAL Y SET Z = 1 ELSE SET Z =-1
 //CMPLE X,Y,Z //COMPARE IF X LOWER THAN OR EQUAL Y SET Z = 1 ELSE SET Z =-1
 //CMPE X,Y,Z //COMPARE IF X EQUAL Y SET Z = 1 ELSE SET Z =-1
 //CMPNE X,Y,Z //COMPARE IF X NOT EQUAL Y SET Z = 1 ELSE SET Z =-1
+
+//ADD X,Y,Z //ADD X + Y AND STORE RESULT IN Z
+//SUB X,Y,Z //SUB X - Y AND STORE RESULT IN Z
+//MUL X,Y,Z //MULTIPLY X * Y AND STORE RESULT IN Z
+//DIV X,Y,Z //DIVIDE X / Y AND STORE RESULT IN Z
+
+//MOV X,Y //MOV X TO Y SO Y=X
+
+//HALT //STOP PROGRAM

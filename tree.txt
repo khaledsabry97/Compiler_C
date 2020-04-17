@@ -1,18 +1,73 @@
 int main ()
 {
+int y;
+int x;
 
  WHILE0:
- CMPG 3 , 7 , RES1 
- JIF RES1 , END_WHILE2{
-}
+ CMPG 7 , 3 , RES1 
+ JIFN RES1 , END_WHILE2{
 
+ ADD y , 1 , ADD_RES3 
+ MOV ADD_RES3 , x
+ IF4:
+ CMPG x , y , RES5 
+ JIFN RES5 , END_IF6{
+
+ MOV x , y}
+
+ JMP END_IF7:
+ END_IF6:
+ IF8:
+ CMPL x , y , RES9 
+ JIFN RES9 , END_IF10{
+
+ MOV y , x}
+
+ JMP END_IF11:
+ END_IF10:{
+
+ MOV y , x}
+
+ END_IF11:
+ END_IF7:}
+
+ JMP WHILE0
  END_WHILE2:
- DO_WHILE3:{
-}
+ DO_WHILE12:{
 
- CMPG 7 , 5 , RES4 
- JIF RES4 , DO_WHILE3
- END__DO_WHILE5:return ;
-}
+ ADD y , 1 , ADD_RES13 
+ MOV ADD_RES13 , x
+ IF14:
+ CMPGE x , y , RES15 
+ JIFN RES15 , END_IF16{
+
+ MOV x , y}
+
+ JMP END_IF17:
+ END_IF16:
+ IF18:
+ CMPLE x , y , RES19 
+ JIFN RES19 , END_IF20{
+
+ MOV y , x}
+
+ JMP END_IF21:
+ END_IF20:
+ IF22:
+ CMPE x , y , RES23 
+ JIFN RES23 , END_IF24{
+
+ MOV y , x}
+
+ JMP END_IF25:
+ END_IF24:
+ END_IF25:
+ END_IF21:
+ END_IF17:}
+
+ CMPG x , y , RES26 
+ JIF RES26 , DO_WHILE12
+ END__DO_WHILE27:
+ HALT}
 
 

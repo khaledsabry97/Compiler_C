@@ -1,16 +1,43 @@
 int main ()
 {
+    int y;
+    int x;
 
-    while( 3 > 7 )
+    while( 7 > 3 )
     {
-
+        x = y+1;
+        if(x >y)
+        {
+            y = x;
+        }
+        else if (x < y)
+        {
+            x = y;
+        }
+        else
+        {
+            x = y;
+        }
+        
     }
 
     do
     {
+        x = y+1;
+        if(x >= y)
+        {
+            y = x;
+        }
+        else if (x <= y)
+        {
+            x = y;
+        }
+        else if( x == y)
+        {
+            x = y;
+        }
+    } while ( x > y);
 
-    } while ( 7 > 5);
-    
     
     return 0;
 }
