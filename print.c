@@ -29,19 +29,15 @@ int parameter_count = 1;
 struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
     struct SCOPE* node = (struct SCOPE*) malloc (sizeof(struct SCOPE));
     node->scope_type = scope_type;
-    node->dowhile_n = 0;
-    node->while_n = 0;
-    node->for_n  = 0;
-    node->if_n = 0;
-    node->compound_n = 0;
+    node->do_while_count = 0;
+    node->while_count = 0;
+    node->for_count  = 0;
+    node->if_count = 0;
+    node->stmt_group_count = 0;
 
-    if(parent_scope != NULL) {
-        node->parent_scope = parent_scope;
+    if(parent_scope != NULL) 
         parent_scope->child_scope = node;
-    } else {
-        node->parent_scope = NULL;
-    }
-
+    node->parent_scope = parent_scope;
     node->child_scope = NULL;
     return node;
 }
@@ -63,19 +59,19 @@ void deleteScope(struct SCOPE** scopeTail) {
 int getMyOrder(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
     switch(scope_type) {
         case Scope_Do_While_Type:
-            return (parent_scope->dowhile_n);
+            return (parent_scope->do_while_count);
 
         case Scope_While_Type:
-            return (parent_scope->while_n);
+            return (parent_scope->while_count);
 
         case Scope_For_Type:
-            return (parent_scope->for_n);
+            return (parent_scope->for_count);
 
         case Scope_If_Type:
-            return (parent_scope->if_n);
+            return (parent_scope->if_count);
 
         case Scope_Stmt_Group_Type:
-            return (parent_scope->compound_n);
+            return (parent_scope->stmt_group_count);
     }
 }
 
@@ -91,12 +87,12 @@ void printScopePath()
     //when printing global variable
     if (scopeTail->scope_type == Scope_Global_Type)
     {
-        fprintf(table_file, "Global variables\n");
-        return; //print nothing at "location"
+        fprintf(table_file, "Global Variables\n");
+        return; 
     }
     else
     {
-        fprintf(table_file, "\nFunction name : ");
+        fprintf(table_file, "\nFunction name => ");
         fprintf(table_file, "%s", current_func_name);
         struct SCOPE *curNode = scopeHead->child_scope; //start from Function node
         while (curNode->child_scope != NULL)
@@ -124,7 +120,7 @@ void printScopePath()
                 fprintf(table_file, "group_stmt");
                 break;
             }
-            fprintf(table_file, "(%d) ", getMyOrder(curNode->child_scope->scope_type, curNode));
+            fprintf(table_file, "[%d]", getMyOrder(curNode->child_scope->scope_type, curNode));
             curNode = curNode->child_scope;
         }
         fprintf(table_file, "\n");
@@ -408,7 +404,7 @@ void processStmt(struct STMT *stmt){
         //making node for symbol table
         scopeTail = newScope(Scope_If_Type, scopeTail);
         print_title = false;
-        scopeTail->parent_scope->if_n++;
+        scopeTail->parent_scope->if_count++;
 
         //fprintf(tree_file, "if (");
         fprintf(tree_file, "\n IF%d:",counter++);
@@ -443,12 +439,13 @@ void processStmt(struct STMT *stmt){
          //making node for symbol table
         scopeTail = newScope(Scope_For_Type, scopeTail);
         print_title = false;
-        scopeTail->parent_scope->for_n++;
+        scopeTail->parent_scope->for_count++;
 
         //fprintf(tree_file, "for (");
         int first_jump_lable = counter;
-        fprintf(tree_file, "\n FOR%d:",counter++);
         processAssignStmt(for_stmt->init);
+        fprintf(tree_file, "\n FOR%d:",counter++);
+
         //fprintf(tree_file, "; ");
         processExpr(for_stmt->condition,true);
         int jump_lable = counter;
@@ -477,7 +474,7 @@ void processStmt(struct STMT *stmt){
             //making node for symbol table
             scopeTail = newScope(Scope_Do_While_Type, scopeTail);
             print_title = false;
-            scopeTail->parent_scope->dowhile_n++;
+            scopeTail->parent_scope->do_while_count++;
 
             //fprintf(tree_file, "do");
             int jump_lable = counter;
@@ -496,7 +493,7 @@ void processStmt(struct STMT *stmt){
             //making node for symbol table
             scopeTail = newScope(Scope_While_Type, scopeTail);
             print_title = false;
-            scopeTail->parent_scope->while_n++;
+            scopeTail->parent_scope->while_count++;
 
             /*fprintf(tree_file, "while (");*/
             int first_jump_lable = counter;
@@ -578,7 +575,7 @@ void processStmtGroup(struct STMTSGROUP *stmts_group){
         //making node for symbol table
         scopeTail = newScope(Scope_Stmt_Group_Type, scopeTail);
         print_title = false;
-        scopeTail->parent_scope->compound_n++;
+        scopeTail->parent_scope->stmt_group_count++;
     }
     _isOtherComp = false;
 

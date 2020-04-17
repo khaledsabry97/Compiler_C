@@ -4,11 +4,11 @@
 struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
     struct SCOPE* node = (struct SCOPE*) malloc (sizeof(struct SCOPE));
     node->scope_type = scope_type;
-    node->dowhile_n = 0;
-    node->while_n = 0;
-    node->for_n  = 0;
-    node->if_n = 0;
-    node->compound_n = 0;
+    node->do_while_count = 0;
+    node->while_count = 0;
+    node->for_count  = 0;
+    node->if_count = 0;
+    node->stmt_group_count = 0;
 
     if(parent_scope != NULL) {
         node->parent_scope = parent_scope;
@@ -38,19 +38,19 @@ void deleteScope(struct SCOPE** scopeTail) {
 int getMyOrder(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
     switch(scope_type) {
         case Scope_Do_While_Type:
-            return (parent_scope->dowhile_n);
+            return (parent_scope->do_while_count);
 
         case Scope_While_Type:
-            return (parent_scope->while_n);
+            return (parent_scope->while_count);
 
         case Scope_For_Type:
-            return (parent_scope->for_n);
+            return (parent_scope->for_count);
 
         case Scope_If_Type:
-            return (parent_scope->if_n);
+            return (parent_scope->if_count);
 
         case Scope_Stmt_Group_Type:
-            return (parent_scope->compound_n);
+            return (parent_scope->stmt_group_count);
     }
 }
 

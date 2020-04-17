@@ -1,13 +1,18 @@
 
-Function name : plus
+Function name => main
      countscope_type      name     array      role
-         1       int        n1           parameter
-         2       int        n2           parameter
-         3       int       sum            variable
+         1       int         i            variable
+         2       int         j            variable
+         3       int         k            variable
 
-Function name : main
+Function name => main - while[1]
      countscope_type      name     array      role
-         1       int        n1            variable
-         2       int        n2            variable
-         3       int    result            variable
-         4       int     value            variable
+         1       int         a            variable
+
+Function name => main - while[1] - while[1]
+     countscope_type      name     array      role
+         1       int         b            variable
+
+Function name => main - while[1] - while[1] - for[1]
+     countscope_type      name     array      role
+         1       int         c            variable
