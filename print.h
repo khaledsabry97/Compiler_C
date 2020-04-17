@@ -31,31 +31,6 @@ int getMyOrder(SCOPE_TYPE scope_type, struct SCOPE* parent_scope);
 struct Assembly{
     struct Assembly* prev;
     char str[1000];
-    
-    struct DECLARATION* declaration;
-    struct FUNCTION* funtion;    
-        
-    struct FUNC_CALL *func_call; 
-    struct EXPR *return_expr; // return expr
-    struct IF_STMT *if_stmt; 
-    struct FOR_STMT *for_stmt; 
-    struct WHILE_STMT *while_stmt;
-    struct ASSIGN_STMT *assign_stmt;
-    struct STMTSGROUP *stmts_group; 
-
-
-    int int_val; 
-    float floatval; 
-    struct EXPR *bracket; // (expr)
-    struct ID_EXPR *id_expr; 
-
-    struct UNI_OP *uni_op; 
-    struct ADD_OP *add_op; 
-    struct MUL_OP *mul_op; 
-
-    struct EQL_OP *eql_op; 
-    struct COM_OP *com_op; 
-
 };
 
 
@@ -97,5 +72,5 @@ void processAssignStmt    (struct ASSIGN_STMT* assign);
 void processStmtGroup  (struct STMTSGROUP* stmts_group);
 void processStmt          (struct STMT* stmt);
 
-void processExpr          (struct EXPR *expr);
+void processExpr          (struct EXPR *expr,bool must_return);
 

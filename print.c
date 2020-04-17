@@ -21,6 +21,7 @@ bool is_it_group_stmt = false;
 struct Assembly* assemhead;
 struct Assembly *temp;
 int counter = 0;
+int parameter_count = 1;
 
 
 
@@ -245,6 +246,7 @@ void processDeclaration(struct DECLARATION *declaration){
     printed = true;
     processIdentifier(declaration->id);
     printed = false;
+
     //fprintf(tree_file, ";\n");
     }
 
@@ -284,6 +286,12 @@ void processIdentifier(struct IDENTIFIER *identifier){
         else if(current_type == Float_Type)
             cur_type = "float";
         fprintf(table_file, "%10d%10s%10s%10s%10s\n", row_no++, cur_type, identifier->ID, "", is_parameter ? "parameter" : "variable"); //row_no(x) ++row_no(x) row_no++(o)
+        if(is_parameter== true)
+        {
+            temp = newAssembly();
+            sprintf(temp->str, identifier->ID);
+            push(temp);
+        }
     
     }}
 
@@ -302,26 +310,43 @@ void processFunction(struct FUNCTION *function){
     switch (function->id_type)
     {
     case Int_Type:
-        fprintf(tree_file, "int ");
+        //fprintf(tree_file, "int ");
         break;
     case Float_Type:
-        fprintf(tree_file, "float ");
+        //fprintf(tree_file, "float ");
         break;
     default:
         fprintf(stderr, "Declaration does not exist.\n");
         exit(1);
     }
-    fprintf(tree_file, "%s (", function->ID); //add function name
+    //fprintf(tree_file, "%s (", function->ID); //add function name
+    fprintf(tree_file, "\n\n %s:",function->ID);
+
+
+    if(strcmp(function->ID,"main")!= 0)
+    {
+        int jump_lable =  counter;
+        fprintf(tree_file,"\n MOV $0 , %s_RET%d",function->ID,counter++);
+        temp = newAssembly();
+        sprintf(temp->str, "%s_RET%d", function->ID,jump_lable);
+        push(temp);
+    }
     print_title = false;
     if (function->parameter != NULL)
     {
         printTitle();
         print_title = true;
+        parameter_count = 1;
         processParameter(function->parameter); //parameter
     }
-    fprintf(tree_file, ")\n");                //function name
+    if(strcmp(function->ID,"main") != 0)
+     fprintf(tree_file,"\n CLRQ");
+
+    //fprintf(tree_file, ")\n");                //function name
     processStmtGroup(function->stmts_group); //compoundStmt
-    fprintf(tree_file, "\n");
+
+    
+    fprintf(tree_file, "\n\n");
 
     //deleteCurScope
     deleteScope(&scopeTail);
@@ -354,8 +379,7 @@ void processStmt(struct STMT *stmt){
                 fprintf(tree_file,"\n HALT");
             else
             {
-                            //fprintf(tree_file, "return;");
-
+                fprintf(tree_file,"\n JMP %s",pop()->str);
             }
             
         }
@@ -365,9 +389,12 @@ void processStmt(struct STMT *stmt){
                 fprintf(tree_file,"\n HALT");
             else
             {
-                fprintf(tree_file, "return ");
-                processExpr(stmt->stmt.return_expr);
-                fprintf(tree_file, ";");
+
+                //fprintf(tree_file, "return ");
+                processExpr(stmt->stmt.return_expr,false);
+                fprintf(tree_file,"\n BIND %s",pop()->str);
+                fprintf(tree_file,"\n JMP %s",pop()->str);
+                //fprintf(tree_file, ";");
             }
             
          
@@ -385,7 +412,7 @@ void processStmt(struct STMT *stmt){
 
         //fprintf(tree_file, "if (");
         fprintf(tree_file, "\n IF%d:",counter++);
-        processExpr(if_stmt->condition);
+        processExpr(if_stmt->condition,true);
         int jump_lable = counter;
         struct Assembly* temp_expr = pop();
         fprintf(tree_file, "\n JIFN %s , END_IF%d",temp_expr->str,counter++);
@@ -423,7 +450,7 @@ void processStmt(struct STMT *stmt){
         fprintf(tree_file, "\n FOR%d:",counter++);
         processAssignStmt(for_stmt->init);
         //fprintf(tree_file, "; ");
-        processExpr(for_stmt->condition);
+        processExpr(for_stmt->condition,true);
         int jump_lable = counter;
         struct Assembly* temp_expr = pop();
         fprintf(tree_file, "\n JIFN %s , END_FOR%d",temp_expr->str,counter++);
@@ -458,7 +485,7 @@ void processStmt(struct STMT *stmt){
 
             processStmt(while_stmt->stmt);
             //fprintf(tree_file, "while (");
-            processExpr(while_stmt->condition);
+            processExpr(while_stmt->condition,true);
             struct Assembly* temp_expr = pop();
             fprintf(tree_file, "\n JIF %s , DO_WHILE%d",temp->str,jump_lable);
             fprintf(tree_file,"\n END__DO_WHILE%d:",counter++);
@@ -475,7 +502,7 @@ void processStmt(struct STMT *stmt){
             int first_jump_lable = counter;
             fprintf(tree_file, "\n WHILE%d:",counter++);
            
-            processExpr(while_stmt->condition);
+            processExpr(while_stmt->condition,true);
             int jump_lable = counter;
             struct Assembly* temp_expr = pop();
             
@@ -508,7 +535,7 @@ void processStmt(struct STMT *stmt){
         //break;
 
     case Semi_Colon_Type:
-        fprintf(tree_file, ";");
+        //fprintf(tree_file, ";");
         break;
     }
     //fprintf(tree_file, "\n");
@@ -520,16 +547,16 @@ void processParameter(struct PARAMETER *parameter){
     if (parameter->prev != NULL)
     {
         processParameter(parameter->prev);
-        fprintf(tree_file, ", ");
+        //fprintf(tree_file, ", ");
     }
     switch (parameter->id_type)
     {
     case Int_Type:
-        fprintf(tree_file, "int ");
+        //fprintf(tree_file, "int ");
         current_type = Int_Type;
         break;
     case Float_Type:
-        fprintf(tree_file, "float ");
+        //fprintf(tree_file, "float ");
         current_type = Float_Type;
         break;
     default:
@@ -538,7 +565,13 @@ void processParameter(struct PARAMETER *parameter){
     }
     printed = true;
     processIdentifier(parameter->id);
-    printed = false;}
+    printed = false;
+
+    temp = pop();
+    fprintf(tree_file,"\n MOV $%d , %s",parameter_count++,temp->str);
+
+    }
+
 void processStmtGroup(struct STMTSGROUP *stmts_group){
     if (is_it_group_stmt == true)
     {
@@ -576,7 +609,7 @@ void processAssignStmt(struct ASSIGN_STMT *assign)
     }
     */
     //fprintf(tree_file, " = ");
-    processExpr(assign->expr);
+    processExpr(assign->expr,true);
     fprintf(tree_file, "\n MOV %s , %s",pop()->str,assign->ID);
 
 }
@@ -586,11 +619,15 @@ void processArg(struct ARG *arg)
     if (arg->prev != NULL)
     {
         processArg(arg->prev);
-        fprintf(tree_file, ", ");
+        //fprintf(tree_file, ", ");
     }
-    processExpr(arg->expr);
+    processExpr(arg->expr,true);
+    temp = pop();
+    fprintf(tree_file,"\n BIND %s , $%d",temp->str,parameter_count++);
+
+
 }
-void processExpr(struct EXPR *expr)
+void processExpr(struct EXPR *expr,bool must_return)
 {
 
     switch (expr->expr_type)
@@ -598,8 +635,6 @@ void processExpr(struct EXPR *expr)
 
     case Id_Type:
     {
-        printf("\n Id_Type \n");
-
         struct ID_EXPR *id_expr = expr->expression.id_expr;
         //fprintf(tree_file, "%s", id_expr->ID);
         /*if (id_expr->expr != NULL)
@@ -636,7 +671,7 @@ void processExpr(struct EXPR *expr)
     case Uni_Type:
     {
         //fprintf(tree_file, "-");
-        processExpr(expr->expression.uni_op->expr);
+        processExpr(expr->expression.uni_op->expr,true);
         struct Assembly* right = pop();
         int ret_counter = counter;
         temp = newAssembly();
@@ -647,8 +682,8 @@ void processExpr(struct EXPR *expr)
     }
 
     case Add_Type:
-        processExpr(expr->expression.add_op->left_side);
-        processExpr(expr->expression.add_op->right_side);
+        processExpr(expr->expression.add_op->left_side,true);
+        processExpr(expr->expression.add_op->right_side,true);
         struct Assembly* right = pop();
         struct Assembly* left = pop();
         int ret_counter = counter;
@@ -672,8 +707,8 @@ void processExpr(struct EXPR *expr)
 
     case Mult_Type:
 {
-        processExpr(expr->expression.mul_op->left_side);
-        processExpr(expr->expression.mul_op->right_side);
+        processExpr(expr->expression.mul_op->left_side,true);
+        processExpr(expr->expression.mul_op->right_side,true);
         struct Assembly* right = pop();
         struct Assembly* left = pop();
         int ret_counter = counter;
@@ -697,8 +732,8 @@ void processExpr(struct EXPR *expr)
     case Com_Type:
     {
         //printf("compare");
-        processExpr(expr->expression.com_op->left_side);
-        processExpr(expr->expression.com_op->right_side);
+        processExpr(expr->expression.com_op->left_side,true);
+        processExpr(expr->expression.com_op->right_side,true);
         struct Assembly* right = pop();
         struct Assembly* left = pop();
         int ret_counter = counter;
@@ -736,8 +771,8 @@ void processExpr(struct EXPR *expr)
     }
     case Eql_Type:
     {
-        processExpr(expr->expression.eql_op->left_side);
-        processExpr(expr->expression.eql_op->right_side);
+        processExpr(expr->expression.eql_op->left_side,true);
+        processExpr(expr->expression.eql_op->right_side,true);
         struct Assembly* right = pop();
         struct Assembly* left = pop();
         int ret_counter = counter;
@@ -762,20 +797,35 @@ void processExpr(struct EXPR *expr)
 
     case CallExpr_Type:
     {
-        fprintf(tree_file,"");
+        //fprintf(tree_file,"");
         struct FUNC_CALL *call = expr->expression.func_call;
-        fprintf(tree_file, "%s(", call->ID);
+        int jump_lable = counter;
+        fprintf(tree_file,"\n BIND %s%d",call->ID,counter++);
+    
         if (call->arg != NULL)
         {
+            parameter_count = 1;
             processArg(call->arg);
         }
-        fprintf(tree_file, ")");
+        fprintf(tree_file, "\n JMP %s", call->ID);
+        fprintf(tree_file,"\n %s%d:",call->ID,jump_lable);
+        //TO DO IN ASSEMBLY CHECK if it's a return type function or not
+        int sec_counter = counter;
+        if (must_return == true)
+        {
+            temp = newAssembly();
+            sprintf(temp->str, "RET_VAL%d", sec_counter);
+            push(temp);
+            fprintf(tree_file, "\n MOV $1 , RET_VAL%d", counter++);
+        }
+
+        //fprintf(tree_file, ")");
         break;
     }
     case Expr_Type:
     {
         //fprintf(tree_file, "(");
-        processExpr(expr->expression.bracket);
+        processExpr(expr->expression.bracket,false);
         //fprintf(tree_file, ")");
         break;
 
@@ -802,5 +852,10 @@ void processExpr(struct EXPR *expr)
 //DIV X,Y,Z //DIVIDE X / Y AND STORE RESULT IN Z
 
 //MOV X,Y //MOV X TO Y SO Y=X
+
+
+//BIND X , $x //SEND PARAMTER X BY ATTCHING IT TO RESERVED VARIABLES IN MEMORY SPECIALIZED FOR FUNCTIONS
+//CLRQ //CLEAR THE VALUES IN $x CALL IT AFTER FINISHING MOVING PARAMTER TO LOCAL FUNCTION DOMAIN
+//$x // x COULD BE A VALUE FROM 0 TO N, $0 SPECIAL FOR RETURN POINTER
 
 //HALT //STOP PROGRAM

@@ -30,15 +30,17 @@ struct PROGRAM
 };
 
 /*
--
-
+- to declare variables before assignment int value;
+id_type : int
+id : value
 
 */
 struct DECLARATION
 {
+	struct DECLARATION *prev;
+
 	ID_TYPE id_type;
 	struct IDENTIFIER *id;
-	struct DECLARATION *prev;
 };
 
 /*
