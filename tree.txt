@@ -1,36 +1,18 @@
-int func1 (int n)
-{
-return 1;
-}
-
-int func2 (int n)
-{
-return 0;
-}
-
 int main ()
 {
-int result;
-result  = 5 * 2 + 5 * 3;
-result  = (3 + 2) / 4 * 10 + 2 + 100;
-if (result > 0)
-{
-func1(result);
+
+ WHILE0:
+ CMPG 3 , 7 , RES1 
+ JIF RES1 , END_WHILE2{
 }
 
-else
-{
-func2(result);
+ END_WHILE2:
+ DO_WHILE3:{
 }
-{
-int comp1;
-comp1  = 10;
-{
-int comp2;
-comp2  = 20;
-}
-}
-return 0;
+
+ CMPG 7 , 5 , RES4 
+ JIF RES4 , DO_WHILE3
+ END__DO_WHILE5:return ;
 }
 
 
