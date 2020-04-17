@@ -27,6 +27,36 @@ void deleteScope(struct SCOPE** scopeTail);
 //returns the order of current SCOPE
 int getMyOrder(SCOPE_TYPE scope_type, struct SCOPE* parent_scope);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void processDeclaration   (struct DECLARATION* declaration);
 void processIdentifier    (struct IDENTIFIER* identifier);
 void processFunction      (struct FUNCTION* function);

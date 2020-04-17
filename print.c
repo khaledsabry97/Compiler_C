@@ -278,6 +278,7 @@ void processStmt(struct STMT *stmt){
         break;
 
     case If_Type:
+    {
         _isOtherComp = true;
         struct IF_STMT *if_stmt  = stmt->stmt.if_stmt;
         //making node for symbol table
@@ -298,8 +299,10 @@ void processStmt(struct STMT *stmt){
         //deleteCurScope
         deleteScope(&scopeTail);        
         return;
+    }
 
     case For_Type:
+    {
         _isOtherComp = true;
         struct FOR_STMT *for_stmt = stmt->stmt.for_stmt;
          //making node for symbol table
@@ -321,8 +324,9 @@ void processStmt(struct STMT *stmt){
 
         
         return;
-
+    }
      case While_Type:
+     {
         _isOtherComp = true;
         struct WHILE_STMT *while_stmt = stmt->stmt.while_stmt;
         if (while_stmt->do_while == true)
@@ -355,12 +359,13 @@ void processStmt(struct STMT *stmt){
         deleteScope(&scopeTail);
         return;
  
- 
+     }
     case Equ_Type:
+    {
         processAssignStmt(stmt->stmt.assign_stmt);
         fprintf(tree_file, ";");
         break;
-
+    }
     case Stmt_Group_Type:
         if (_isOtherComp == false)
             is_it_group_stmt = true;
@@ -453,6 +458,7 @@ void processExpr(struct EXPR *expr)
     {
 
     case Id_Type:
+    {
         fprintf(tree_file,"");
         struct ID_EXPR *id_expr = expr->expression.id_expr;
         fprintf(tree_file, "%s", id_expr->ID);
@@ -464,6 +470,7 @@ void processExpr(struct EXPR *expr)
         }
 
         break;
+    }
     case IntNum_Type:
         fprintf(tree_file, "%d", expr->expression.int_val);
         break;
@@ -533,6 +540,7 @@ void processExpr(struct EXPR *expr)
         break;
 
     case CallExpr_Type:
+    {
         fprintf(tree_file,"");
         struct FUNC_CALL *call = expr->expression.func_call;
         fprintf(tree_file, "%s(", call->ID);
@@ -542,14 +550,16 @@ void processExpr(struct EXPR *expr)
         }
         fprintf(tree_file, ")");
         break;
-
+    }
     case Expr_Type:
+    {
         fprintf(tree_file, "(");
         processExpr(expr->expression.bracket);
         fprintf(tree_file, ")");
         break;
 
 
+    }
     }
 }
 
