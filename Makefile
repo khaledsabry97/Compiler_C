@@ -7,6 +7,7 @@ all:
 	./compiler < sa1.txt
 	./compiler < sa2.txt
 	./compiler < sa4.txt
+	./compiler < test8_semantic.c
 	
 
 

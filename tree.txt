@@ -2,32 +2,23 @@
 
  main:
 
- WHILE0:
- CMPL i , 10 , RES1 
- JIFN RES1 , END_WHILE2
+ MOV 10 , count
+ ADD count , no_value , ADD_RES0 
+ MOV ADD_RES0 , count
+ MOV 10 , counts
+ ADD count , no_value , ADD_RES1 
+ MOV ADD_RES1 , count
+ MOV 10 , count
+ FOR2:
+ CMPL count , 100 , RES3 
+ JIFN RES3 , END_FOR4
+ ADD count , 1 , ADD_RES5 
+ MOV ADD_RES5 , count
 
- WHILE3:
- CMPL j , 10 , RES4 
- JIFN RES4 , END_WHILE5
+ MOV 10 , no_value
 
- MOV 0 , k
- FOR6:
- CMPL k , 10 , RES7 
- JIFN RES7 , END_FOR8
- ADD k , 1 , ADD_RES9 
- MOV ADD_RES9 , k
-
- MOV 3 , c
-
- JMP FOR6
- END_FOR8:
- MOV 5 , b
-
- JMP WHILE3
- END_WHILE5:
-
- JMP WHILE0
- END_WHILE2:
+ JMP FOR2
+ END_FOR4:
  HALT
 
 

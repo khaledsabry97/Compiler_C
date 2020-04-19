@@ -406,7 +406,28 @@ Stmt: ID '=' Expr ';' {
            
                 
             }  
-    | ';' {
+    | /*Type Identifier ';' {
+        struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
+        declaration->id_type = $1;
+        declaration->id = $2;
+        
+        struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
+        stmt->stmt_type = Declaration_Type;
+        stmt->stmt.declaration = declaration;
+        $$ = stmt;
+        }
+    | Declaration_List  Type Identifier ';' {
+        struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
+        declaration->prev = $1;
+        declaration->id_type = $2;
+        declaration->id = $3;
+
+        struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
+        stmt->stmt_type = Declaration_Type;
+        stmt->stmt.declaration = declaration;
+        $$ = stmt;
+        }
+    |*/ ';' {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Semi_Colon_Type;
         $$ = stmt;
