@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "print.h"
+#include "Semantic_Handler.h"
 #include <string.h>
-
-
-
 
 extern FILE *tree_file;
 extern FILE *table_file;
+extern FILE *semantic_file;
+
 
 
 //global variable for making symboltable
@@ -22,6 +21,7 @@ struct Assembly* assemhead;
 struct Assembly *temp;
 int counter = 0;
 int parameter_count = 1;
+struct CHECKS* temp_check;
 
 
 
@@ -34,6 +34,7 @@ struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
     node->for_count  = 0;
     node->if_count = 0;
     node->stmt_group_count = 0;
+    node->name = current_func_name; //only important for function scope
 
     if(parent_scope != NULL) 
         parent_scope->child_scope = node;
@@ -298,23 +299,38 @@ void processFunction(struct FUNCTION *function){
     {
         processFunction(function->prev);
     }
+    struct Semantic *semantic = (struct Semantic*) malloc (sizeof (struct Semantic));
+
     current_func_name = function->ID;     //for symboltable
+    switch (function->id_type)
+        {
+        case Int_Type:
+            //fprintf(tree_file, "int ");
+            semantic->identifier_semantic_type = Int_Semantic_Type;
+
+            break;
+        case Float_Type:
+            //fprintf(tree_file, "float ");
+            semantic->identifier_semantic_type = Float_Semantic_Type;
+
+            break;
+        default:
+            fprintf(stderr, "Declaration does not exist.\n");
+            exit(1);
+        }
+    temp_check = newCheck();
+    temp_check->check_identifier_type = true;
+
+    int count = checkSemantic(function->ID,true,scopeTail,temp_check,semantic->identifier_semantic_type);
+    if(count != 0)
+        fprintf(semantic_file,"ERORR: function %s appeared %d times before \n",function->ID,count);
 
     //list node
     scopeTail = newScope(Scope_Func_Type, scopeTail); //append it to the end of list
+    semantic->identifier_name = function->ID;
+    semantic->is_function = true;
+    addNewSemantic(semantic);
 
-    switch (function->id_type)
-    {
-    case Int_Type:
-        //fprintf(tree_file, "int ");
-        break;
-    case Float_Type:
-        //fprintf(tree_file, "float ");
-        break;
-    default:
-        fprintf(stderr, "Declaration does not exist.\n");
-        exit(1);
-    }
     //fprintf(tree_file, "%s (", function->ID); //add function name
     fprintf(tree_file, "\n\n %s:",function->ID);
 

@@ -1,8 +1,36 @@
-Global Variables
+
+Function name => func1
      countscope_type      name     array      role
-         1       int     count            variable
+         1       int         n           parameter
+
+Function name => func2
+     countscope_type      name     array      role
+         1       int         n           parameter
+
+Function name => func1
+     countscope_type      name     array      role
+         1       int         n           parameter
+
+Function name => func1
+     countscope_type      name     array      role
+         1       int         n           parameter
+
+Function name => func1
+     countscope_type      name     array      role
+         1       int         n           parameter
+
+Function name => func1
+     countscope_type      name     array      role
+         1       int         n           parameter
 
 Function name => main
      countscope_type      name     array      role
-         1       int     count            variable
-         2       int  no_value            variable
+         1       int    result            variable
+
+Function name => main - group_stmt[1]
+     countscope_type      name     array      role
+         1       int     comp1            variable
+
+Function name => main - group_stmt[1] - group_stmt[1]
+     countscope_type      name     array      role
+         1       int     comp2            variable

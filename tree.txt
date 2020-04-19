@@ -1,24 +1,101 @@
 
 
+ func1:
+ MOV $0 , func1_RET0
+ MOV $1 , n
+ CLRQ
+
+ BIND 1
+ JMP func1_RET0
+
+
+
+
+ func2:
+ MOV $0 , func2_RET1
+ MOV $1 , n
+ CLRQ
+
+ BIND 0
+ JMP func2_RET1
+
+
+
+
+ func1:
+ MOV $0 , func1_RET2
+ MOV $1 , n
+ CLRQ
+
+ BIND 1
+ JMP func1_RET2
+
+
+
+
+ func1:
+ MOV $0 , func1_RET3
+ MOV $1 , n
+ CLRQ
+
+ BIND 1
+ JMP func1_RET3
+
+
+
+
+ func1:
+ MOV $0 , func1_RET4
+ MOV $1 , n
+ CLRQ
+
+ BIND 1
+ JMP func1_RET4
+
+
+
+
+ func1:
+ MOV $0 , func1_RET5
+ MOV $1 , n
+ CLRQ
+
+ BIND 1
+ JMP func1_RET5
+
+
+
+
  main:
 
- MOV 10 , count
- ADD count , no_value , ADD_RES0 
- MOV ADD_RES0 , count
- MOV 10 , counts
- ADD count , no_value , ADD_RES1 
- MOV ADD_RES1 , count
- MOV 10 , count
- FOR2:
- CMPL count , 100 , RES3 
- JIFN RES3 , END_FOR4
- ADD count , 1 , ADD_RES5 
- MOV ADD_RES5 , count
+ MUL 5 , 2 , MUL_RES6 
+ MUL 5 , 3 , MUL_RES7 
+ ADD MUL_RES6 , MUL_RES7 , ADD_RES8 
+ MOV ADD_RES8 , result
+ ADD 3 , 2 , ADD_RES9 
+ DIV ADD_RES9 , 4 , DIV_RES10 
+ MUL DIV_RES10 , 10 , MUL_RES11 
+ ADD MUL_RES11 , 2 , ADD_RES12 
+ ADD ADD_RES12 , 100 , ADD_RES13 
+ MOV ADD_RES13 , result
+ IF14:
+ CMPG result , 0 , RES15 
+ JIFN RES15 , END_IF16
+func1(
+ BIND result , $2);
 
- MOV 10 , no_value
+ JMP END_IF17:
+ END_IF16:
+func2(
+ BIND result , $3);
 
- JMP FOR2
- END_FOR4:
+ END_IF17:
+
+ MOV 10 , comp1
+
+ MOV 20 , comp2
+
+
  HALT
 
 

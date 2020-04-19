@@ -3,10 +3,32 @@ int func1(int n)
     return 1;
 }
 
+
+
 int func2(int n)
 {
     return 0;
 }
+
+int func1(int n)
+{
+    return 1;
+}
+
+int func1(int n)
+{
+    return 1;
+}
+int func1(int n)
+{
+    return 1;
+}
+
+float func1(int n)
+{
+    return 1;
+}
+
 
 int main ()
 {

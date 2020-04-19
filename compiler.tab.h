@@ -78,7 +78,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 32 "compiler.y" /* yacc.c:1909  */
+#line 33 "compiler.y" /* yacc.c:1909  */
 
     ID_TYPE type;
     char* id;

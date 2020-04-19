@@ -9,6 +9,7 @@ struct SCOPE {
     int while_count;
     int for_count;
     int if_count;
+    char* name;
     int stmt_group_count;
     SCOPE_TYPE scope_type;
     struct SCOPE* parent_scope;

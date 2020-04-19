@@ -7,6 +7,7 @@
 
 FILE *tree_file; 
 FILE *table_file; 
+FILE *semantic_file;
 void print(struct PROGRAM* head);
 void openFiles();
 void closeFiles();
@@ -691,10 +692,13 @@ void openFiles()
 {
     tree_file = fopen("tree.txt","w");
     table_file = fopen("table.txt","w");
+    semantic_file = fopen("semantic_file.txt","w");
 }
 void closeFiles()
 {
     fprintf(tree_file, "\n");
     pclose(tree_file);
     pclose(table_file);
+    pclose(semantic_file);
+
 }
