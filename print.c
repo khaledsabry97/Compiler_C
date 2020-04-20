@@ -23,6 +23,7 @@ int counter = 0;
 int parameter_count = 1;
 struct CHECKS* temp_check;
 struct Semantic* temp_semantic;
+struct SEMANTIC_STACK* temp_semantic_stack;
 
 
 
@@ -344,13 +345,10 @@ void processIdentifier(struct IDENTIFIER *identifier){
         temp_semantic->is_assigned = false;
         temp_semantic->is_function = false;
         temp_semantic->scope = scopeHead;
-        printf("x1");
-        printf("before\n");
-        printf("before\n");
-
-
+    
         int count = checkSemantic(temp_semantic->identifier_name,false,temp_semantic->scope,NULL,temp_semantic->identifier_semantic_type);
-        printf("count : %d\n",count);
+        if(count != 0)
+        fprintf(semantic_file,"ERORR: variable %s has been declared before %d times before \n",temp_semantic->identifier_name,count);
         addNewSemantic(temp_semantic);
 
 
@@ -701,6 +699,30 @@ void processAssignStmt(struct ASSIGN_STMT *assign)
     */
     //fprintf(tree_file, " = ");
     processExpr(assign->expr,true);
+
+        //check if identifier was found
+
+    struct SEMANTIC_STACK* semantic_temp = findSemantic(assign->ID);
+    if(semantic_temp == NULL)
+        {
+            fprintf(semantic_file,"ERROR: Identifier %s wasn't declared before to use it in an assignment\n",assign->ID);
+        }
+    else
+    {
+
+            //check if identifier type match todo and assign identifier
+             temp_semantic_stack = popSemanticStack();
+            //printf("%d\n",temp_semantic_stack);
+
+           if (temp_semantic_stack->identifier_semantic_type != semantic_temp->identifier_semantic_type)
+            {
+                fprintf(semantic_file,"ERROR: Identifier %s is not the same type of the assignment\n",assign->ID);
+
+            }
+
+        
+    }
+
     fprintf(tree_file, "\n MOV %s , %s",pop()->str,assign->ID);
 
 }
@@ -724,7 +746,7 @@ void processExpr(struct EXPR *expr,bool must_return)
     switch (expr->expr_type)
     {
 
-    case Id_Type:
+    case Id_Type: // some_variable = ID;
     {
         struct ID_EXPR *id_expr = expr->expression.id_expr;
         //fprintf(tree_file, "%s", id_expr->ID);
@@ -738,8 +760,29 @@ void processExpr(struct EXPR *expr,bool must_return)
         temp = newAssembly();
         sprintf(temp->str, "%s", id_expr->ID);
         push(temp);
-    
 
+        //check identifier is found
+        temp_semantic = findSemantic(id_expr->ID);
+        printf("hellor");
+        if(temp_semantic == NULL)
+        {
+                fprintf(semantic_file,"ERROR: Identifier %s wasn't declared before to be used\n",id_expr->ID);
+                 //add to semantic stack
+            temp_semantic_stack = newSemanticStack();
+            temp_semantic_stack->identifier_semantic_type = Error_Semantic_Type;
+            pushSemanticStack(temp_semantic_stack);
+        }
+        else
+        {
+             //add to semantic stack
+            temp_semantic_stack = newSemanticStack();
+            temp_semantic_stack->identifier_semantic_type = temp_semantic->identifier_semantic_type;
+            pushSemanticStack(temp_semantic_stack);
+            
+        }
+        
+
+       
         break;
     }
     case IntNum_Type:
@@ -749,6 +792,11 @@ void processExpr(struct EXPR *expr,bool must_return)
         temp = newAssembly();
         sprintf(temp->str, "%d", expr->expression.int_val);
         push(temp);
+        //add to semantic stack
+        printf("j");
+        temp_semantic_stack = newSemanticStack();
+        temp_semantic_stack->identifier_semantic_type = Int_Semantic_Type;
+        pushSemanticStack(temp_semantic_stack);
         break;
     }
 
@@ -757,6 +805,11 @@ void processExpr(struct EXPR *expr,bool must_return)
         temp = newAssembly();
         sprintf(temp->str, "%d", expr->expression.floatval);
         push(temp);
+        //add to semantic stack
+        temp_semantic_stack = newSemanticStack();
+        temp_semantic_stack->identifier_semantic_type = Float_Semantic_Type;
+        pushSemanticStack(temp_semantic_stack);
+
         break;
 
     case Uni_Type:
@@ -769,6 +822,10 @@ void processExpr(struct EXPR *expr,bool must_return)
         sprintf(temp->str, "UNI_RES%d", ret_counter);
         push(temp);
         fprintf(tree_file, "\n MUL %s , %s , UNI_RES%d ",right->str,"-1",counter++);
+        //add to semantic stack
+        printf("SdfsdF");
+        temp_semantic_stack = popSemanticStack();
+        pushSemanticStack(temp_semantic_stack);
         break;
     }
 
@@ -793,6 +850,20 @@ void processExpr(struct EXPR *expr,bool must_return)
             fprintf(tree_file, "\n SUB %s , %s , SUB_RES%d ",left->str,right->str,counter++);
         }
         push(temp);
+
+        //add to semantic stack
+        /*printf("sdf");
+        struct SEMANTIC_STACK* left_semantic = popSemanticStack();
+        struct SEMANTIC_STACK* right_semantic = popSemanticStack();
+        temp_semantic_stack = newSemanticStack();
+        temp_semantic_stack->identifier_semantic_type = compareTypes(left_semantic->identifier_semantic_type,right_semantic->identifier_semantic_type);
+        if(temp_semantic_stack->identifier_semantic_type == Error_Semantic_Type)
+        {
+            fprintf(semantic_file,"Error: two different identifier one is bool and other is float/int\n");
+
+        }
+        pushSemanticStack(temp_semantic_stack);
+*/
 
         break;
 

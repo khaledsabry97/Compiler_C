@@ -1,4 +1,4 @@
-int plus(int n1, int n1)
+int plus(int n1, int n2)
 {
     int sum;
     sum = n1 + n2;
@@ -9,11 +9,13 @@ int main ()
 {
     int n1;
     int n2;
+    float n3;
     int result;
     int value;
     n1 = 10;
     n2 = 20;
     n1 = -n1;
+    n1 = n3;
     value = plus(n1, n2);
     result = plus(value, n2);
     return 0;

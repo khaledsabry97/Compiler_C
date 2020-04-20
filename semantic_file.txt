@@ -1,0 +1,1 @@
+ERROR: Identifier n1 is not the same type of the assignment

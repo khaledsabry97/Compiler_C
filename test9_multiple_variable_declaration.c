@@ -11,6 +11,8 @@ int main ()
     int y;
     int x;
     int x;
+    count = 10;
+    x = count;
 
     while( 7 > 3 )
     {
@@ -86,6 +88,5 @@ int main ()
         x = (x * x) + ( y * y );
     }
 
-    
     return 0;
 }

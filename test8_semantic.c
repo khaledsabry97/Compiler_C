@@ -1,4 +1,6 @@
 int count;
+
+
 int main ()
 {
     //second identification for same variable name and type
@@ -11,7 +13,7 @@ int main ()
 
     // use a variable without identification
     //counts = 10;
-    count = count + no_value ;
+    counts = count + no_value ;
 
     for ( count = 10 ; count < 100 ; count = count + 1 )
     {
