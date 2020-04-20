@@ -9,23 +9,27 @@ struct CHECKS
     bool check_identifier_type;
 };
 
-struct Semantic {
-    struct Semantic* temp;
-    struct Semantic* next;
-
-    IDENTIFIER_SEMANTIC_TYPE identifier_semantic_type;
-    char* identifier_name;
-    bool is_function;
-    bool is_assigned;
-    int value;
-    struct SCOPE* scope;
-};
-
 struct SEMANTIC_STACK {
     IDENTIFIER_SEMANTIC_TYPE identifier_semantic_type;
     struct SEMANTIC_STACK* prev;
 
 };
+
+struct Semantic {
+    struct Semantic* temp;
+    struct Semantic* next;
+
+    struct SEMANTIC_STACK* args_stack;
+    IDENTIFIER_SEMANTIC_TYPE identifier_semantic_type;
+    char* identifier_name;
+    bool is_function;
+    bool is_assigned;
+    bool is_parameter;
+    int value;
+    struct SCOPE* scope;
+};
+
+
 
 struct Semantic* head;
 
@@ -266,10 +270,19 @@ int checkSemantic(char* name, bool is_function,struct SCOPE* current_scope,struc
 }
 
 
+struct SEMANTIC_STACK* semantic_stack_head;
+
+struct SEMANTIC_STACK* newSemanticStack()
+{
+    return (struct SEMANTIC_STACK*) malloc (sizeof (struct SEMANTIC_STACK));
+}
+
+
 void addNewSemantic(struct Semantic* semantic)
 {
     semantic->next = NULL;
     semantic->temp = NULL;
+    semantic->args_stack = NULL;
     if (head == NULL)
     {
         head = semantic;
@@ -284,6 +297,24 @@ void addNewSemantic(struct Semantic* semantic)
     semantic->scope = newScopeToSemantic(semantic->scope,NULL);
 
     return;
+
+}
+
+void addArgsToSemantic(struct Semantic* semantic, IDENTIFIER_SEMANTIC_TYPE identifier_semantic_type)
+{
+    if (semantic->args_stack == NULL)
+    {
+        semantic->args_stack = newSemanticStack();
+        semantic->args_stack->identifier_semantic_type = identifier_semantic_type;
+        return;
+    }
+    struct SEMANTIC_STACK* temp = semantic->args_stack;
+    while(temp->prev != NULL) //deal with prev as if it's next in this case
+    {
+        temp = temp->prev;
+    }
+    temp->prev = newSemanticStack();
+    temp->prev->identifier_semantic_type = identifier_semantic_type;
 
 }
 
@@ -330,26 +361,51 @@ struct Semantic* findSemanticIdentifier(char* identifier_name)
     return NULL;
 }
 
-struct Semantic* findSemanticFunction(char* identifier_name)
+struct Semantic* findSemanticFunction(char* identifier_name,struct SEMANTIC_STACK* semantic_stack)
 {
     struct Semantic* list_of_names = findIdentifier(identifier_name,true);
-    return list_of_names;
+    struct SEMANTIC_STACK* temp = semantic_stack;
+    struct SEMANTIC_STACK* temp2;
+
+    while(list_of_names != NULL)
+    {
+        //printf("%s\n",list_of_names->identifier_name);
+        temp2 = list_of_names->args_stack;
+        while (true)
+        {
+            if(temp2 == NULL || temp == NULL)
+            {
+                //printf("sdfsdfsf\n");
+                break;
+            }
+            if(temp2->identifier_semantic_type != temp->identifier_semantic_type)
+            {
+                //printf("%d - %d\n",temp2->identifier_semantic_type ,temp->identifier_semantic_type );
+                break;
+            }
+            temp2 = temp2->prev; //deal with prev as next
+            temp = temp->prev;
+        }
+
+        if(temp2 == NULL && temp == NULL)
+        {
+            return list_of_names;
+        }
+        temp = semantic_stack;
+        list_of_names = list_of_names->temp;
+    }
+    return NULL;
 }
 
 
 
-struct SEMANTIC_STACK* semantic_stack_head;
 
-struct SEMANTIC_STACK* newSemanticStack()
-{
-    return (struct SEMANTIC_STACK*) malloc (sizeof (struct SEMANTIC_STACK));
-}
 
 void pushSemanticStack(struct SEMANTIC_STACK* semantic_stack)
 {
     if (semantic_stack_head == NULL)
     {
-        printf("good");
+        //printf("good");
         semantic_stack_head = semantic_stack;
         semantic_stack_head->prev = NULL;
     }
@@ -367,7 +423,7 @@ struct SEMANTIC_STACK* popSemanticStack()
 {
     if(semantic_stack_head == NULL)
     {
-        printf("bad");
+        //printf("bad");
         return NULL;
     }
     else
@@ -443,3 +499,10 @@ IDENTIFIER_SEMANTIC_TYPE compareTypes(IDENTIFIER_SEMANTIC_TYPE type1, IDENTIFIER
 // you can identify funcation with the same name of a variable no problem
 // tell you how many times the variable declared
 // tell if an identifier not declared before wether if it's on the rhs or lhs
+// error: if rhs identifier is not assigned value before it's used
+// error: if rhs is different type from lhs
+// error: if compare between integer and bool or between float and bool
+// error: if not found a function name matching the calling function
+// float [+/*-] integer => float
+// float/integer [><==] float/integer => bool
+// 

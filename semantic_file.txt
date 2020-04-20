@@ -1,7 +1,3 @@
-ERROR: Identifier n1 wasn't assigned any value before to be used
-ERROR: Identifier n2 wasn't assigned any value before to be used
-Error: two different identifier one is bool and other is float/int
-ERROR: Identifier sum is not the same type of the assignment
-ERROR: Identifier sum wasn't assigned any value before to be used
-ERROR: Identifier n3 wasn't assigned any value before to be used
-ERROR: Identifier n1 is not the same type of the assignment
+ERROR: didn't found any function matching the types or number of arguments
+ERROR: Solve previous error
+ERROR: Identifier value wasn't assigned any value before to be used

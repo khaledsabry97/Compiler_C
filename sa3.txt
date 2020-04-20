@@ -14,9 +14,8 @@ int main ()
     int value;
     n1 = 10;
     n2 = 20;
-    n1 = -n1;
-    n1 = n3;
-    value = plus(n1, n2);
+    n3 = 30.0;
+    value = plus(n3, n2);
     result = plus(value, n2);
     return 0;
 }

@@ -320,20 +320,20 @@ void processIdentifier(struct IDENTIFIER *identifier){
         
 
 
-        temp_semantic = newSemantic();
-        temp_semantic->identifier_name = identifier->ID;
+        struct Semantic* temp_semantic_identifier = newSemantic();
+        temp_semantic_identifier->identifier_name = identifier->ID;
 
         char *cur_type;
         if (current_type == Int_Type)
         {
             cur_type = "int";
-            temp_semantic->identifier_semantic_type= Int_Semantic_Type;
+            temp_semantic_identifier->identifier_semantic_type= Int_Semantic_Type;
 
         }
         else if(current_type == Float_Type)
         {
             cur_type = "float";
-            temp_semantic->identifier_semantic_type= Float_Semantic_Type;
+            temp_semantic_identifier->identifier_semantic_type= Float_Semantic_Type;
         }
         fprintf(table_file, "%10d%10s%10s%10s%10s\n", row_no++, cur_type, identifier->ID, "", is_parameter ? "parameter" : "variable"); //row_no(x) ++row_no(x) row_no++(o)
         if(is_parameter== true)
@@ -342,14 +342,20 @@ void processIdentifier(struct IDENTIFIER *identifier){
             sprintf(temp->str, identifier->ID);
             push(temp);
         }
-        temp_semantic->is_assigned = false;
-        temp_semantic->is_function = false;
-        temp_semantic->scope = scopeHead;
+        temp_semantic_identifier->is_assigned = false;
+        temp_semantic_identifier->is_function = false;
+        temp_semantic_identifier->scope = scopeHead;
+        temp_semantic_identifier->is_parameter = is_parameter;
     
-        int count = checkSemantic(temp_semantic->identifier_name,false,temp_semantic->scope,NULL,temp_semantic->identifier_semantic_type);
+        int count = checkSemantic(temp_semantic_identifier->identifier_name,false,temp_semantic_identifier->scope,NULL,temp_semantic_identifier->identifier_semantic_type);
         if(count != 0)
-        fprintf(semantic_file,"ERORR: variable %s has been declared before %d times before \n",temp_semantic->identifier_name,count);
-        addNewSemantic(temp_semantic);
+        fprintf(semantic_file,"ERORR: variable %s has been declared before %d times before \n",temp_semantic_identifier->identifier_name,count);
+        addNewSemantic(temp_semantic_identifier);
+        if(is_parameter == true)
+        {
+            addArgsToSemantic(temp_semantic,temp_semantic_identifier->identifier_semantic_type);
+        }
+
 
 
         
@@ -716,6 +722,12 @@ void processAssignStmt(struct ASSIGN_STMT *assign)
 
         if (temp_semantic_stack->identifier_semantic_type != semantic_temp->identifier_semantic_type)
         {
+            if(temp_semantic_stack->identifier_semantic_type == Error_Semantic_Type)
+            {
+            fprintf(semantic_file,"ERROR: Solve previous error\n",assign->ID);
+
+            }
+            else
             fprintf(semantic_file,"ERROR: Identifier %s is not the same type of the assignment\n",assign->ID);
         }
         else
@@ -738,6 +750,9 @@ void processArg(struct ARG *arg)
     processExpr(arg->expr,true);
     temp = pop();
     fprintf(tree_file,"\n BIND %s , $%d",temp->str,parameter_count++);
+
+    temp_semantic_stack = popSemanticStack();
+    pushSemanticStack(temp_semantic_stack);
 
 
 }
@@ -774,12 +789,12 @@ void processExpr(struct EXPR *expr,bool must_return)
             pushSemanticStack(temp_semantic_stack);
         }
 
-        else if(temp_semantic->is_assigned == false)
+        else if(temp_semantic->is_assigned == false && temp_semantic->is_parameter == false)
         {
             fprintf(semantic_file,"ERROR: Identifier %s wasn't assigned any value before to be used\n",id_expr->ID);
                  //add to semantic stack
             temp_semantic_stack = newSemanticStack();
-            temp_semantic_stack->identifier_semantic_type = Error_Semantic_Type;
+            temp_semantic_stack->identifier_semantic_type = temp_semantic->identifier_semantic_type;
             pushSemanticStack(temp_semantic_stack);
         }
         else
@@ -1015,16 +1030,61 @@ void processExpr(struct EXPR *expr,bool must_return)
         int jump_lable = counter;
         fprintf(tree_file,"\n BIND %s%d",call->ID,counter++);
 
-        temp_semantic = findSemanticFunction(call->ID);
-        temp_semantic_stack = newSemanticStack();
-        temp_semantic_stack->identifier_semantic_type = temp_semantic->identifier_semantic_type;
-        pushSemanticStack(temp_semantic_stack);
+
     
         if (call->arg != NULL)
         {
             parameter_count = 1;
             processArg(call->arg);
         }
+
+        
+        //check function existance
+        struct SEMANTIC_STACK* args_stack;
+        args_stack = NULL;
+        int parmater_count_temp = parameter_count -1;
+        
+        while(parmater_count_temp > 0)
+        {
+            printf("h%dh\n",parmater_count_temp);
+            if (args_stack == NULL)
+            {
+                args_stack = popSemanticStack();
+                args_stack->prev = NULL;
+            }
+            else
+            {
+                struct SEMANTIC_STACK* temp2;
+                temp2 = args_stack;
+                args_stack = popSemanticStack();
+                args_stack->prev = temp2;
+            }
+            parmater_count_temp = parmater_count_temp - 1;
+        }
+        
+        printf("args%d\n",args_stack);
+        temp_semantic = findSemanticFunction(call->ID,args_stack);
+        temp_semantic_stack = newSemanticStack();
+        printf("%d\n",temp_semantic);
+        if (temp_semantic == NULL)
+        {
+            fprintf(semantic_file,"ERROR: didn't found any function matching the types or number of arguments\n");
+            temp_semantic_stack->identifier_semantic_type = Error_Semantic_Type;
+        }
+        else
+        {
+            printf("found%d\n",temp_semantic->identifier_semantic_type);
+            temp_semantic_stack->identifier_semantic_type = temp_semantic->identifier_semantic_type;
+        }
+        pushSemanticStack(temp_semantic_stack);
+
+
+
+
+
+
+
+
         fprintf(tree_file, "\n JMP %s", call->ID);
         fprintf(tree_file,"\n %s%d:",call->ID,jump_lable);
         //TO DO IN ASSEMBLY CHECK if it's a return type function or not
