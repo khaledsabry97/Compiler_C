@@ -702,7 +702,7 @@ void processAssignStmt(struct ASSIGN_STMT *assign)
 
         //check if identifier was found
 
-    struct SEMANTIC_STACK* semantic_temp = findSemantic(assign->ID);
+    struct Semantic* semantic_temp = findSemanticIdentifier(assign->ID);
     if(semantic_temp == NULL)
         {
             fprintf(semantic_file,"ERROR: Identifier %s wasn't declared before to use it in an assignment\n",assign->ID);
@@ -710,17 +710,18 @@ void processAssignStmt(struct ASSIGN_STMT *assign)
     else
     {
 
-            //check if identifier type match todo and assign identifier
-             temp_semantic_stack = popSemanticStack();
-            //printf("%d\n",temp_semantic_stack);
+        //check if identifier type match todo and assign identifier
+            temp_semantic_stack = popSemanticStack();
+        //printf("%d\n",temp_semantic_stack);
 
-           if (temp_semantic_stack->identifier_semantic_type != semantic_temp->identifier_semantic_type)
-            {
-                fprintf(semantic_file,"ERROR: Identifier %s is not the same type of the assignment\n",assign->ID);
-
-            }
-
-        
+        if (temp_semantic_stack->identifier_semantic_type != semantic_temp->identifier_semantic_type)
+        {
+            fprintf(semantic_file,"ERROR: Identifier %s is not the same type of the assignment\n",assign->ID);
+        }
+        else
+        {
+            semantic_temp->is_assigned = true;            
+        }
     }
 
     fprintf(tree_file, "\n MOV %s , %s",pop()->str,assign->ID);
@@ -762,11 +763,20 @@ void processExpr(struct EXPR *expr,bool must_return)
         push(temp);
 
         //check identifier is found
-        temp_semantic = findSemantic(id_expr->ID);
+        temp_semantic = findSemanticIdentifier(id_expr->ID);
         printf("hellor");
-        if(temp_semantic == NULL)
+        if(temp_semantic == NULL )
         {
                 fprintf(semantic_file,"ERROR: Identifier %s wasn't declared before to be used\n",id_expr->ID);
+                 //add to semantic stack
+            temp_semantic_stack = newSemanticStack();
+            temp_semantic_stack->identifier_semantic_type = Error_Semantic_Type;
+            pushSemanticStack(temp_semantic_stack);
+        }
+
+        else if(temp_semantic->is_assigned == false)
+        {
+            fprintf(semantic_file,"ERROR: Identifier %s wasn't assigned any value before to be used\n",id_expr->ID);
                  //add to semantic stack
             temp_semantic_stack = newSemanticStack();
             temp_semantic_stack->identifier_semantic_type = Error_Semantic_Type;
@@ -780,9 +790,6 @@ void processExpr(struct EXPR *expr,bool must_return)
             pushSemanticStack(temp_semantic_stack);
             
         }
-        
-
-       
         break;
     }
     case IntNum_Type:
@@ -852,7 +859,6 @@ void processExpr(struct EXPR *expr,bool must_return)
         push(temp);
 
         //add to semantic stack
-        /*printf("sdf");
         struct SEMANTIC_STACK* left_semantic = popSemanticStack();
         struct SEMANTIC_STACK* right_semantic = popSemanticStack();
         temp_semantic_stack = newSemanticStack();
@@ -863,7 +869,7 @@ void processExpr(struct EXPR *expr,bool must_return)
 
         }
         pushSemanticStack(temp_semantic_stack);
-*/
+
 
         break;
 
@@ -888,6 +894,19 @@ void processExpr(struct EXPR *expr,bool must_return)
             fprintf(tree_file, "\n DIV %s , %s , DIV_RES%d ",left->str,right->str,counter++);
         }
         push(temp);
+
+
+
+        struct SEMANTIC_STACK* left_semantic = popSemanticStack();
+        struct SEMANTIC_STACK* right_semantic = popSemanticStack();
+        temp_semantic_stack = newSemanticStack();
+        temp_semantic_stack->identifier_semantic_type = compareTypes(left_semantic->identifier_semantic_type,right_semantic->identifier_semantic_type);
+        if(temp_semantic_stack->identifier_semantic_type == Error_Semantic_Type)
+        {
+            fprintf(semantic_file,"Error: two different identifier one is bool and other is float/int\n");
+
+        }
+        pushSemanticStack(temp_semantic_stack);
 
         break;
 }
@@ -929,6 +948,22 @@ void processExpr(struct EXPR *expr,bool must_return)
 
             break;
         }
+
+
+        struct SEMANTIC_STACK* left_semantic = popSemanticStack();
+        struct SEMANTIC_STACK* right_semantic = popSemanticStack();
+        temp_semantic_stack = newSemanticStack();
+        if(left_semantic->identifier_semantic_type == Error_Semantic_Type || right_semantic->identifier_semantic_type == Error_Semantic_Type)
+        {
+            printf("er\n");
+        }
+        else
+        {
+            temp_semantic_stack->identifier_semantic_type = Bool_Semantic_Type;
+            pushSemanticStack(temp_semantic_stack);
+
+        }
+        
         break;
     }
     case Eql_Type:
@@ -954,6 +989,22 @@ void processExpr(struct EXPR *expr,bool must_return)
             fprintf(tree_file, "\n CMPNE %s , %s , RES%d ",left->str,right->str,counter++);
 
         }
+
+
+        struct SEMANTIC_STACK* left_semantic = popSemanticStack();
+        struct SEMANTIC_STACK* right_semantic = popSemanticStack();
+        temp_semantic_stack = newSemanticStack();
+        if(left_semantic->identifier_semantic_type == Error_Semantic_Type || right_semantic->identifier_semantic_type == Error_Semantic_Type)
+        {
+            printf("er\n");
+        }
+        else
+        {
+            temp_semantic_stack->identifier_semantic_type = Bool_Semantic_Type;
+            pushSemanticStack(temp_semantic_stack);
+
+        }
+
         break;
     }
 
@@ -963,6 +1014,11 @@ void processExpr(struct EXPR *expr,bool must_return)
         struct FUNC_CALL *call = expr->expression.func_call;
         int jump_lable = counter;
         fprintf(tree_file,"\n BIND %s%d",call->ID,counter++);
+
+        temp_semantic = findSemanticFunction(call->ID);
+        temp_semantic_stack = newSemanticStack();
+        temp_semantic_stack->identifier_semantic_type = temp_semantic->identifier_semantic_type;
+        pushSemanticStack(temp_semantic_stack);
     
         if (call->arg != NULL)
         {

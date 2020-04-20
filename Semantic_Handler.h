@@ -312,22 +312,28 @@ struct Semantic* newSemantic()
 }
 
 
-struct Semantic* findSemantic(char* identifier_name)
+struct Semantic* findSemanticIdentifier(char* identifier_name)
 {
     struct Semantic* list_of_names = findIdentifier(identifier_name,false);
-    printf("%s \n",identifier_name);
     while(list_of_names != NULL)
     {
         //printf("%s\n",list_of_names->identifier_name);
         bool ret = checkScope(list_of_names->scope,scopeHead);
         if (ret == true)
         {
+            list_of_names->temp = NULL;
             return list_of_names;
         }
 
         list_of_names = list_of_names->temp;
     }    
     return NULL;
+}
+
+struct Semantic* findSemanticFunction(char* identifier_name)
+{
+    struct Semantic* list_of_names = findIdentifier(identifier_name,true);
+    return list_of_names;
 }
 
 
