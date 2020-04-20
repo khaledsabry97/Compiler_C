@@ -1,4 +1,6 @@
 #include "print.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef enum { Int_Semantic_Type, Float_Semantic_Type } IDENTIFIER_SEMANTIC_TYPE; 
 struct CHECKS
@@ -22,6 +24,25 @@ struct Semantic {
 struct Semantic* head;
 
 
+
+struct SCOPE* newScopeToSemantic(struct SCOPE* current_scope,struct SCOPE* parent_scope) {
+    if (current_scope == NULL)
+        return NULL;
+    struct SCOPE* node = (struct SCOPE*) malloc (sizeof(struct SCOPE));
+    node->scope_type = current_scope->scope_type;
+    node->do_while_count = current_scope->do_while_count;
+    node->while_count = current_scope->while_count;
+    node->for_count  = current_scope->for_count;
+    node->if_count = current_scope->if_count;
+    node->stmt_group_count = current_scope->stmt_group_count;
+    node->name = current_scope->name; //only important for function scope
+    node->parent_scope = parent_scope;
+
+    node->child_scope = newScopeToSemantic(current_scope->child_scope,node);
+    return node;
+}
+
+
 //return a list of same identifier name
 struct Semantic* findIdentifier(char* name,bool is_function)
 {
@@ -38,62 +59,168 @@ struct Semantic* findIdentifier(char* name,bool is_function)
         //printf("Comparison : %s - %s - %d \n",temp->identifier_name, name,strcmp(temp->identifier_name,name));
         if(strcmp(temp->identifier_name,name) == 0 && temp->is_function == is_function ) // comapre between two names and if function
         {
+
             if (new_list == NULL)
             {
+                //printf("newlist\n");
                 new_list = temp;
                 new_list_head = new_list;
             }
             else
             {
+                //printf("oldlist\n");
                 new_list->temp = temp;
                 new_list = new_list->temp;
-                new_list->temp = NULL;
-            }
-        }
-        temp = temp->next;
-    }
+                //printf("oldlist\n");
 
-    
+            }
+            temp = temp->next;
+        }
+        else
+            temp = temp->next;
+    }
+    //printf("out\n");
+    if(new_list != NULL)
+        new_list->temp = NULL;
+
+
     return new_list_head;
 }
 
+
 bool checkScope(struct SCOPE* identifier_scope,struct SCOPE* current_scope)
 {
-    if(identifier_scope->scope_type == Scope_Global_Type)
+    
+    if(identifier_scope->child_scope == NULL)
+    {
+        //printf("global_scope");
         return true;
+    }
+
+
+
+    /*struct SCOPE* temp;
+
     while(current_scope->parent_scope != NULL)
     {
-        current_scope = current_scope->parent_scope;
+        printf("1%s",current_scope->name);
+        temp = current_scope;
+        current_scope = current_scope->parent_scope;  
+        if (current_scope == NULL)
+        {
+            current_scope = temp;
+            break; 
+        }     
     }
-    while(identifier_scope->parent_scope != NULL)
+    while(temp->parent_scope != NULL)
     {
-        identifier_scope = identifier_scope->parent_scope;
-    }
-    while(identifier_scope->do_while_count == current_scope->do_while_count
+        printf("%s",temp->name);
+        temp = temp->parent_scope;
+
+    }*/
+    
+
+    /*while(identifier_scope->do_while_count == current_scope->do_while_count
     && identifier_scope->while_count == current_scope->while_count
     && identifier_scope->for_count == current_scope->for_count
     && identifier_scope->if_count == current_scope->if_count
-    && identifier_scope->stmt_group_count == current_scope->stmt_group_count )
+    && identifier_scope->stmt_group_count == current_scope->stmt_group_count
+    && identifier_scope->name == current_scope->name )
     {
+        printf("hello");
         identifier_scope = identifier_scope->child_scope;
         current_scope = current_scope->child_scope;
+        printf("%s",identifier_scope->name);
         if(identifier_scope == NULL)
             return true;
         if(current_scope == NULL)
             return false;        
+    }*/
+
+
+    while(1 == 1)
+    {
+
+        identifier_scope = identifier_scope->child_scope;
+        current_scope = current_scope->child_scope;
+        if(identifier_scope == NULL)
+        {
+            return true;
+
+        }
+        if(current_scope == NULL)
+            return false;      
+
+
+        if(identifier_scope->parent_scope->do_while_count != current_scope->parent_scope->do_while_count)
+            return false;
+        if(identifier_scope->parent_scope->for_count != current_scope->parent_scope->for_count)
+            return false;
+        if(identifier_scope->parent_scope->while_count != current_scope->parent_scope->while_count)
+            return false;
+        if(identifier_scope->parent_scope->if_count != current_scope->parent_scope->if_count)
+            return false;
+        if(identifier_scope->parent_scope->stmt_group_count != current_scope->parent_scope->stmt_group_count)
+            return false;
+        if(strcmp(identifier_scope->name,current_scope->name) != 0)
+            return false;
+
+        
+       // printf("%s",identifier_scope->name);
+  
     }
+
+    
+    //printf("sdfsdfsd%s",current_scope->name);
+
+    /*while(identifier_scope->do_while_count - current_scope->do_while_count == 0 )
+    {
+        identifier_scope = identifier_scope->child_scope;
+        current_scope = current_scope->child_scope;
+        printf("%s",identifier_scope->name);
+        if(identifier_scope == NULL)
+            return true;
+        if(current_scope == NULL)
+            return false;        
+    }*/
+   
+    
+    //printf("two");
+
     return false;
 }
 
 
+
+/*
+bool checkScope(char* identifier_scope,char* current_scope)
+{
+    int i = 1;
+
+    int size_of_identifier = strlen(identifier_scope);
+    if(size_of_identifier > strlen(current_scope))
+    return false;
+    while(i <= size_of_identifier)
+    {
+        if(strncmp(identifier_scope, current_scope,i) != 0)
+        return false;
+        i+=1;
+    }
+    return true;
+}
+*/
+
 int checkSemantic(char* name, bool is_function,struct SCOPE* current_scope,struct CHECKS* checks,IDENTIFIER_SEMANTIC_TYPE identifier_semantic_type)
 {
+    //printf("%s\n",current_scope);
+            printf("before\n");
+
     struct Semantic* list_of_names = findIdentifier(name,is_function);
     int count = 0;
-    
-
-    if(is_function)
+        printf("before\n");
+    if(is_function == true)
     {
+
           while(list_of_names != NULL)
             {
 
@@ -112,23 +239,24 @@ int checkSemantic(char* name, bool is_function,struct SCOPE* current_scope,struc
                
                 list_of_names = list_of_names->temp;
             }
+
                 
-              
-            
+        return count; //0 = no matching - 1 = one match - more than 1 is wrong
+
+
     }
-    else
-    {
+
         while(list_of_names != NULL)
         {
+            printf("%s\n",list_of_names->identifier_name);
             bool ret = checkScope(list_of_names->scope,current_scope);
             if (ret == true)
             {
                 count +=1;
             }
+
             list_of_names = list_of_names->temp;
-        }
-    }
-    
+        }    
    
     return count; //0 = no matching - 1 = one match - more than 1 is wrong
 }
@@ -136,6 +264,8 @@ int checkSemantic(char* name, bool is_function,struct SCOPE* current_scope,struc
 
 void addNewSemantic(struct Semantic* semantic)
 {
+    semantic->next = NULL;
+    semantic->temp = NULL;
     if (head == NULL)
     {
         head = semantic;
@@ -147,6 +277,8 @@ void addNewSemantic(struct Semantic* semantic)
         temp = temp->next;
     }
     temp->next = semantic;
+    semantic->scope = newScopeToSemantic(semantic->scope,NULL);
+
     return;
 
 }
@@ -170,3 +302,15 @@ struct CHECKS* newCheck()
         return (struct CHECKS*) malloc (sizeof (struct CHECKS));
 }
 
+struct Semantic* newSemantic()
+{
+        return (struct Semantic*) malloc (sizeof (struct Semantic));
+}
+
+
+
+
+
+
+//you can't have two names of same type in function
+// you can have more than one function with same name but different return types

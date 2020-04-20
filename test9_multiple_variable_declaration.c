@@ -44,7 +44,7 @@ int main ()
     do
     {
         int x;
-        
+        int x;
         x = y+1;
         if(x >= y)
         {
@@ -60,14 +60,25 @@ int main ()
         }
     } while ( x > y);
 
-    while ( x > y )
+
+    do
     {
         int x;
-    }
-    
-
-
-
+        int x;
+        x = y+1;
+        if(x >= y)
+        {
+            y = x;
+        }
+        else if (x <= y)
+        {
+            x = y;
+        }
+        else if( x == y)
+        {
+            x = y;
+        }
+    } while ( x > y);
     for( x = 5; x <y;x = x+1)
     {
         x = x + 2;

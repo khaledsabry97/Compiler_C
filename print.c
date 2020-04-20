@@ -7,7 +7,7 @@ extern FILE *tree_file;
 extern FILE *table_file;
 extern FILE *semantic_file;
 
-
+char *result;
 
 //global variable for making symboltable
 int row_no;
@@ -22,6 +22,7 @@ struct Assembly *temp;
 int counter = 0;
 int parameter_count = 1;
 struct CHECKS* temp_check;
+struct Semantic* temp_semantic;
 
 
 
@@ -34,6 +35,8 @@ struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
     node->for_count  = 0;
     node->if_count = 0;
     node->stmt_group_count = 0;
+    if(scope_type == Scope_Global_Type)
+        node->name = "Global Variables";
     node->name = current_func_name; //only important for function scope
 
     if(parent_scope != NULL) 
@@ -81,51 +84,87 @@ int getMyOrder(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
 
 
 
+//char to_print[1200];
 
 
-void printScopePath()
+char* printScopePath(char* to_print1)
 {
+char to_print[1200];
+//char *to_print = (char *)malloc(1000);
+
     //when printing global variable
     if (scopeTail->scope_type == Scope_Global_Type)
     {
         fprintf(table_file, "Global Variables\n");
-        return; 
+        sprintf(to_print, "Global Variables\n");
+        return to_print;
     }
-    else
+
+    fprintf(table_file, "\nFunction name => ");
+    sprintf(to_print, "\nFunction name => ");
+    sprintf(to_print1, "\nFunction name => ");
+
+    fprintf(table_file, "%s", current_func_name);
+    sprintf(to_print, "%s %s", to_print,current_func_name);
+
+    struct SCOPE *curNode = scopeHead->child_scope; //start from Function node
+    while (curNode->child_scope != NULL)
     {
-        fprintf(table_file, "\nFunction name => ");
-        fprintf(table_file, "%s", current_func_name);
-        struct SCOPE *curNode = scopeHead->child_scope; //start from Function node
-        while (curNode->child_scope != NULL)
+        fprintf(table_file, " - ");
+        sprintf(to_print, "%s - ", to_print);
+
+        switch (curNode->child_scope->scope_type)
         {
-            fprintf(table_file, " - ");
-            switch (curNode->child_scope->scope_type)
-            {
-            case Scope_Do_While_Type:
-                fprintf(table_file, "do_while");
-                break;
+        case Scope_Do_While_Type:
+            fprintf(table_file, "do_while");
+            sprintf(to_print, "%s do_while ", to_print);
 
-            case Scope_While_Type:
-                fprintf(table_file, "while");
-                break;
+            break;
 
-            case Scope_For_Type:
-                fprintf(table_file, "for");
-                break;
+        case Scope_While_Type:
+            fprintf(table_file, "while");
+            sprintf(to_print, "%s while ", to_print);
 
-            case Scope_If_Type:
-                fprintf(table_file, "if");
-                break;
+            break;
 
-            case Scope_Stmt_Group_Type:
-                fprintf(table_file, "group_stmt");
-                break;
-            }
-            fprintf(table_file, "[%d]", getMyOrder(curNode->child_scope->scope_type, curNode));
-            curNode = curNode->child_scope;
+        case Scope_For_Type:
+            fprintf(table_file, "for");
+            sprintf(to_print, "%s for ", to_print);
+
+            break;
+
+        case Scope_If_Type:
+            fprintf(table_file, "if");
+            sprintf(to_print, "%s if ", to_print);
+
+            break;
+
+        case Scope_Stmt_Group_Type:
+            fprintf(table_file, "group_stmt");
+            sprintf(to_print, "%s group_stmt ", to_print);
+
+            break;
         }
-        fprintf(table_file, "\n");
+        fprintf(table_file, "[%d]", getMyOrder(curNode->child_scope->scope_type, curNode));
+        sprintf(to_print, "%s [%d] ", to_print,getMyOrder(curNode->child_scope->scope_type, curNode));
+
+        curNode = curNode->child_scope;
     }
+    fprintf(table_file, "\n");
+    sprintf(to_print, "%s\n ", to_print);
+    //char* results = (char*)malloc(sizeof(char) * strlen(to_print)+1); 
+    //strcpy(results,to_print);
+    //printf("%s \n", &to_print[0]);
+    //printf("%s \n", results);
+    //strcat(results,to_print);
+    //printf("%s \n", results);
+    //strcpy (to_print1, to_print);
+   
+
+    //printf("%s \n", to_print1);
+
+
+    return to_print1;
 }
 
 
@@ -139,8 +178,9 @@ void printTitle()
 {
 
     row_no = 1;
+    char s[1000];
+    printScopePath(s);
 
-    printScopePath();
     fprintf(table_file, "%10s%10s%10s%10s%10s\n", "count", "scope_type", "name", "array", "role");
 }
 
@@ -277,11 +317,23 @@ void processIdentifier(struct IDENTIFIER *identifier){
         if (!printed)
              return;
         
+
+
+        temp_semantic = newSemantic();
+        temp_semantic->identifier_name = identifier->ID;
+
         char *cur_type;
         if (current_type == Int_Type)
+        {
             cur_type = "int";
+            temp_semantic->identifier_semantic_type= Int_Semantic_Type;
+
+        }
         else if(current_type == Float_Type)
+        {
             cur_type = "float";
+            temp_semantic->identifier_semantic_type= Float_Semantic_Type;
+        }
         fprintf(table_file, "%10d%10s%10s%10s%10s\n", row_no++, cur_type, identifier->ID, "", is_parameter ? "parameter" : "variable"); //row_no(x) ++row_no(x) row_no++(o)
         if(is_parameter== true)
         {
@@ -289,29 +341,44 @@ void processIdentifier(struct IDENTIFIER *identifier){
             sprintf(temp->str, identifier->ID);
             push(temp);
         }
+        temp_semantic->is_assigned = false;
+        temp_semantic->is_function = false;
+        temp_semantic->scope = scopeHead;
+        printf("x1");
+        printf("before\n");
+        printf("before\n");
+
+
+        int count = checkSemantic(temp_semantic->identifier_name,false,temp_semantic->scope,NULL,temp_semantic->identifier_semantic_type);
+        printf("count : %d\n",count);
+        addNewSemantic(temp_semantic);
+
+
+        
     
     }}
 
 
 
 void processFunction(struct FUNCTION *function){
+
     if (function->prev != NULL)
     {
         processFunction(function->prev);
     }
-    struct Semantic *semantic = (struct Semantic*) malloc (sizeof (struct Semantic));
-
+    //struct Semantic *semantic = (struct Semantic*) malloc (sizeof (struct Semantic));
+    temp_semantic = newSemantic();
     current_func_name = function->ID;     //for symboltable
     switch (function->id_type)
         {
         case Int_Type:
             //fprintf(tree_file, "int ");
-            semantic->identifier_semantic_type = Int_Semantic_Type;
+            temp_semantic->identifier_semantic_type = Int_Semantic_Type;
 
             break;
         case Float_Type:
             //fprintf(tree_file, "float ");
-            semantic->identifier_semantic_type = Float_Semantic_Type;
+            temp_semantic->identifier_semantic_type = Float_Semantic_Type;
 
             break;
         default:
@@ -320,16 +387,23 @@ void processFunction(struct FUNCTION *function){
         }
     temp_check = newCheck();
     temp_check->check_identifier_type = true;
+    //char* c = printScopePath(temp_semantic->scope);
+    //printf("%s \n",temp_semantic->scope);
+    //printf("%s \n",c);
 
-    int count = checkSemantic(function->ID,true,scopeTail,temp_check,semantic->identifier_semantic_type);
-    if(count != 0)
-        fprintf(semantic_file,"ERORR: function %s appeared %d times before \n",function->ID,count);
+    //free(c);
+   
 
     //list node
     scopeTail = newScope(Scope_Func_Type, scopeTail); //append it to the end of list
-    semantic->identifier_name = function->ID;
-    semantic->is_function = true;
-    addNewSemantic(semantic);
+    temp_semantic->scope = scopeHead;
+
+    int count = checkSemantic(function->ID,true,temp_semantic->scope,temp_check,temp_semantic->identifier_semantic_type);
+    if(count != 0)
+        fprintf(semantic_file,"ERORR: function %s appeared %d times before \n",function->ID,count);
+    temp_semantic->identifier_name = function->ID;
+    temp_semantic->is_function = true;
+    addNewSemantic(temp_semantic);
 
     //fprintf(tree_file, "%s (", function->ID); //add function name
     fprintf(tree_file, "\n\n %s:",function->ID);
@@ -346,9 +420,11 @@ void processFunction(struct FUNCTION *function){
     print_title = false;
     if (function->parameter != NULL)
     {
+
         printTitle();
         print_title = true;
         parameter_count = 1;
+
         processParameter(function->parameter); //parameter
     }
     if(strcmp(function->ID,"main") != 0)
@@ -557,6 +633,7 @@ void processStmt(struct STMT *stmt){
 
 void processParameter(struct PARAMETER *parameter){
     is_parameter = true;
+
     if (parameter->prev != NULL)
     {
         processParameter(parameter->prev);
@@ -577,6 +654,7 @@ void processParameter(struct PARAMETER *parameter){
         exit(1);
     }
     printed = true;
+
     processIdentifier(parameter->id);
     printed = false;
 
@@ -872,3 +950,10 @@ void processExpr(struct EXPR *expr,bool must_return)
 //$x // x COULD BE A VALUE FROM 0 TO N, $0 SPECIAL FOR RETURN POINTER
 
 //HALT //STOP PROGRAM
+
+
+
+
+
+
+

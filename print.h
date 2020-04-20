@@ -16,7 +16,8 @@ struct SCOPE {
     struct SCOPE* child_scope;
 };
 
-struct SCOPE *scopeHead, *scopeTail;
+struct SCOPE *scopeHead;
+struct SCOPE *scopeTail;
 char* current_func_name;
 
 //make node

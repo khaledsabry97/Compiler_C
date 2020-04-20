@@ -10,7 +10,7 @@ int main ()
     count = count + no_value ;
 
     // use a variable without identification
-    counts = 10;
+    //counts = 10;
     count = count + no_value ;
 
     for ( count = 10 ; count < 100 ; count = count + 1 )

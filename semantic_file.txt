@@ -1,3 +1,0 @@
-ERORR: function func1 appeared 1 times before 
-ERORR: function func1 appeared 2 times before 
-ERORR: function func1 appeared 3 times before 

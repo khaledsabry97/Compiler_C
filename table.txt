@@ -1,36 +1,40 @@
-
-Function name => func1
+Global Variables
      countscope_type      name     array      role
-         1       int         n           parameter
+         1       int         x            variable
 
-Function name => func2
+Function name => x
      countscope_type      name     array      role
-         1       int         n           parameter
-
-Function name => func1
-     countscope_type      name     array      role
-         1       int         n           parameter
-
-Function name => func1
-     countscope_type      name     array      role
-         1       int         n           parameter
-
-Function name => func1
-     countscope_type      name     array      role
-         1       int         n           parameter
-
-Function name => func1
-     countscope_type      name     array      role
-         1       int         n           parameter
+         1       int         x           parameter
 
 Function name => main
      countscope_type      name     array      role
-         1       int    result            variable
+         1       int         y            variable
+         2       int         y            variable
+         3       int         x            variable
+         4       int         x            variable
 
-Function name => main - group_stmt[1]
+Function name => main - while[1]
      countscope_type      name     array      role
-         1       int     comp1            variable
+         1       int         y            variable
+         2       int         x            variable
+         3       int         x            variable
 
-Function name => main - group_stmt[1] - group_stmt[1]
+Function name => main - while[1] - if[1]
      countscope_type      name     array      role
-         1       int     comp2            variable
+         1       int         x            variable
+         2       int         y            variable
+
+Function name => main - while[1] - if[1] - do_while[1]
+     countscope_type      name     array      role
+         1       int         x            variable
+         2       int         y            variable
+
+Function name => main - do_while[1]
+     countscope_type      name     array      role
+         1       int         x            variable
+         2       int         x            variable
+
+Function name => main - do_while[2]
+     countscope_type      name     array      role
+         1       int         x            variable
+         2       int         x            variable

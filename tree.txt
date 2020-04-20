@@ -1,102 +1,144 @@
 
 
- func1:
- MOV $0 , func1_RET0
- MOV $1 , n
+ x:
+ MOV $0 , x_RET0
+ MOV $1 , x
  CLRQ
 
- BIND 1
- JMP func1_RET0
-
-
-
-
- func2:
- MOV $0 , func2_RET1
- MOV $1 , n
- CLRQ
-
- BIND 0
- JMP func2_RET1
-
-
-
-
- func1:
- MOV $0 , func1_RET2
- MOV $1 , n
- CLRQ
-
- BIND 1
- JMP func1_RET2
-
-
-
-
- func1:
- MOV $0 , func1_RET3
- MOV $1 , n
- CLRQ
-
- BIND 1
- JMP func1_RET3
-
-
-
-
- func1:
- MOV $0 , func1_RET4
- MOV $1 , n
- CLRQ
-
- BIND 1
- JMP func1_RET4
-
-
-
-
- func1:
- MOV $0 , func1_RET5
- MOV $1 , n
- CLRQ
-
- BIND 1
- JMP func1_RET5
 
 
 
 
  main:
 
- MUL 5 , 2 , MUL_RES6 
- MUL 5 , 3 , MUL_RES7 
- ADD MUL_RES6 , MUL_RES7 , ADD_RES8 
- MOV ADD_RES8 , result
- ADD 3 , 2 , ADD_RES9 
- DIV ADD_RES9 , 4 , DIV_RES10 
- MUL DIV_RES10 , 10 , MUL_RES11 
- ADD MUL_RES11 , 2 , ADD_RES12 
- ADD ADD_RES12 , 100 , ADD_RES13 
- MOV ADD_RES13 , result
- IF14:
- CMPG result , 0 , RES15 
- JIFN RES15 , END_IF16
-func1(
- BIND result , $2);
+ WHILE1:
+ CMPG 7 , 3 , RES2 
+ JIFN RES2 , END_WHILE3
 
- JMP END_IF17:
- END_IF16:
-func2(
- BIND result , $3);
+ ADD y , 1 , ADD_RES4 
+ MOV ADD_RES4 , x
+ IF5:
+ CMPG x , y , RES6 
+ JIFN RES6 , END_IF7
 
- END_IF17:
-
- MOV 10 , comp1
-
- MOV 20 , comp2
+ DO_WHILE8:
 
 
- HALT
+ CMPG x , y , RES9 
+ JIF RES9 , DO_WHILE8
+ END__DO_WHILE10:
+ MOV x , y
+
+ JMP END_IF11:
+ END_IF7:
+ IF12:
+ CMPL x , y , RES13 
+ JIFN RES13 , END_IF14
+
+ MOV y , x
+
+ JMP END_IF15:
+ END_IF14:
+
+ MOV y , x
+
+ END_IF15:
+ END_IF11:
+
+ JMP WHILE1
+ END_WHILE3:
+ DO_WHILE16:
+
+ ADD y , 1 , ADD_RES17 
+ MOV ADD_RES17 , x
+ IF18:
+ CMPGE x , y , RES19 
+ JIFN RES19 , END_IF20
+
+ MOV x , y
+
+ JMP END_IF21:
+ END_IF20:
+ IF22:
+ CMPLE x , y , RES23 
+ JIFN RES23 , END_IF24
+
+ MOV y , x
+
+ JMP END_IF25:
+ END_IF24:
+ IF26:
+ CMPE x , y , RES27 
+ JIFN RES27 , END_IF28
+
+ MOV y , x
+
+ JMP END_IF29:
+ END_IF28:
+ END_IF29:
+ END_IF25:
+ END_IF21:
+
+ CMPG x , y , RES30 
+ JIF RES30 , DO_WHILE16
+ END__DO_WHILE31:
+ DO_WHILE32:
+
+ ADD y , 1 , ADD_RES33 
+ MOV ADD_RES33 , x
+ IF34:
+ CMPGE x , y , RES35 
+ JIFN RES35 , END_IF36
+
+ MOV x , y
+
+ JMP END_IF37:
+ END_IF36:
+ IF38:
+ CMPLE x , y , RES39 
+ JIFN RES39 , END_IF40
+
+ MOV y , x
+
+ JMP END_IF41:
+ END_IF40:
+ IF42:
+ CMPE x , y , RES43 
+ JIFN RES43 , END_IF44
+
+ MOV y , x
+
+ JMP END_IF45:
+ END_IF44:
+ END_IF45:
+ END_IF41:
+ END_IF37:
+
+ CMPG x , y , RES46 
+ JIF RES46 , DO_WHILE32
+ END__DO_WHILE47:
+ MOV 5 , x
+ FOR48:
+ CMPL x , y , RES49 
+ JIFN RES49 , END_FOR50
+ ADD x , 1 , ADD_RES51 
+ MOV ADD_RES51 , x
+
+ ADD x , 2 , ADD_RES52 
+ MOV ADD_RES52 , x
+ MUL x , 2 , MUL_RES53 
+ MUL x , y , MUL_RES54 
+ ADD MUL_RES53 , MUL_RES54 , ADD_RES55 
+ MOV ADD_RES55 , y
+ MUL x , x , MUL_RES56 
+ MUL y , y , MUL_RES57 
+ ADD MUL_RES56 , MUL_RES57 , ADD_RES58 
+ MOV ADD_RES58 , x
+
+ JMP FOR48
+ END_FOR50:
+ BIND 0
+ JMP x_RET0
 
 
 

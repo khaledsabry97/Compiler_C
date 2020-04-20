@@ -1,3 +1,4 @@
+int n1;
 int func1(int n)
 {
     return 1;
@@ -39,6 +40,7 @@ int main ()
 
     if (result > 0)
     {
+        int result;
         func1(result);
     } else {
         func2(result);
