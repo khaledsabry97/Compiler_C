@@ -296,6 +296,15 @@ void processDeclaration(struct DECLARATION *declaration){
         //fprintf(assembly_file, "float ");
         current_type = Float_Type;
         break;
+
+    case Const_Int_Type:
+        //fprintf(assembly_file, "int ");
+        current_type = Const_Int_Type;
+        break;
+    case Const_Float_Type:
+        //fprintf(assembly_file, "float ");
+        current_type = Const_Float_Type;
+        break;
     default:
         fprintf(stderr, "declaration does not exist.\n");
         exit(1);
@@ -347,12 +356,29 @@ void processIdentifier(struct IDENTIFIER *identifier){
         {
             cur_type = "int";
             temp_semantic_identifier->identifier_semantic_type= Int_Semantic_Type;
+            temp_semantic_identifier->is_const = false;
+
 
         }
         else if(current_type == Float_Type)
         {
             cur_type = "float";
             temp_semantic_identifier->identifier_semantic_type= Float_Semantic_Type;
+            temp_semantic_identifier->is_const = false;
+
+        }
+        else if(current_type == Const_Int_Type)
+        {
+            cur_type = "constant int";
+            temp_semantic_identifier->identifier_semantic_type= Int_Semantic_Type; //to look for later because of constant
+            temp_semantic_identifier->is_const = true;
+
+        }
+        else if(current_type == Const_Float_Type)
+        {
+            cur_type = "constant float";
+            temp_semantic_identifier->identifier_semantic_type= Float_Semantic_Type;
+            temp_semantic_identifier->is_const = true;
         }
         fprintf(symbol_file, "%10d%10s%10s%10s%10s\n", row_no++, cur_type, identifier->ID, "", is_parameter ? "parameter" : "variable"); //row_no(x) ++row_no(x) row_no++(o)
         if(is_parameter== true)
@@ -716,6 +742,15 @@ void processParameter(struct PARAMETER *parameter){
         //fprintf(assembly_file, "float ");
         current_type = Float_Type;
         break;
+
+    case Const_Int_Type:
+        //fprintf(assembly_file, "int ");
+        current_type = Const_Int_Type;
+        break;
+    case Const_Float_Type:
+        //fprintf(assembly_file, "float ");
+        current_type = Const_Float_Type;
+        break;
     default:
         fprintf(stderr, "Declaration does not exist.\n");
         exit(1);
@@ -780,7 +815,7 @@ void processAssignStmt(struct ASSIGN_STMT *assign)
     {
 
         //check if identifier type match todo and assign identifier
-            temp_semantic_stack = popSemanticStack();
+        temp_semantic_stack = popSemanticStack();
         //printf("%d\n",temp_semantic_stack);
 
         if (temp_semantic_stack->identifier_semantic_type != semantic_temp->identifier_semantic_type)
@@ -795,7 +830,21 @@ void processAssignStmt(struct ASSIGN_STMT *assign)
         }
         else
         {
-            semantic_temp->is_assigned = true;            
+            if(semantic_temp->is_const == true && semantic_temp->is_assigned == true)
+            {
+                fprintf(semantic_file,"ERROR: Constant Identifier %s can't be initialized again\n",assign->ID);
+
+            }
+            else if(semantic_temp->is_const == true && semantic_temp->is_parameter == true)
+            {
+                fprintf(semantic_file,"ERROR: Constant Identifier %s can't be initialized again\n",assign->ID);
+
+            }
+            else
+            {
+                semantic_temp->is_assigned = true;            
+            }
+            
         }
     }
 

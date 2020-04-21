@@ -34,6 +34,7 @@
 "!="    return NE;
 int     return INT;
 float   return FLOAT;
+const return CONST;
 if return IF;
 else return ELSE;
 do return DO;

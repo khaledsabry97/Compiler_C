@@ -1,5 +1,7 @@
-int plusx(int n3,int n4)
+int plusx(int n3,const int n5)
 {
+    n3 = n3 + n5;
+    n5 = n3 + n5;
     return 0 ;
 }
 
@@ -22,6 +24,10 @@ int main ()
     n1 = 10;
     n2 = 20;
     n3 = 30.5;
+    n4 = 20;
+    n2 = n4;
+    n2 = n2 + n4;
+    n4 = 10;
     value = plusx(n1, n2);
     n3 = plusx(value, n3);
     

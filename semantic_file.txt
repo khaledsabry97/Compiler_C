@@ -1,0 +1,2 @@
+ERROR: Constant Identifier n5 can't be initialized again
+ERROR: Constant Identifier n4 can't be initialized again

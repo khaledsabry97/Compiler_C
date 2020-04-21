@@ -50,26 +50,27 @@ extern int yydebug;
     FLOATNUM = 260,
     INT = 261,
     FLOAT = 262,
-    MINUS = 263,
-    PLUS = 264,
-    MUL = 265,
-    DIV = 266,
-    LE = 267,
-    GE = 268,
-    EQ = 269,
-    NE = 270,
-    GT = 271,
-    LT = 272,
-    IF = 273,
-    ELSE = 274,
-    FOR = 275,
-    WHILE = 276,
-    DO = 277,
-    RETURN = 278,
-    DOUBLE_QT = 279,
-    SINGLE_QT = 280,
-    UNARY = 281,
-    NO_ELSE = 282
+    CONST = 263,
+    MINUS = 264,
+    PLUS = 265,
+    MUL = 266,
+    DIV = 267,
+    LE = 268,
+    GE = 269,
+    EQ = 270,
+    NE = 271,
+    GT = 272,
+    LT = 273,
+    IF = 274,
+    ELSE = 275,
+    FOR = 276,
+    WHILE = 277,
+    DO = 278,
+    RETURN = 279,
+    DOUBLE_QT = 280,
+    SINGLE_QT = 281,
+    UNARY = 282,
+    NO_ELSE = 283
   };
 #endif
 
@@ -101,7 +102,7 @@ union YYSTYPE
 
 
 
-#line 105 "compiler.tab.h" /* yacc.c:1909  */
+#line 106 "compiler.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

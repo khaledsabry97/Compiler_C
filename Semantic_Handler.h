@@ -24,6 +24,7 @@ struct Semantic {
     char* identifier_name;
     bool is_function;
     bool is_assigned;
+    bool is_const;
     bool is_parameter;
     int function_number;
     int value;

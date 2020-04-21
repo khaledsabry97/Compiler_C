@@ -74,6 +74,7 @@ void yyerror(YYLTYPE t, char *s, ...)
 
 %token INT
 %token FLOAT
+%token CONST
 %token MINUS
 %token PLUS
 %token MUL
@@ -236,6 +237,8 @@ Arg_List: Expr {
 
 Type: INT { $$ = Int_Type;}
     | FLOAT { $$ = Float_Type;}
+    | CONST INT { $$ = Const_Int_Type;}
+    | CONST FLOAT { $$ = Const_Float_Type;}
     ;
 
 
