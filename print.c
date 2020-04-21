@@ -37,13 +37,20 @@ struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
     node->if_count = 0;
     node->stmt_group_count = 0;
     if(scope_type == Scope_Global_Type)
-        node->name = "Global Variables";
-    node->name = current_func_name; //only important for function scope
+        sprintf(node->name, "Global Variables");
+    else
+    //node->name = current_func_name; //only important for function scope
+        sprintf(node->name, "%s",current_func_name);
 
+    //sprintf(node->name,"%s",current_func_name);
+
+    node->function_number = current_func_number;
     if(parent_scope != NULL) 
         parent_scope->child_scope = node;
     node->parent_scope = parent_scope;
     node->child_scope = NULL;
+
+    //printf("curr %s\n",node->name);
     return node;
 }
 
@@ -360,7 +367,12 @@ void processIdentifier(struct IDENTIFIER *identifier){
         int count = checkSemantic(temp_semantic_identifier->identifier_name,false,temp_semantic_identifier->scope,NULL,temp_semantic_identifier->identifier_semantic_type);
         if(count != 0)
             fprintf(semantic_file,"ERORR: variable %s has been declared before %d times before \n",temp_semantic_identifier->identifier_name,count);
+        else
+        {
+            printf("didn't found any variable in the smae scope\n");
+        }
         addNewSemantic(temp_semantic_identifier);
+        printScopeFunctionName(temp_semantic_identifier->scope);
         if(is_parameter == true)
         {
             //printf("\nnew%s\n",temp_semantic->identifier_name);
@@ -384,6 +396,9 @@ void processFunction(struct FUNCTION *function){
     //struct Semantic *semantic = (struct Semantic*) malloc (sizeof (struct Semantic));
     temp_semantic = newSemantic();
     current_func_name = function->ID;     //for symboltable
+    printf("%s\n",current_func_name);
+    //sprintf(current_func_number,function->ID);
+    current_func_number = counter;
     switch (function->id_type)
         {
         case Int_Type:
@@ -408,6 +423,8 @@ void processFunction(struct FUNCTION *function){
     //list node
     scopeTail = newScope(Scope_Func_Type, scopeTail); //append it to the end of list
     temp_semantic->scope = scopeHead;
+    temp_semantic->function_number = current_func_number;
+
 
     //int count = checkSemantic(function->ID,true,temp_semantic->scope,temp_check,temp_semantic->identifier_semantic_type);
     //if(count != 0)
@@ -421,7 +438,6 @@ void processFunction(struct FUNCTION *function){
 
     if(strcmp(function->ID,"main")!= 0)
     {
-        temp_semantic->function_number = counter;
         fprintf(assembly_file, "\n\n %s%d:",function->ID,counter++);
         int jump_lable =  counter;
         fprintf(assembly_file,"\n MOV $0 , %s_RET%d",function->ID,counter++);
@@ -430,7 +446,6 @@ void processFunction(struct FUNCTION *function){
         push(temp);
     }
     print_title = false;
-    addNewSemantic(temp_semantic);
 
 
     if (function->parameter != NULL)
@@ -443,10 +458,12 @@ void processFunction(struct FUNCTION *function){
         processParameter(function->parameter); //parameter
 
     }
-    printf("%s\n",temp_semantic->identifier_name);
+        //addNewSemantic(temp_semantic);
+
+    //printf("%s\n",temp_semantic->identifier_name);
 
 
-/*
+
     if(strcmp(function->ID,"main")!= 0)
     {
         if(findSemanticFunction(function->ID,temp_semantic->args_stack) != NULL)
@@ -455,18 +472,24 @@ void processFunction(struct FUNCTION *function){
         }
         else
         {
+            printf("\n %d error\n",temp_semantic->args_stack);
             addNewSemantic(temp_semantic);
-            printf("\nnew%s\n",temp_semantic->identifier_name);
+            //printf("\nnew%s\n",temp_semantic->identifier_name);
 
         }
         
     }
     else
     {
-            printf("\nnew%s\n",temp_semantic->identifier_name);
+            printf("\n add main \n");
+
+            addNewSemantic(temp_semantic);
+            //printf("\nnew%s\n",temp_semantic->identifier_name);
 
     }
-*/
+
+
+
     if(strcmp(function->ID,"main") != 0)
      fprintf(assembly_file,"\n CLRQ");
 
@@ -789,7 +812,8 @@ void processArg(struct ARG *arg)
     fprintf(assembly_file,"\n BIND %s , $%d",temp->str,parameter_count++);
 
     temp_semantic_stack = popSemanticStack();
-    pushSemanticStack(temp_semantic_stack);
+    //pushSemanticStack(temp_semantic_stack);
+    addArgsToSemantic(temp_semantic,temp_semantic_stack->identifier_semantic_type);
 
 
 }
@@ -1067,6 +1091,7 @@ void processExpr(struct EXPR *expr,bool must_return)
         int jump_lable = counter;
         fprintf(assembly_file,"\n BIND %s%d",call->ID,counter++);
 
+        temp_semantic = newSemantic();
 
     
         if (call->arg != NULL)
@@ -1077,7 +1102,7 @@ void processExpr(struct EXPR *expr,bool must_return)
 
         
         //check function existance
-        struct SEMANTIC_STACK* args_stack;
+        /*struct SEMANTIC_STACK* args_stack;
         args_stack = NULL;
         int parmater_count_temp = parameter_count -1;
         
@@ -1097,10 +1122,10 @@ void processExpr(struct EXPR *expr,bool must_return)
                 args_stack->prev = temp2;
             }
             parmater_count_temp = parmater_count_temp - 1;
-        }
+        }*/
         
-        printf("args%d\n",args_stack);
-        temp_semantic = findSemanticFunction(call->ID,args_stack);
+        //printf("args%d\n",args_stack);
+        temp_semantic = findSemanticFunction(call->ID,temp_semantic->args_stack);
         temp_semantic_stack = newSemanticStack();
         printf("%d\n",temp_semantic);
         if (temp_semantic == NULL)
@@ -1112,6 +1137,8 @@ void processExpr(struct EXPR *expr,bool must_return)
         {
             printf("found%d\n",temp_semantic->identifier_semantic_type);
             temp_semantic_stack->identifier_semantic_type = temp_semantic->identifier_semantic_type;
+            fprintf(assembly_file, "\n JMP %s%d", call->ID,temp_semantic->function_number);
+
         }
         pushSemanticStack(temp_semantic_stack);
 
@@ -1122,7 +1149,6 @@ void processExpr(struct EXPR *expr,bool must_return)
 
 
 
-        fprintf(assembly_file, "\n JMP %s", call->ID);
         fprintf(assembly_file,"\n %s%d:",call->ID,jump_lable);
         //TO DO IN ASSEMBLY CHECK if it's a return type function or not
         int sec_counter = counter;

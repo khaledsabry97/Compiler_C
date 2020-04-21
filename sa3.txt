@@ -1,22 +1,11 @@
-int plus(int n1, int n2)
+int plus(int n3)
 {
-    int sum;
-    sum = n1 + n2;
-    return sum;
+    return ;
 }
+
 
 int main ()
 {
-    int n1;
-    int n2;
-    int x;
-    float n3;
-    int result;
-    int value;
-    n1 = 10;
-    n2 = 20;
-    n3 = 30.0;
-    value = plus(n1, n2);
-    result = plus(value, n2);
+    int n3;
     return 0;
 }

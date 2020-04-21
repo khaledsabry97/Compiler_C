@@ -9,7 +9,9 @@ struct SCOPE {
     int while_count;
     int for_count;
     int if_count;
-    char* name;
+    char name[1000];
+    //char* name_;
+    int function_number;
     int stmt_group_count;
     SCOPE_TYPE scope_type;
     struct SCOPE* parent_scope;
@@ -19,6 +21,7 @@ struct SCOPE {
 struct SCOPE *scopeHead;
 struct SCOPE *scopeTail;
 char* current_func_name;
+int current_func_number;
 
 //make node
 struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope);

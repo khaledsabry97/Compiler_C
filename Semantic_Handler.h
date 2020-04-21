@@ -46,9 +46,20 @@ struct SCOPE* newScopeToSemantic(struct SCOPE* current_scope,struct SCOPE* paren
     node->for_count  = current_scope->for_count;
     node->if_count = current_scope->if_count;
     node->stmt_group_count = current_scope->stmt_group_count;
-    node->name = current_scope->name; //only important for function scope
+    //node->name = current_scope->name; //only important for function scope
+    if(current_scope->scope_type == Scope_Global_Type)
+        sprintf(node->name, "Global Variables");
+    else
+    sprintf(node->name, "%s",current_scope->name);
+    //node->name_ = malloc(sizeof(char) * (strlen(current_scope->name)+1));
+    //sprintf(node->name_, "%s",current_scope->name);
+    //node->name_ = "hello";
+    //sprintf(node->name, "bad");
+    node->function_number = current_scope->function_number;
     node->parent_scope = parent_scope;
-
+    //node->name = (char*)malloc(strlen(current_scope->name) + 1); 
+    //strcpy(node->name, current_scope->name);
+    //printf("current_scope %s\n",node->name);
     node->child_scope = newScopeToSemantic(current_scope->child_scope,node);
     return node;
 }
@@ -147,14 +158,15 @@ bool checkScope(struct SCOPE* identifier_scope,struct SCOPE* current_scope)
             return false;        
     }*/
 
-
+    printScopeFunctionName(identifier_scope->child_scope);
     while(1 == 1)
     {
-
+        //printf("%s",identifier_scope->function_number);
         identifier_scope = identifier_scope->child_scope;
         current_scope = current_scope->child_scope;
         if(identifier_scope == NULL)
         {
+            //printf("same scope\n");
             return true;
 
         }
@@ -174,6 +186,10 @@ bool checkScope(struct SCOPE* identifier_scope,struct SCOPE* current_scope)
             return false;
         if(strcmp(identifier_scope->name,current_scope->name) != 0)
             return false;
+        //printf("%s - %s\n",identifier_scope->name,current_scope->name);
+        if(strcmp(identifier_scope->name,current_scope->name) == 0 && identifier_scope->function_number != current_scope->function_number)
+            return false;
+        
 
         
         //printf("%s\n",identifier_scope->name);
@@ -257,10 +273,11 @@ int checkSemantic(char* name, bool is_function,struct SCOPE* current_scope,struc
 
         while(list_of_names != NULL)
         {
-            //printf("%s\n",list_of_names->identifier_name);
+            printf("%s\n",list_of_names->identifier_name);
             bool ret = checkScope(list_of_names->scope,current_scope);
             if (ret == true)
             {
+                printf("sdfsdfsdf\n");
                 count +=1;
             }
 
@@ -283,7 +300,12 @@ void addNewSemantic(struct Semantic* semantic)
 {
     semantic->next = NULL;
     semantic->temp = NULL;
-    semantic->args_stack = NULL;
+    semantic->scope = newScopeToSemantic(semantic->scope,NULL);
+
+    if(semantic->args_stack == NULL)
+    {
+        semantic->args_stack = NULL;
+    }
     if (head == NULL)
     {
         head = semantic;
@@ -295,7 +317,6 @@ void addNewSemantic(struct Semantic* semantic)
         temp = temp->next;
     }
     temp->next = semantic;
-    semantic->scope = newScopeToSemantic(semantic->scope,NULL);
 
     return;
 
@@ -307,6 +328,7 @@ void addArgsToSemantic(struct Semantic* semantic, IDENTIFIER_SEMANTIC_TYPE ident
     {
         semantic->args_stack = newSemanticStack();
         semantic->args_stack->identifier_semantic_type = identifier_semantic_type;
+        semantic->args_stack->prev = NULL;
 
         return;
     }
@@ -318,18 +340,21 @@ void addArgsToSemantic(struct Semantic* semantic, IDENTIFIER_SEMANTIC_TYPE ident
     }
     temp->prev = newSemanticStack();
     temp->prev->identifier_semantic_type = identifier_semantic_type;
+    temp->prev->prev = NULL;
+
 
 }
 
-void printSemantic()
-{
-     if (head == NULL)
-        return;
-    struct Semantic* temp = head;
-    while(temp != NULL)
+void printScopeFunctionName(struct SCOPE* scope)
+{    
+    while(scope != NULL)
     {
-        temp = temp->next;
+        printf("%s -> ",scope->name);
+        scope = scope->child_scope;
     }
+    printf("\n");
+
+
     return;
 
 }
@@ -372,18 +397,31 @@ struct Semantic* findSemanticFunction(char* identifier_name,struct SEMANTIC_STAC
 
     while(list_of_names != NULL)
     {
-        //printf("%s\n",list_of_names->identifier_name);
+        //printf("%s %d errrorror\n",list_of_names->identifier_name,list_of_names->args_stack);
+        /*if(check_function_type == true)
+        {
+            if(list_of_names->identifier_semantic_type != semantic->identifier_semantic_type )
+            {
+                list_of_names = list_of_names->temp;
+                continue;
+            }
+            
+
+
+
+        }*/
         temp2 = list_of_names->args_stack;
         while (true)
         {
+            printf("c\n");
             if(temp2 == NULL || temp == NULL)
             {
-                //printf("sdfsdfsf\n");
+                printf("%d-%d\n",temp,temp2);
                 break;
             }
             if(temp2->identifier_semantic_type != temp->identifier_semantic_type)
             {
-                //printf("%d - %d\n",temp2->identifier_semantic_type ,temp->identifier_semantic_type );
+                printf("%d - %d\n",temp2->identifier_semantic_type ,temp->identifier_semantic_type );
                 break;
             }
             temp2 = temp2->prev; //deal with prev as next
