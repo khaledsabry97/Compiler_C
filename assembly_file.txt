@@ -1,3 +1,5 @@
+START main
+
 
 
  plusx0:
@@ -24,9 +26,11 @@
 
 
 
+ main:
+
  MOV 10 , n1
  MOV 20 , n2
- MOV -265802480 , n3
+ MOV -348627696 , n3
  BIND plusx4
  BIND n1 , $1
  BIND n2 , $2

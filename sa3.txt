@@ -9,11 +9,14 @@ float plusx(int n3,float n4)
 }
 
 
+
+
 int main ()
 {
     int n1;
     int n2;
     float n3;
+    const int n4;
     int result;
     int value;
     n1 = 10;

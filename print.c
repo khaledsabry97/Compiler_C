@@ -257,6 +257,8 @@ void processProgram(struct PROGRAM* program)
         exit(1);
     scopeHead = newScope(Scope_Global_Type, NULL);
     scopeTail = scopeHead;
+
+    fprintf(assembly_file,"%s\n\n","START main");
     if(program->declaration != NULL)
         processDeclaration(program->declaration);
     if(program->function != NULL)
@@ -448,10 +450,16 @@ void processFunction(struct FUNCTION *function){
         sprintf(temp->str, "%s_RET%d", function->ID,jump_lable);
         push(temp);
     }
+    else
+    {
+        fprintf(assembly_file, "\n\n %s:",function->ID);
+
+    }
+    
     print_title = false;
 
 
-    if (function->parameter != NULL)
+    if (function->parameter != NULL && strcmp(function->ID,"main")!= 0 )
     {
 
         printTitle();
@@ -468,8 +476,7 @@ void processFunction(struct FUNCTION *function){
 
         printf("hello\n");
 
-    if(strcmp(function->ID,"main")!= 0)
-    {
+
         if(findSemanticFunction(function->ID,temp_semantic->args_stack) != NULL)
         {
             printf("hello\n");
@@ -483,17 +490,6 @@ void processFunction(struct FUNCTION *function){
 
         }
         
-    }
-    else
-    {
-            printf("\n add main \n");
-
-            addNewSemantic(temp_semantic);
-            //printf("\nnew%s\n",temp_semantic->identifier_name);
-
-    }
-
-
 
     if(strcmp(function->ID,"main") != 0)
      fprintf(assembly_file,"\n CLRQ");
@@ -1208,6 +1204,7 @@ void processExpr(struct EXPR *expr,bool must_return)
 //CLRQ //CLEAR THE VALUES IN $x CALL IT AFTER FINISHING MOVING PARAMTER TO LOCAL FUNCTION DOMAIN
 //$x // x COULD BE A VALUE FROM 0 TO N, $0 SPECIAL FOR RETURN POINTER
 
+//START //START FROM SPECIFIC LABLE MENTIONED ONLY AT THE START OF THE PROGRAM
 //HALT //STOP PROGRAM
 
 

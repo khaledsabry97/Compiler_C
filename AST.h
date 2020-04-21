@@ -44,9 +44,9 @@ struct DECLARATION
 };
 
 /*
-identifier like : int number
+identifier like : int number[int_val]
 - ID: number
-- int_val: its value
+- int_val: array size
 */
 struct IDENTIFIER
 {
