@@ -63,7 +63,7 @@ struct Assembly{
 
 
 
-
+void processProgram        (struct PROGRAM* program);
 void processDeclaration   (struct DECLARATION* declaration);
 void processIdentifier    (struct IDENTIFIER* identifier);
 void processFunction      (struct FUNCTION* function);

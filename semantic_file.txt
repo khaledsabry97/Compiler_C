@@ -1,0 +1,16 @@
+ERORR: variable x has been declared before 1 times before 
+ERORR: variable y has been declared before 1 times before 
+ERORR: variable x has been declared before 1 times before 
+ERORR: variable x has been declared before 2 times before 
+ERORR: variable y has been declared before 2 times before 
+ERORR: variable x has been declared before 3 times before 
+ERORR: variable x has been declared before 4 times before 
+ERROR: Identifier y wasn't assigned any value before to be used
+ERROR: Identifier y wasn't assigned any value before to be used
+ERORR: variable x has been declared before 5 times before 
+ERORR: variable y has been declared before 3 times before 
+ERORR: variable x has been declared before 6 times before 
+ERORR: variable y has been declared before 4 times before 
+ERROR: Identifier y wasn't assigned any value before to be used
+ERORR: variable x has been declared before 3 times before 
+ERORR: variable x has been declared before 3 times before 

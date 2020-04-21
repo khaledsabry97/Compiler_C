@@ -70,10 +70,10 @@
 #include "AST.h"
 #include "print.h"
 
-FILE *tree_file; 
-FILE *table_file; 
+FILE *assembly_file; 
+FILE *symbol_file; 
 FILE *semantic_file;
-void print(struct PROGRAM* head);
+void process(struct PROGRAM* head);
 void openFiles();
 void closeFiles();
 void yyerror(char* text) {
@@ -1434,7 +1434,7 @@ yyreduce:
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = (yyvsp[-1]._declaration);
             program->function = (yyvsp[0]._function);
-            print(program);
+            processProgram(program);
             (yyval._program) = program;
        }
 #line 1441 "compiler.tab.c" /* yacc.c:1646  */
@@ -1446,7 +1446,7 @@ yyreduce:
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = (yyvsp[0]._declaration);
             program->function = NULL;
-            print(program);
+            processProgram(program);
             (yyval._program) = program;
        }
 #line 1453 "compiler.tab.c" /* yacc.c:1646  */
@@ -1458,7 +1458,7 @@ yyreduce:
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = NULL;
             program->function = (yyvsp[0]._function);
-            print(program);
+            processProgram(program);
             (yyval._program) = program;
        }
 #line 1465 "compiler.tab.c" /* yacc.c:1646  */
@@ -2445,7 +2445,10 @@ int main(int argc, char* argv[]) {
     closeFiles();
     return 0;
 }
-void print(struct PROGRAM* head) {
+
+/*
+void process(struct PROGRAM* head) {
+    
     if(head == NULL)
         exit(1);
     scopeHead = newScope(Scope_Global_Type, NULL);
@@ -2454,20 +2457,22 @@ void print(struct PROGRAM* head) {
         processDeclaration(head->declaration);
     if(head->function != NULL)
         processFunction(head->function);
+            processProgram(head);
 }
+*/
 
 
 void openFiles()
 {
-    tree_file = fopen("tree.txt","w");
-    table_file = fopen("table.txt","w");
+    assembly_file = fopen("assembly_file.txt","w");
+    symbol_file = fopen("symbol_file.txt","w");
     semantic_file = fopen("semantic_file.txt","w");
 }
 void closeFiles()
 {
-    fprintf(tree_file, "\n");
-    pclose(tree_file);
-    pclose(table_file);
+    //fprintf(assembly_file, "\n");
+    pclose(assembly_file);
+    pclose(symbol_file);
     pclose(semantic_file);
 
 }
