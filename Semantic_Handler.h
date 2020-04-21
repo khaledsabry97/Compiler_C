@@ -292,20 +292,16 @@ struct SEMANTIC_STACK* semantic_stack_head;
 
 struct SEMANTIC_STACK* newSemanticStack()
 {
-    return (struct SEMANTIC_STACK*) malloc (sizeof (struct SEMANTIC_STACK));
+    struct SEMANTIC_STACK* semantics =  (struct SEMANTIC_STACK*) malloc (sizeof (struct SEMANTIC_STACK));
+    semantics->prev = NULL;
+    return semantics;
 }
 
 
 void addNewSemantic(struct Semantic* semantic)
 {
-    semantic->next = NULL;
-    semantic->temp = NULL;
     semantic->scope = newScopeToSemantic(semantic->scope,NULL);
 
-    if(semantic->args_stack == NULL)
-    {
-        semantic->args_stack = NULL;
-    }
     if (head == NULL)
     {
         head = semantic;
@@ -324,11 +320,15 @@ void addNewSemantic(struct Semantic* semantic)
 
 void addArgsToSemantic(struct Semantic* semantic, IDENTIFIER_SEMANTIC_TYPE identifier_semantic_type)
 {
+            printf("%dhello\n",semantic->args_stack);
+
     if (semantic->args_stack == NULL)
     {
+                printf("hello\n");
+
         semantic->args_stack = newSemanticStack();
         semantic->args_stack->identifier_semantic_type = identifier_semantic_type;
-        semantic->args_stack->prev = NULL;
+        printf("stack: %d\n",semantic->args_stack->prev);
 
         return;
     }
@@ -340,9 +340,21 @@ void addArgsToSemantic(struct Semantic* semantic, IDENTIFIER_SEMANTIC_TYPE ident
     }
     temp->prev = newSemanticStack();
     temp->prev->identifier_semantic_type = identifier_semantic_type;
-    temp->prev->prev = NULL;
+    printf("stacks: %d\n",temp->prev->prev);
 
 
+
+}
+
+
+void printNumberOfArgs(struct SEMANTIC_STACK* args)
+{
+    while(args != NULL)
+    {
+        printf("argtype: %d -> ",args->identifier_semantic_type);
+        args = args->prev;
+    }
+    printf("\n");
 }
 
 void printScopeFunctionName(struct SCOPE* scope)
@@ -353,7 +365,6 @@ void printScopeFunctionName(struct SCOPE* scope)
         scope = scope->child_scope;
     }
     printf("\n");
-
 
     return;
 
@@ -367,7 +378,11 @@ struct CHECKS* newCheck()
 
 struct Semantic* newSemantic()
 {
-        return (struct Semantic*) malloc (sizeof (struct Semantic));
+    struct Semantic* semantics = (struct Semantic*) malloc (sizeof (struct Semantic));
+    semantics->args_stack = NULL;
+    semantics->next = NULL;
+    semantics->temp = NULL;
+    return semantics;
 }
 
 
@@ -410,6 +425,8 @@ struct Semantic* findSemanticFunction(char* identifier_name,struct SEMANTIC_STAC
 
 
         }*/
+        printNumberOfArgs(list_of_names->args_stack);
+        printNumberOfArgs(temp);
         temp2 = list_of_names->args_stack;
         while (true)
         {
@@ -549,3 +566,5 @@ IDENTIFIER_SEMANTIC_TYPE compareTypes(IDENTIFIER_SEMANTIC_TYPE type1, IDENTIFIER
 // error: if you send an arguments and not matched with the number of another function with same name 
 // error: if you send an arguments with different types
 // error: if return type of function doesn't match with the identifier
+// can do function overloading
+// check if types of arguments match with the paramter of a fucntion with the same name

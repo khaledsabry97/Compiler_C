@@ -1,11 +1,27 @@
-int plus(int n3)
+int plusx(int n3,int n4)
 {
-    return ;
+    return 0 ;
+}
+
+float plusx(int n3,float n4)
+{
+    return 0 ;
 }
 
 
 int main ()
 {
-    int n3;
+    int n1;
+    int n2;
+    float n3;
+    int result;
+    int value;
+    n1 = 10;
+    n2 = 20;
+    n3 = 30.5;
+    value = plusx(n1, n2);
+    n3 = plusx(value, n3);
+    
+
     return 0;
 }

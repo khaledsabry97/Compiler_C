@@ -1,0 +1,18 @@
+
+Function name => plusx
+     countscope_type      name     array      role
+         1       int        n3           parameter
+         2       int        n4           parameter
+
+Function name => plusx
+     countscope_type      name     array      role
+         1       int        n3           parameter
+         2     float        n4           parameter
+
+Function name => main
+     countscope_type      name     array      role
+         1       int        n1            variable
+         2       int        n2            variable
+         3     float        n3            variable
+         4       int    result            variable
+         5       int     value            variable

@@ -1,0 +1,46 @@
+
+
+ plusx0:
+ MOV $0 , plusx_RET1
+ MOV $1 , n3
+ MOV $2 , n4
+ CLRQ
+
+ BIND 0
+ JMP plusx_RET1
+
+
+
+
+ plusx2:
+ MOV $0 , plusx_RET3
+ MOV $1 , n3
+ MOV $2 , n4
+ CLRQ
+
+ BIND 0
+ JMP plusx_RET3
+
+
+
+
+ MOV 10 , n1
+ MOV 20 , n2
+ MOV -265802480 , n3
+ BIND plusx4
+ BIND n1 , $1
+ BIND n2 , $2
+ JMP plusx0
+ plusx4:
+ MOV $1 , RET_VAL5
+ MOV RET_VAL5 , value
+ BIND plusx6
+ BIND value , $1
+ BIND n3 , $2
+ JMP plusx2
+ plusx6:
+ MOV $1 , RET_VAL7
+ MOV RET_VAL7 , n3
+ HALT
+
+

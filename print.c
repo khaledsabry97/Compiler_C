@@ -379,6 +379,9 @@ void processIdentifier(struct IDENTIFIER *identifier){
             addArgsToSemantic(temp_semantic,temp_semantic_identifier->identifier_semantic_type);
         }
 
+                //printf("hello\n");
+
+
 
 
         
@@ -463,12 +466,14 @@ void processFunction(struct FUNCTION *function){
     //printf("%s\n",temp_semantic->identifier_name);
 
 
+        printf("hello\n");
 
     if(strcmp(function->ID,"main")!= 0)
     {
         if(findSemanticFunction(function->ID,temp_semantic->args_stack) != NULL)
         {
-            fprintf(semantic_file,"ERORR: function %s appeared before same type and argument number and types \n",function->ID);
+            printf("hello\n");
+            fprintf(semantic_file,"ERORR: function %s appeared before with the name and argument numbers and its types and order \n",function->ID);
         }
         else
         {
@@ -511,15 +516,17 @@ void processStmt(struct STMT *stmt){
     switch (stmt->stmt_type)
     {
     
-    case Call_Type:
-        
+    case Call_Type: //deprecated
+        /*
         fprintf(assembly_file, "%s(", stmt->stmt.func_call->ID);
         if (stmt->stmt.func_call->arg != NULL)
         {
-            processArg(stmt->stmt.func_call->arg);
+            struct Semantic* sem = newSemantic();
+            processArg(stmt->stmt.func_call->arg,sem);
         }
         fprintf(assembly_file, ")");
         fprintf(assembly_file, ";");
+        */
         break;
 
 
@@ -800,20 +807,20 @@ void processAssignStmt(struct ASSIGN_STMT *assign)
 
 }
 
-void processArg(struct ARG *arg)
+void processArg(struct ARG *arg,struct Semantic* sem)
 {
     if (arg->prev != NULL)
     {
-        processArg(arg->prev);
+        processArg(arg->prev,sem);
         //fprintf(assembly_file, ", ");
     }
     processExpr(arg->expr,true);
     temp = pop();
     fprintf(assembly_file,"\n BIND %s , $%d",temp->str,parameter_count++);
-
+    printf("f-arg\n");
     temp_semantic_stack = popSemanticStack();
     //pushSemanticStack(temp_semantic_stack);
-    addArgsToSemantic(temp_semantic,temp_semantic_stack->identifier_semantic_type);
+    addArgsToSemantic(sem,temp_semantic_stack->identifier_semantic_type);
 
 
 }
@@ -840,7 +847,6 @@ void processExpr(struct EXPR *expr,bool must_return)
 
         //check identifier is found
         temp_semantic = findSemanticIdentifier(id_expr->ID);
-        printf("hellor");
         if(temp_semantic == NULL )
         {
                 fprintf(semantic_file,"ERROR: Identifier %s wasn't declared before to be used\n",id_expr->ID);
@@ -863,6 +869,7 @@ void processExpr(struct EXPR *expr,bool must_return)
              //add to semantic stack
             temp_semantic_stack = newSemanticStack();
             temp_semantic_stack->identifier_semantic_type = temp_semantic->identifier_semantic_type;
+            printf("\n%s : %d\n",id_expr->ID,temp_semantic->identifier_semantic_type);
             pushSemanticStack(temp_semantic_stack);
             
         }
@@ -1091,13 +1098,13 @@ void processExpr(struct EXPR *expr,bool must_return)
         int jump_lable = counter;
         fprintf(assembly_file,"\n BIND %s%d",call->ID,counter++);
 
-        temp_semantic = newSemantic();
+        struct Semantic* semantic = newSemantic();
 
     
         if (call->arg != NULL)
         {
             parameter_count = 1;
-            processArg(call->arg);
+            processArg(call->arg,semantic);
         }
 
         
@@ -1125,11 +1132,13 @@ void processExpr(struct EXPR *expr,bool must_return)
         }*/
         
         //printf("args%d\n",args_stack);
-        temp_semantic = findSemanticFunction(call->ID,temp_semantic->args_stack);
+        
+        temp_semantic = findSemanticFunction(call->ID,semantic->args_stack);
         temp_semantic_stack = newSemanticStack();
         printf("%d\n",temp_semantic);
         if (temp_semantic == NULL)
         {
+            printf("why\n");
             fprintf(semantic_file,"ERROR: didn't found any function matching the types or number of arguments\n");
             temp_semantic_stack->identifier_semantic_type = Error_Semantic_Type;
         }

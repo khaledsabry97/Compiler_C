@@ -61,9 +61,7 @@ struct Assembly{
 
 
 
-
-
-
+//struct Semantic;
 
 
 void processProgram        (struct PROGRAM* program);
@@ -71,7 +69,7 @@ void processDeclaration   (struct DECLARATION* declaration);
 void processIdentifier    (struct IDENTIFIER* identifier);
 void processFunction      (struct FUNCTION* function);
 void processParameter     (struct PARAMETER* parameter);
-void processArg           (struct ARG* arg);
+//void processArg           (struct ARG* arg, struct Semantic* sem);
 
 void processAssignStmt    (struct ASSIGN_STMT* assign);
 void processStmtGroup  (struct STMTSGROUP* stmts_group);
