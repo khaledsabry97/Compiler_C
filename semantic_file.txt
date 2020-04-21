@@ -1,3 +1,0 @@
-ERROR: didn't found any function matching the types or number of arguments
-ERROR: Solve previous error
-ERROR: Identifier value wasn't assigned any value before to be used

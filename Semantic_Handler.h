@@ -25,6 +25,7 @@ struct Semantic {
     bool is_function;
     bool is_assigned;
     bool is_parameter;
+    int function_number;
     int value;
     struct SCOPE* scope;
 };
@@ -256,7 +257,7 @@ int checkSemantic(char* name, bool is_function,struct SCOPE* current_scope,struc
 
         while(list_of_names != NULL)
         {
-            printf("%s\n",list_of_names->identifier_name);
+            //printf("%s\n",list_of_names->identifier_name);
             bool ret = checkScope(list_of_names->scope,current_scope);
             if (ret == true)
             {
@@ -306,11 +307,13 @@ void addArgsToSemantic(struct Semantic* semantic, IDENTIFIER_SEMANTIC_TYPE ident
     {
         semantic->args_stack = newSemanticStack();
         semantic->args_stack->identifier_semantic_type = identifier_semantic_type;
+
         return;
     }
     struct SEMANTIC_STACK* temp = semantic->args_stack;
     while(temp->prev != NULL) //deal with prev as if it's next in this case
     {
+        //printf("%dthere\n",temp->identifier_semantic_type);
         temp = temp->prev;
     }
     temp->prev = newSemanticStack();
@@ -492,7 +495,7 @@ IDENTIFIER_SEMANTIC_TYPE compareTypes(IDENTIFIER_SEMANTIC_TYPE type1, IDENTIFIER
 
 }
 
-//you can't have two names of same type in function
+// you can't have two names of same type in function
 // you can have more than one function with same name but different return types
 // you can have one variable with same name if declared as global variable
 // never mix between different scopes
@@ -505,4 +508,6 @@ IDENTIFIER_SEMANTIC_TYPE compareTypes(IDENTIFIER_SEMANTIC_TYPE type1, IDENTIFIER
 // error: if not found a function name matching the calling function
 // float [+/*-] integer => float
 // float/integer [><==] float/integer => bool
-// 
+// error: if you send an arguments and not matched with the number of another function with same name 
+// error: if you send an arguments with different types
+// error: if return type of function doesn't match with the identifier

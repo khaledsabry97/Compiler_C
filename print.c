@@ -349,10 +349,11 @@ void processIdentifier(struct IDENTIFIER *identifier){
     
         int count = checkSemantic(temp_semantic_identifier->identifier_name,false,temp_semantic_identifier->scope,NULL,temp_semantic_identifier->identifier_semantic_type);
         if(count != 0)
-        fprintf(semantic_file,"ERORR: variable %s has been declared before %d times before \n",temp_semantic_identifier->identifier_name,count);
+            fprintf(semantic_file,"ERORR: variable %s has been declared before %d times before \n",temp_semantic_identifier->identifier_name,count);
         addNewSemantic(temp_semantic_identifier);
         if(is_parameter == true)
         {
+            //printf("\nnew%s\n",temp_semantic->identifier_name);
             addArgsToSemantic(temp_semantic,temp_semantic_identifier->identifier_semantic_type);
         }
 
@@ -391,30 +392,27 @@ void processFunction(struct FUNCTION *function){
         }
     temp_check = newCheck();
     temp_check->check_identifier_type = true;
-    //char* c = printScopePath(temp_semantic->scope);
-    //printf("%s \n",temp_semantic->scope);
-    //printf("%s \n",c);
 
-    //free(c);
    
 
     //list node
     scopeTail = newScope(Scope_Func_Type, scopeTail); //append it to the end of list
     temp_semantic->scope = scopeHead;
 
-    int count = checkSemantic(function->ID,true,temp_semantic->scope,temp_check,temp_semantic->identifier_semantic_type);
-    if(count != 0)
-        fprintf(semantic_file,"ERORR: function %s appeared %d times before \n",function->ID,count);
+    //int count = checkSemantic(function->ID,true,temp_semantic->scope,temp_check,temp_semantic->identifier_semantic_type);
+    //if(count != 0)
+        //fprintf(semantic_file,"ERORR: function %s appeared %d times before \n",function->ID,count);
+    
     temp_semantic->identifier_name = function->ID;
     temp_semantic->is_function = true;
-    addNewSemantic(temp_semantic);
 
     //fprintf(tree_file, "%s (", function->ID); //add function name
-    fprintf(tree_file, "\n\n %s:",function->ID);
 
 
     if(strcmp(function->ID,"main")!= 0)
     {
+        temp_semantic->function_number = counter;
+        fprintf(tree_file, "\n\n %s%d:",function->ID,counter++);
         int jump_lable =  counter;
         fprintf(tree_file,"\n MOV $0 , %s_RET%d",function->ID,counter++);
         temp = newAssembly();
@@ -422,15 +420,43 @@ void processFunction(struct FUNCTION *function){
         push(temp);
     }
     print_title = false;
+    addNewSemantic(temp_semantic);
+
+
     if (function->parameter != NULL)
     {
 
         printTitle();
         print_title = true;
         parameter_count = 1;
-
+        
         processParameter(function->parameter); //parameter
+
     }
+    printf("%s\n",temp_semantic->identifier_name);
+
+
+/*
+    if(strcmp(function->ID,"main")!= 0)
+    {
+        if(findSemanticFunction(function->ID,temp_semantic->args_stack) != NULL)
+        {
+            fprintf(semantic_file,"ERORR: function %s appeared before same type and argument number and types \n",function->ID);
+        }
+        else
+        {
+            addNewSemantic(temp_semantic);
+            printf("\nnew%s\n",temp_semantic->identifier_name);
+
+        }
+        
+    }
+    else
+    {
+            printf("\nnew%s\n",temp_semantic->identifier_name);
+
+    }
+*/
     if(strcmp(function->ID,"main") != 0)
      fprintf(tree_file,"\n CLRQ");
 
@@ -641,6 +667,7 @@ void processParameter(struct PARAMETER *parameter){
     if (parameter->prev != NULL)
     {
         processParameter(parameter->prev);
+
         //fprintf(tree_file, ", ");
     }
     switch (parameter->id_type)

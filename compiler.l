@@ -49,7 +49,7 @@ return return RETURN;
     yylval.floatval = atof(yytext);
     return FLOATNUM;
 }
-[A-Za-z][A-Za-z0-9_]*   {
+[A-Za-z][A-Za-z0-9_]*  {
     yylval.id = strndup(yytext, yyleng);
     return ID;
 }

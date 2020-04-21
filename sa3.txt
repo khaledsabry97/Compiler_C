@@ -9,13 +9,14 @@ int main ()
 {
     int n1;
     int n2;
+    int x;
     float n3;
     int result;
     int value;
     n1 = 10;
     n2 = 20;
     n3 = 30.0;
-    value = plus(n3, n2);
+    value = plus(n1, n2);
     result = plus(value, n2);
     return 0;
 }
