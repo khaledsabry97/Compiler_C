@@ -550,6 +550,23 @@ IDENTIFIER_SEMANTIC_TYPE compareTypes(IDENTIFIER_SEMANTIC_TYPE type1, IDENTIFIER
 
 
 }
+extern FILE *semantic_file;
+
+
+void checkNotAssignedIdentifiers()
+{
+    struct Semantic* temp = head;
+    while(temp!=NULL)
+    {
+        if (temp->is_assigned == false && temp->is_function == false && temp->is_parameter == false)
+        {
+            fprintf(semantic_file,"Warning: Identified a variable %s but not assigend a value to it\n",temp->identifier_name);
+        }
+        head = temp;
+        temp = temp->next;
+        free(head);
+    }
+}
 
 // you can't have two names of same type in function
 // you can have more than one function with same name but different return types
@@ -571,3 +588,4 @@ IDENTIFIER_SEMANTIC_TYPE compareTypes(IDENTIFIER_SEMANTIC_TYPE type1, IDENTIFIER
 // check if types of arguments match with the paramter of a fucntion with the same name
 // can't reassign a constant variable
 // can't reassign a constant parameter
+// Warning:if Identified a variable  but not assigend a value later

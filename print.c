@@ -262,6 +262,7 @@ void processProgram(struct PROGRAM* program)
         processDeclaration(program->declaration);
     if(program->function != NULL)
         processFunction(program->function);
+    checkNotAssignedIdentifiers();
 }
 
 
@@ -886,6 +887,8 @@ void processExpr(struct EXPR *expr,bool must_return)
         }
         */
         temp = newAssembly();
+        printf("%s\n",id_expr->ID);
+        printf("damn\n");
         sprintf(temp->str, "%s", id_expr->ID);
         push(temp);
 
@@ -922,6 +925,7 @@ void processExpr(struct EXPR *expr,bool must_return)
     case IntNum_Type:
 
     {
+        printf("%d\n",expr->expression.int_val);
         //fprintf(assembly_file, "%d", expr->expression.int_val);
         temp = newAssembly();
         sprintf(temp->str, "%d", expr->expression.int_val);
@@ -965,16 +969,23 @@ void processExpr(struct EXPR *expr,bool must_return)
 
     case Add_Type:
         processExpr(expr->expression.add_op->left_side,true);
+        
         processExpr(expr->expression.add_op->right_side,true);
+
         struct Assembly* right = pop();
         struct Assembly* left = pop();
         int ret_counter = counter;
         temp = newAssembly();
         if (expr->expression.add_op->add_type == Plus_Type)
         {
+
             //fprintf(assembly_file, " + ");
             sprintf(temp->str, "ADD_RES%d", ret_counter);
+                                        printf("dhellor%d\n",right->str);
+
             fprintf(assembly_file, "\n ADD %s , %s , ADD_RES%d ",left->str,right->str,counter++);
+                                        printf("dhellor\n");
+
         }
         else
         {
@@ -983,6 +994,7 @@ void processExpr(struct EXPR *expr,bool must_return)
 
             fprintf(assembly_file, "\n SUB %s , %s , SUB_RES%d ",left->str,right->str,counter++);
         }
+
         push(temp);
 
         //add to semantic stack

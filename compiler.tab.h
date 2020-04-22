@@ -52,25 +52,27 @@ extern int yydebug;
     FLOAT = 262,
     CONST = 263,
     MINUS = 264,
-    PLUS = 265,
-    MUL = 266,
-    DIV = 267,
-    LE = 268,
-    GE = 269,
-    EQ = 270,
-    NE = 271,
-    GT = 272,
-    LT = 273,
-    IF = 274,
-    ELSE = 275,
-    FOR = 276,
-    WHILE = 277,
-    DO = 278,
-    RETURN = 279,
-    DOUBLE_QT = 280,
-    SINGLE_QT = 281,
-    UNARY = 282,
-    NO_ELSE = 283
+    MM = 265,
+    PLUS = 266,
+    PP = 267,
+    MUL = 268,
+    DIV = 269,
+    LE = 270,
+    GE = 271,
+    EQ = 272,
+    NE = 273,
+    GT = 274,
+    LT = 275,
+    IF = 276,
+    ELSE = 277,
+    FOR = 278,
+    WHILE = 279,
+    DO = 280,
+    RETURN = 281,
+    DOUBLE_QT = 282,
+    SINGLE_QT = 283,
+    UNARY = 284,
+    NO_ELSE = 285
   };
 #endif
 
@@ -79,7 +81,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 34 "compiler.y" /* yacc.c:1909  */
+#line 36 "compiler.y" /* yacc.c:1909  */
 
     ID_TYPE type;
     char* id;
@@ -102,7 +104,7 @@ union YYSTYPE
 
 
 
-#line 106 "compiler.tab.h" /* yacc.c:1909  */
+#line 108 "compiler.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

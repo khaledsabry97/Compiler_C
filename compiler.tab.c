@@ -74,6 +74,7 @@
 FILE *assembly_file; 
 FILE *symbol_file; 
 FILE *semantic_file;
+static int line_counter;
 void process(struct PROGRAM* head);
 void openFiles();
 void closeFiles();
@@ -95,7 +96,8 @@ void yyerror(YYLTYPE t, char *s, ...)
 } 
 */
 
-#line 99 "compiler.tab.c" /* yacc.c:339  */
+
+#line 101 "compiler.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -110,7 +112,7 @@ void yyerror(YYLTYPE t, char *s, ...)
 # undef YYERROR_VERBOSE
 # define YYERROR_VERBOSE 1
 #else
-# define YYERROR_VERBOSE 0
+# define YYERROR_VERBOSE 1
 #endif
 
 /* In a future release of Bison, this section will be replaced
@@ -137,25 +139,27 @@ extern int yydebug;
     FLOAT = 262,
     CONST = 263,
     MINUS = 264,
-    PLUS = 265,
-    MUL = 266,
-    DIV = 267,
-    LE = 268,
-    GE = 269,
-    EQ = 270,
-    NE = 271,
-    GT = 272,
-    LT = 273,
-    IF = 274,
-    ELSE = 275,
-    FOR = 276,
-    WHILE = 277,
-    DO = 278,
-    RETURN = 279,
-    DOUBLE_QT = 280,
-    SINGLE_QT = 281,
-    UNARY = 282,
-    NO_ELSE = 283
+    MM = 265,
+    PLUS = 266,
+    PP = 267,
+    MUL = 268,
+    DIV = 269,
+    LE = 270,
+    GE = 271,
+    EQ = 272,
+    NE = 273,
+    GT = 274,
+    LT = 275,
+    IF = 276,
+    ELSE = 277,
+    FOR = 278,
+    WHILE = 279,
+    DO = 280,
+    RETURN = 281,
+    DOUBLE_QT = 282,
+    SINGLE_QT = 283,
+    UNARY = 284,
+    NO_ELSE = 285
   };
 #endif
 
@@ -164,7 +168,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 34 "compiler.y" /* yacc.c:355  */
+#line 36 "compiler.y" /* yacc.c:355  */
 
     ID_TYPE type;
     char* id;
@@ -187,7 +191,7 @@ union YYSTYPE
 
 
 
-#line 191 "compiler.tab.c" /* yacc.c:355  */
+#line 195 "compiler.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -204,7 +208,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 208 "compiler.tab.c" /* yacc.c:358  */
+#line 212 "compiler.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -446,21 +450,21 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  10
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   486
+#define YYLAST   477
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  38
+#define YYNTOKENS  40
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  12
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  60
+#define YYNRULES  62
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  152
+#define YYNSTATES  154
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   283
+#define YYMAXUTOK   285
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -473,15 +477,15 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      29,    30,     2,     2,    35,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,    32,
-       2,    27,     2,     2,     2,     2,     2,     2,     2,     2,
+      31,    32,     2,     2,    37,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,    34,
+       2,    29,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    33,     2,    34,     2,     2,     2,     2,     2,     2,
+       2,    35,     2,    36,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    36,     2,    37,     2,     2,     2,     2,
+       2,     2,     2,    38,     2,    39,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -497,35 +501,35 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    28,    31
+      25,    26,    27,    28,    30,    33
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   116,   116,   125,   134,   143,   149,   161,   167,   175,
-     183,   192,   200,   211,   218,   226,   232,   244,   245,   246,
-     247,   253,   264,   276,   285,   294,   300,   306,   317,   328,
-     352,   363,   375,   386,   396,   407,   440,   450,   457,   463,
-     470,   479,   485,   495,   505,   516,   527,   538,   549,   560,
-     571,   582,   593,   604,   615,   621,   627,   637,   647,   653,
-     663
+       0,   120,   120,   129,   138,   147,   153,   165,   171,   179,
+     187,   196,   204,   215,   222,   230,   236,   244,   245,   246,
+     247,   253,   265,   277,   286,   295,   301,   307,   318,   329,
+     353,   364,   376,   387,   397,   408,   420,   454,   512,   522,
+     529,   535,   542,   551,   557,   567,   577,   588,   599,   610,
+     621,   632,   643,   654,   665,   676,   687,   693,   699,   709,
+     719,   725,   735
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 0
+#if YYDEBUG || YYERROR_VERBOSE || 1
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "ID", "INTNUM", "FLOATNUM", "INT",
-  "FLOAT", "CONST", "MINUS", "PLUS", "MUL", "DIV", "LE", "GE", "EQ", "NE",
-  "GT", "LT", "IF", "ELSE", "FOR", "WHILE", "DO", "RETURN", "DOUBLE_QT",
-  "SINGLE_QT", "'='", "UNARY", "'('", "')'", "NO_ELSE", "';'", "'['",
-  "']'", "','", "'{'", "'}'", "$accept", "Program", "Declaration_List",
-  "Identifier", "Function_List", "Parameter_List", "Arg_List", "Type",
-  "Stmt", "Stmt_Group", "Stmt_List", "Expr", YY_NULLPTR
+  "FLOAT", "CONST", "MINUS", "MM", "PLUS", "PP", "MUL", "DIV", "LE", "GE",
+  "EQ", "NE", "GT", "LT", "IF", "ELSE", "FOR", "WHILE", "DO", "RETURN",
+  "DOUBLE_QT", "SINGLE_QT", "'='", "UNARY", "'('", "')'", "NO_ELSE", "';'",
+  "'['", "']'", "','", "'{'", "'}'", "$accept", "Program",
+  "Declaration_List", "Identifier", "Function_List", "Parameter_List",
+  "Arg_List", "Type", "Stmt", "Stmt_Group", "Stmt_List", "Expr", YY_NULLPTR
 };
 #endif
 
@@ -536,8 +540,8 @@ static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280,   281,    61,   282,    40,
-      41,   283,    59,    91,    93,    44,   123,   125
+     275,   276,   277,   278,   279,   280,   281,   282,   283,    61,
+     284,    40,    41,   285,    59,    91,    93,    44,   123,   125
 };
 # endif
 
@@ -555,22 +559,22 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-       6,   -43,   -43,    20,    64,     6,     6,     0,   -43,   -43,
-     -43,     6,     0,    34,    56,    39,    59,    63,     3,   103,
-     -43,   -43,    37,    73,    -6,   109,    83,    73,    19,    -2,
-     -43,    73,     6,    90,   -43,   -43,   -43,    73,    69,    87,
-      99,   114,   203,    54,   -43,   112,   -43,   118,   109,   -43,
-      29,   -43,   109,   -43,   237,   225,   237,   237,   129,   237,
-     116,    70,   -43,   -43,   237,   237,   -43,   294,   -43,   150,
-     143,   -43,   109,   173,   -43,   -43,   -43,   304,   113,    71,
-     458,   258,   372,   120,   394,   123,   228,   237,   -43,   404,
-     237,   237,   237,   237,   237,   237,   237,   237,   237,   237,
-     -43,   -43,   180,   -43,   -43,   -43,   -43,   127,   237,   133,
-     203,   237,   203,   237,   -43,    75,   268,   -43,    44,    44,
-     -43,   -43,   179,   179,   468,   468,   179,   179,   -43,   -43,
-     458,   237,   141,   328,   -43,   426,   -43,   -43,   338,   203,
-     237,   131,   -43,   -43,   362,   -43,   165,   151,   237,   436,
-     203,   -43
+     172,   -43,   -43,   112,     5,   172,   172,    36,   -43,   -43,
+     -43,   172,    36,    44,   -28,    25,    39,    19,    21,    63,
+     -43,   -43,   129,    48,   -23,    88,    66,    48,   -21,    82,
+     -43,    48,   172,    69,   -43,   -43,   -43,    48,   334,    78,
+      83,    92,    31,   125,   -43,   119,   -43,   143,    88,   -43,
+      -2,   -43,    88,   -43,   -43,   -43,   108,   231,   108,   108,
+     128,   108,   109,    33,   -43,   -43,   108,   108,   -43,   275,
+     -43,   167,   173,   -43,    88,   192,   -43,   -43,   -43,   287,
+     104,   -17,   457,   235,   357,   118,   377,   110,   238,   108,
+     -43,   397,   108,   108,   108,   108,   108,   108,   108,   108,
+     108,   108,   -43,   -43,   199,   -43,   -43,   -43,   -43,   114,
+     108,   123,    31,   108,    31,   108,   -43,    14,   263,   -43,
+      80,    80,   -43,   -43,    87,    87,   339,   339,    87,    87,
+     -43,   -43,   457,   108,   132,   299,   -43,   417,   -43,   -43,
+     311,    31,   108,   121,   -43,   -43,   323,   -43,   157,   133,
+     108,   437,    31,   -43
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -582,32 +586,32 @@ static const yytype_uint8 yydefact[] =
        1,     2,     0,     0,     7,     0,     0,     0,     0,     0,
        5,     6,     0,     0,     0,     0,     0,     0,     0,     0,
        9,     0,     0,     7,    13,     8,    12,     0,     0,     0,
-       0,     0,     0,     0,    36,     0,    40,     0,     0,    41,
-       0,    11,     0,    10,     0,     0,     0,     0,     0,     0,
-       0,    56,    54,    55,     0,     0,    25,     0,    35,     0,
-       0,    39,     0,     0,    38,    42,    14,     0,     0,     0,
-      15,     0,     0,     0,     0,     0,     0,     0,    43,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      26,    34,     0,    33,    37,    21,    23,     0,     0,     0,
-       0,     0,     0,     0,    59,     0,     0,    58,    44,    45,
-      46,    47,    48,    49,    52,    53,    50,    51,    32,    24,
-      16,     0,    27,     0,    30,     0,    60,    57,     0,     0,
-       0,     0,    22,    28,     0,    31,     0,     0,     0,     0,
-       0,    29
+       0,     0,     0,     0,    38,     0,    42,     0,     0,    43,
+       0,    11,     0,    10,    37,    36,     0,     0,     0,     0,
+       0,     0,     0,    58,    56,    57,     0,     0,    25,     0,
+      35,     0,     0,    41,     0,     0,    40,    44,    14,     0,
+       0,     0,    15,     0,     0,     0,     0,     0,     0,     0,
+      45,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,    26,    34,     0,    33,    39,    21,    23,     0,
+       0,     0,     0,     0,     0,     0,    61,     0,     0,    60,
+      46,    47,    48,    49,    50,    51,    54,    55,    52,    53,
+      32,    24,    16,     0,    27,     0,    30,     0,    62,    59,
+       0,     0,     0,     0,    22,    28,     0,    31,     0,     0,
+       0,     0,     0,    29
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-     -43,   -43,   -22,   -10,   172,   148,    95,    82,   -42,    57,
-     -29,   -18
+     -43,   -43,   -19,    -8,   158,   149,    77,    13,   -42,   -25,
+      16,   -18
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     4,     5,    15,     6,    24,    79,    13,    49,    30,
-      50,    80
+      -1,     4,     5,    15,     6,    24,    81,    13,    49,    30,
+      50,    82
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -615,142 +619,140 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      60,    38,    16,    14,     1,     2,     3,    47,    75,     1,
-       2,     3,     1,     2,     3,    34,    70,    39,    73,    40,
-      41,    42,    43,    69,    31,    67,     8,     9,    75,    32,
-      44,    75,    38,    23,    45,    46,    77,    17,    81,    82,
-     102,    84,    76,     1,     2,     3,    88,    89,    39,    37,
-      40,    41,    42,    43,    32,    92,    93,    61,    62,    63,
-      75,    44,    16,    64,    10,    45,    74,    27,   132,   116,
-     134,    20,   118,   119,   120,   121,   122,   123,   124,   125,
-     126,   127,     7,    65,    36,    18,    66,    12,    51,    19,
-     130,    21,    22,   133,    53,   135,    54,   143,    55,    86,
-      25,   107,    56,    87,    25,   136,   108,    26,   151,    29,
-     108,    48,    33,   138,    52,    38,    57,    35,     1,     2,
-       3,    38,   144,    19,     1,     2,     3,    48,    58,    72,
-     149,    39,    83,    40,    41,    42,    43,    39,    85,    40,
-      41,    42,    43,    59,    44,   106,    38,   111,    45,    68,
-      44,    72,   113,    38,    45,    71,     1,     2,     3,   129,
-     131,   139,    39,   145,    40,    41,    42,    43,   147,    39,
-      28,    40,    41,    42,    43,    44,    38,    11,   148,    45,
-     103,   115,    44,    38,     0,     0,    45,   101,    90,    91,
-      92,    93,    39,     0,    40,    41,    42,    43,     0,    39,
-       0,    40,    41,    42,    43,    44,    38,     0,     0,    45,
-     104,     0,    44,     0,     0,     0,    45,   128,     0,     0,
-       0,     0,    39,     0,    40,    41,    42,    43,    61,    62,
-      63,    61,    62,    63,    64,    44,     0,    64,     0,    45,
-      61,    62,    63,     0,     0,     0,    64,     0,     0,     0,
-       0,     0,     0,     0,    65,    78,     0,    65,   114,     0,
-       0,     0,     0,     0,     0,     0,    65,    90,    91,    92,
-      93,    94,    95,    96,    97,    98,    99,    90,    91,    92,
-      93,    94,    95,    96,    97,    98,    99,     0,     0,     0,
-       0,     0,   109,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,   137,    90,    91,    92,    93,    94,    95,    96,
-      97,    98,    99,    90,    91,    92,    93,    94,    95,    96,
-      97,    98,    99,     0,     0,     0,   100,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,   105,    90,    91,    92,
-      93,    94,    95,    96,    97,    98,    99,    90,    91,    92,
-      93,    94,    95,    96,    97,    98,    99,     0,     0,     0,
-     140,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-     142,    90,    91,    92,    93,    94,    95,    96,    97,    98,
-      99,    90,    91,    92,    93,    94,    95,    96,    97,    98,
-      99,     0,     0,     0,   146,     0,     0,     0,     0,     0,
-       0,     0,   110,    90,    91,    92,    93,    94,    95,    96,
-      97,    98,    99,    90,    91,    92,    93,    94,    95,    96,
-      97,    98,    99,     0,   112,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,   117,    90,    91,    92,    93,    94,
-      95,    96,    97,    98,    99,    90,    91,    92,    93,    94,
-      95,    96,    97,    98,    99,     0,   141,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,   150,    90,    91,    92,
-      93,    94,    95,    96,    97,    98,    99,    90,    91,    92,
-      93,    94,    95,     0,     0,    98,    99
+      62,    38,    36,    18,    16,    10,    51,    19,    77,    31,
+      47,    37,    53,     7,    32,   109,    32,    34,    12,    39,
+     110,    40,    41,    42,    43,    69,    71,     1,     2,     3,
+      77,    25,    44,    77,    38,    25,    45,    76,    79,    14,
+      83,    84,    48,    86,    78,    52,   138,    17,    90,    91,
+      22,   110,    39,    23,    40,    41,    42,    43,    48,    20,
+      74,    72,    77,    75,    88,    44,    16,    26,    89,    45,
+     134,   118,   136,    21,   120,   121,   122,   123,   124,   125,
+     126,   127,   128,   129,    74,    38,    29,   104,     1,     2,
+       3,    33,   132,    94,    95,   135,    92,   137,    93,   145,
+      94,    95,    35,    39,    19,    40,    41,    42,    43,    59,
+     153,    63,    64,    65,    60,   140,    44,    66,     8,     9,
+      45,    46,    38,    61,   146,     1,     2,     3,    63,    64,
+      65,    85,   151,    87,    66,     1,     2,     3,   108,    67,
+      39,   115,    40,    41,    42,    43,    38,   113,   131,     1,
+       2,     3,   133,    44,   141,   147,    67,    45,    70,    68,
+     149,    27,   150,    11,    39,   117,    40,    41,    42,    43,
+      38,    28,     0,     1,     2,     3,    38,    44,     1,     2,
+       3,    45,    73,     0,     0,     0,     0,     0,    39,     0,
+      40,    41,    42,    43,    39,    38,    40,    41,    42,    43,
+       0,    44,    38,     0,     0,    45,   103,    44,     0,     0,
+       0,    45,   105,    39,     0,    40,    41,    42,    43,     0,
+      39,     0,    40,    41,    42,    43,    44,     0,     0,     0,
+      45,   106,     0,    44,    63,    64,    65,    45,   130,     0,
+      66,    63,    64,    65,    92,     0,    93,    66,    94,    95,
+      96,    97,    98,    99,   100,   101,     0,     0,     0,     0,
+       0,     0,    67,    80,     0,     0,     0,     0,     0,    67,
+     116,   111,    92,     0,    93,     0,    94,    95,    96,    97,
+      98,    99,   100,   101,    92,     0,    93,     0,    94,    95,
+      96,    97,    98,    99,   100,   101,    92,     0,    93,   139,
+      94,    95,    96,    97,    98,    99,   100,   101,    92,   102,
+      93,     0,    94,    95,    96,    97,    98,    99,   100,   101,
+      92,   107,    93,     0,    94,    95,    96,    97,    98,    99,
+     100,   101,    92,   142,    93,     0,    94,    95,    96,    97,
+      98,    99,   100,   101,    54,   144,    55,     0,    92,     0,
+      93,     0,    94,    95,    96,    97,     0,   148,   100,   101,
+       0,     0,     0,    56,     0,    57,    92,     0,    93,    58,
+      94,    95,    96,    97,    98,    99,   100,   101,     0,     0,
+       0,     0,     0,     0,     0,     0,    92,     0,    93,   112,
+      94,    95,    96,    97,    98,    99,   100,   101,     0,     0,
+       0,     0,     0,     0,     0,     0,    92,     0,    93,   114,
+      94,    95,    96,    97,    98,    99,   100,   101,     0,     0,
+       0,     0,     0,     0,     0,     0,    92,     0,    93,   119,
+      94,    95,    96,    97,    98,    99,   100,   101,     0,     0,
+       0,     0,     0,     0,     0,     0,    92,     0,    93,   143,
+      94,    95,    96,    97,    98,    99,   100,   101,     0,     0,
+       0,     0,     0,     0,     0,     0,    92,     0,    93,   152,
+      94,    95,    96,    97,    98,    99,   100,   101
 };
 
 static const yytype_int16 yycheck[] =
 {
-      42,     3,    12,     3,     6,     7,     8,    29,    50,     6,
-       7,     8,     6,     7,     8,    25,    45,    19,    47,    21,
-      22,    23,    24,    45,    30,    43,     6,     7,    70,    35,
-      32,    73,     3,    30,    36,    37,    54,     3,    56,    57,
-      69,    59,    52,     6,     7,     8,    64,    65,    19,    30,
-      21,    22,    23,    24,    35,    11,    12,     3,     4,     5,
-     102,    32,    72,     9,     0,    36,    37,    30,   110,    87,
-     112,    32,    90,    91,    92,    93,    94,    95,    96,    97,
-      98,    99,     0,    29,    27,    29,    32,     5,    31,    33,
-     108,    32,    29,   111,    37,   113,    27,   139,    29,    29,
-      18,    30,    33,    33,    22,    30,    35,     4,   150,    36,
-      35,    29,     3,   131,    32,     3,    29,    34,     6,     7,
-       8,     3,   140,    33,     6,     7,     8,    45,    29,    47,
-     148,    19,     3,    21,    22,    23,    24,    19,    22,    21,
-      22,    23,    24,    29,    32,    32,     3,    27,    36,    37,
-      32,    69,    29,     3,    36,    37,     6,     7,     8,    32,
-      27,    20,    19,    32,    21,    22,    23,    24,     3,    19,
-      22,    21,    22,    23,    24,    32,     3,     5,    27,    36,
-      37,    86,    32,     3,    -1,    -1,    36,    37,     9,    10,
-      11,    12,    19,    -1,    21,    22,    23,    24,    -1,    19,
-      -1,    21,    22,    23,    24,    32,     3,    -1,    -1,    36,
-      37,    -1,    32,    -1,    -1,    -1,    36,    37,    -1,    -1,
-      -1,    -1,    19,    -1,    21,    22,    23,    24,     3,     4,
-       5,     3,     4,     5,     9,    32,    -1,     9,    -1,    36,
-       3,     4,     5,    -1,    -1,    -1,     9,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    29,    30,    -1,    29,    30,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    29,     9,    10,    11,
-      12,    13,    14,    15,    16,    17,    18,     9,    10,    11,
-      12,    13,    14,    15,    16,    17,    18,    -1,    -1,    -1,
-      -1,    -1,    34,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    34,     9,    10,    11,    12,    13,    14,    15,
-      16,    17,    18,     9,    10,    11,    12,    13,    14,    15,
-      16,    17,    18,    -1,    -1,    -1,    32,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    32,     9,    10,    11,
-      12,    13,    14,    15,    16,    17,    18,     9,    10,    11,
-      12,    13,    14,    15,    16,    17,    18,    -1,    -1,    -1,
-      32,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      32,     9,    10,    11,    12,    13,    14,    15,    16,    17,
-      18,     9,    10,    11,    12,    13,    14,    15,    16,    17,
-      18,    -1,    -1,    -1,    32,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    30,     9,    10,    11,    12,    13,    14,    15,
-      16,    17,    18,     9,    10,    11,    12,    13,    14,    15,
-      16,    17,    18,    -1,    30,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    30,     9,    10,    11,    12,    13,
-      14,    15,    16,    17,    18,     9,    10,    11,    12,    13,
-      14,    15,    16,    17,    18,    -1,    30,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    30,     9,    10,    11,
-      12,    13,    14,    15,    16,    17,    18,     9,    10,    11,
-      12,    13,    14,    -1,    -1,    17,    18
+      42,     3,    27,    31,    12,     0,    31,    35,    50,    32,
+      29,    32,    37,     0,    37,    32,    37,    25,     5,    21,
+      37,    23,    24,    25,    26,    43,    45,     6,     7,     8,
+      72,    18,    34,    75,     3,    22,    38,    39,    56,     3,
+      58,    59,    29,    61,    52,    32,    32,     3,    66,    67,
+      31,    37,    21,    32,    23,    24,    25,    26,    45,    34,
+      47,    45,   104,    47,    31,    34,    74,     4,    35,    38,
+     112,    89,   114,    34,    92,    93,    94,    95,    96,    97,
+      98,    99,   100,   101,    71,     3,    38,    71,     6,     7,
+       8,     3,   110,    13,    14,   113,     9,   115,    11,   141,
+      13,    14,    36,    21,    35,    23,    24,    25,    26,    31,
+     152,     3,     4,     5,    31,   133,    34,     9,     6,     7,
+      38,    39,     3,    31,   142,     6,     7,     8,     3,     4,
+       5,     3,   150,    24,     9,     6,     7,     8,    34,    31,
+      21,    31,    23,    24,    25,    26,     3,    29,    34,     6,
+       7,     8,    29,    34,    22,    34,    31,    38,    39,    34,
+       3,    32,    29,     5,    21,    88,    23,    24,    25,    26,
+       3,    22,    -1,     6,     7,     8,     3,    34,     6,     7,
+       8,    38,    39,    -1,    -1,    -1,    -1,    -1,    21,    -1,
+      23,    24,    25,    26,    21,     3,    23,    24,    25,    26,
+      -1,    34,     3,    -1,    -1,    38,    39,    34,    -1,    -1,
+      -1,    38,    39,    21,    -1,    23,    24,    25,    26,    -1,
+      21,    -1,    23,    24,    25,    26,    34,    -1,    -1,    -1,
+      38,    39,    -1,    34,     3,     4,     5,    38,    39,    -1,
+       9,     3,     4,     5,     9,    -1,    11,     9,    13,    14,
+      15,    16,    17,    18,    19,    20,    -1,    -1,    -1,    -1,
+      -1,    -1,    31,    32,    -1,    -1,    -1,    -1,    -1,    31,
+      32,    36,     9,    -1,    11,    -1,    13,    14,    15,    16,
+      17,    18,    19,    20,     9,    -1,    11,    -1,    13,    14,
+      15,    16,    17,    18,    19,    20,     9,    -1,    11,    36,
+      13,    14,    15,    16,    17,    18,    19,    20,     9,    34,
+      11,    -1,    13,    14,    15,    16,    17,    18,    19,    20,
+       9,    34,    11,    -1,    13,    14,    15,    16,    17,    18,
+      19,    20,     9,    34,    11,    -1,    13,    14,    15,    16,
+      17,    18,    19,    20,    10,    34,    12,    -1,     9,    -1,
+      11,    -1,    13,    14,    15,    16,    -1,    34,    19,    20,
+      -1,    -1,    -1,    29,    -1,    31,     9,    -1,    11,    35,
+      13,    14,    15,    16,    17,    18,    19,    20,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,     9,    -1,    11,    32,
+      13,    14,    15,    16,    17,    18,    19,    20,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,     9,    -1,    11,    32,
+      13,    14,    15,    16,    17,    18,    19,    20,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,     9,    -1,    11,    32,
+      13,    14,    15,    16,    17,    18,    19,    20,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,     9,    -1,    11,    32,
+      13,    14,    15,    16,    17,    18,    19,    20,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,     9,    -1,    11,    32,
+      13,    14,    15,    16,    17,    18,    19,    20
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     6,     7,     8,    39,    40,    42,    45,     6,     7,
-       0,    42,    45,    45,     3,    41,    41,     3,    29,    33,
-      32,    32,    29,    30,    43,    45,     4,    30,    43,    36,
-      47,    30,    35,     3,    41,    34,    47,    30,     3,    19,
-      21,    22,    23,    24,    32,    36,    37,    40,    45,    46,
-      48,    47,    45,    47,    27,    29,    33,    29,    29,    29,
-      46,     3,     4,     5,     9,    29,    32,    49,    37,    40,
-      48,    37,    45,    48,    37,    46,    41,    49,    30,    44,
-      49,    49,    49,     3,    49,    22,    29,    33,    49,    49,
-       9,    10,    11,    12,    13,    14,    15,    16,    17,    18,
-      32,    37,    48,    37,    37,    32,    32,    30,    35,    34,
-      30,    27,    30,    29,    30,    44,    49,    30,    49,    49,
-      49,    49,    49,    49,    49,    49,    49,    49,    37,    32,
-      49,    27,    46,    49,    46,    49,    30,    34,    49,    20,
-      32,    30,    32,    46,    49,    32,    32,     3,    27,    49,
-      30,    46
+       0,     6,     7,     8,    41,    42,    44,    47,     6,     7,
+       0,    44,    47,    47,     3,    43,    43,     3,    31,    35,
+      34,    34,    31,    32,    45,    47,     4,    32,    45,    38,
+      49,    32,    37,     3,    43,    36,    49,    32,     3,    21,
+      23,    24,    25,    26,    34,    38,    39,    42,    47,    48,
+      50,    49,    47,    49,    10,    12,    29,    31,    35,    31,
+      31,    31,    48,     3,     4,     5,     9,    31,    34,    51,
+      39,    42,    50,    39,    47,    50,    39,    48,    43,    51,
+      32,    46,    51,    51,    51,     3,    51,    24,    31,    35,
+      51,    51,     9,    11,    13,    14,    15,    16,    17,    18,
+      19,    20,    34,    39,    50,    39,    39,    34,    34,    32,
+      37,    36,    32,    29,    32,    31,    32,    46,    51,    32,
+      51,    51,    51,    51,    51,    51,    51,    51,    51,    51,
+      39,    34,    51,    29,    48,    51,    48,    51,    32,    36,
+      51,    22,    34,    32,    34,    48,    51,    34,    34,     3,
+      29,    51,    32,    48
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    38,    39,    39,    39,    40,    40,    41,    41,    42,
-      42,    42,    42,    43,    43,    44,    44,    45,    45,    45,
-      45,    46,    46,    46,    46,    46,    46,    46,    46,    46,
-      46,    46,    46,    46,    46,    46,    46,    47,    47,    47,
-      47,    48,    48,    49,    49,    49,    49,    49,    49,    49,
-      49,    49,    49,    49,    49,    49,    49,    49,    49,    49,
-      49
+       0,    40,    41,    41,    41,    42,    42,    43,    43,    44,
+      44,    44,    44,    45,    45,    46,    46,    47,    47,    47,
+      47,    48,    48,    48,    48,    48,    48,    48,    48,    48,
+      48,    48,    48,    48,    48,    48,    48,    48,    48,    49,
+      49,    49,    49,    50,    50,    51,    51,    51,    51,    51,
+      51,    51,    51,    51,    51,    51,    51,    51,    51,    51,
+      51,    51,    51
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -759,10 +761,10 @@ static const yytype_uint8 yyr2[] =
        0,     2,     2,     1,     1,     3,     4,     1,     4,     5,
        7,     6,     6,     2,     4,     1,     3,     1,     1,     2,
        2,     4,     7,     4,     5,     2,     3,     5,     7,    13,
-       5,     7,     4,     3,     3,     2,     1,     4,     3,     3,
-       2,     1,     2,     2,     3,     3,     3,     3,     3,     3,
-       3,     3,     3,     3,     1,     1,     1,     4,     3,     3,
-       4
+       5,     7,     4,     3,     3,     2,     2,     2,     1,     4,
+       3,     3,     2,     1,     2,     2,     3,     3,     3,     3,
+       3,     3,     3,     3,     3,     3,     1,     1,     1,     4,
+       3,     3,     4
 };
 
 
@@ -1439,7 +1441,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 116 "compiler.y" /* yacc.c:1646  */
+#line 120 "compiler.y" /* yacc.c:1646  */
     {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = (yyvsp[-1]._declaration);
@@ -1449,11 +1451,11 @@ yyreduce:
 
             (yyval._program) = program;
        }
-#line 1453 "compiler.tab.c" /* yacc.c:1646  */
+#line 1455 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 125 "compiler.y" /* yacc.c:1646  */
+#line 129 "compiler.y" /* yacc.c:1646  */
     {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = (yyvsp[0]._declaration);
@@ -1463,11 +1465,11 @@ yyreduce:
 
             (yyval._program) = program;
        }
-#line 1467 "compiler.tab.c" /* yacc.c:1646  */
+#line 1469 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 134 "compiler.y" /* yacc.c:1646  */
+#line 138 "compiler.y" /* yacc.c:1646  */
     {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = NULL;
@@ -1476,22 +1478,22 @@ yyreduce:
             printf("finally%d\n",line_counter);
             (yyval._program) = program;
        }
-#line 1480 "compiler.tab.c" /* yacc.c:1646  */
+#line 1482 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 143 "compiler.y" /* yacc.c:1646  */
+#line 147 "compiler.y" /* yacc.c:1646  */
     {
                 struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
                 declaration->id_type = (yyvsp[-2].type);
                 declaration->id = (yyvsp[-1]._identifier);
                 (yyval._declaration) = declaration;
         }
-#line 1491 "compiler.tab.c" /* yacc.c:1646  */
+#line 1493 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 149 "compiler.y" /* yacc.c:1646  */
+#line 153 "compiler.y" /* yacc.c:1646  */
     {
                 struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
                 declaration->prev = (yyvsp[-3]._declaration);
@@ -1499,33 +1501,33 @@ yyreduce:
                 declaration->id = (yyvsp[-1]._identifier);
                 (yyval._declaration) = declaration;
         }
-#line 1503 "compiler.tab.c" /* yacc.c:1646  */
+#line 1505 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 161 "compiler.y" /* yacc.c:1646  */
+#line 165 "compiler.y" /* yacc.c:1646  */
     {
             struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             identifier->ID = (yyvsp[0].id);
             identifier->int_val = 0;   // zero, If scalar
             (yyval._identifier) = identifier;
           }
-#line 1514 "compiler.tab.c" /* yacc.c:1646  */
+#line 1516 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 167 "compiler.y" /* yacc.c:1646  */
+#line 171 "compiler.y" /* yacc.c:1646  */
     {
             struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             identifier->ID = (yyvsp[-3].id);
             identifier->int_val = (yyvsp[-1].intval);   // zero, If scalar
             (yyval._identifier) = identifier;
            }
-#line 1525 "compiler.tab.c" /* yacc.c:1646  */
+#line 1527 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 175 "compiler.y" /* yacc.c:1646  */
+#line 179 "compiler.y" /* yacc.c:1646  */
     {
             struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
             function->id_type = (yyvsp[-4].type);
@@ -1534,11 +1536,11 @@ yyreduce:
             function->stmts_group = (yyvsp[0]._stmtgroup);
             (yyval._function) = function;
         }
-#line 1538 "compiler.tab.c" /* yacc.c:1646  */
+#line 1540 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 183 "compiler.y" /* yacc.c:1646  */
+#line 187 "compiler.y" /* yacc.c:1646  */
     {
         struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
         function->prev = (yyvsp[-6]._function);
@@ -1548,11 +1550,11 @@ yyreduce:
         function->stmts_group = (yyvsp[0]._stmtgroup);
         (yyval._function) = function;
     }
-#line 1552 "compiler.tab.c" /* yacc.c:1646  */
+#line 1554 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 192 "compiler.y" /* yacc.c:1646  */
+#line 196 "compiler.y" /* yacc.c:1646  */
     {
             struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
             function->id_type = (yyvsp[-5].type);
@@ -1561,11 +1563,11 @@ yyreduce:
             function->stmts_group = (yyvsp[0]._stmtgroup);
             (yyval._function) = function;
         }
-#line 1565 "compiler.tab.c" /* yacc.c:1646  */
+#line 1567 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 200 "compiler.y" /* yacc.c:1646  */
+#line 204 "compiler.y" /* yacc.c:1646  */
     {
         struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
         function->prev = (yyvsp[-5]._function);
@@ -1575,11 +1577,11 @@ yyreduce:
         function->stmts_group = (yyvsp[0]._stmtgroup);
         (yyval._function) = function;
     }
-#line 1579 "compiler.tab.c" /* yacc.c:1646  */
+#line 1581 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 211 "compiler.y" /* yacc.c:1646  */
+#line 215 "compiler.y" /* yacc.c:1646  */
     {
             struct PARAMETER *parameter = (struct PARAMETER*) malloc (sizeof (struct PARAMETER));
             parameter->id_type = (yyvsp[-1].type);
@@ -1587,11 +1589,11 @@ yyreduce:
             parameter->prev = NULL;
             (yyval._parameter) = parameter;
         }
-#line 1591 "compiler.tab.c" /* yacc.c:1646  */
+#line 1593 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 218 "compiler.y" /* yacc.c:1646  */
+#line 222 "compiler.y" /* yacc.c:1646  */
     {
             struct PARAMETER *parameter = (struct PARAMETER*) malloc (sizeof (struct PARAMETER));
             parameter->id_type = (yyvsp[-1].type);
@@ -1599,53 +1601,53 @@ yyreduce:
             parameter->prev = (yyvsp[-3]._parameter);
             (yyval._parameter) = parameter;
         }
-#line 1603 "compiler.tab.c" /* yacc.c:1646  */
+#line 1605 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 226 "compiler.y" /* yacc.c:1646  */
+#line 230 "compiler.y" /* yacc.c:1646  */
     { 
     struct ARG *arg = (struct ARG*) malloc (sizeof (struct ARG));
     arg->expr = (yyvsp[0]._expr);
     arg->prev = NULL;
     (yyval._arg) = arg;
     }
-#line 1614 "compiler.tab.c" /* yacc.c:1646  */
+#line 1616 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 232 "compiler.y" /* yacc.c:1646  */
+#line 236 "compiler.y" /* yacc.c:1646  */
     {
     struct ARG *arg = (struct ARG*) malloc (sizeof (struct ARG));
     arg->expr = (yyvsp[0]._expr);
     arg->prev = (yyvsp[-2]._arg);
     (yyval._arg) = arg;
         }
-#line 1625 "compiler.tab.c" /* yacc.c:1646  */
+#line 1627 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
 #line 244 "compiler.y" /* yacc.c:1646  */
     { (yyval.type) = Int_Type;}
-#line 1631 "compiler.tab.c" /* yacc.c:1646  */
+#line 1633 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
 #line 245 "compiler.y" /* yacc.c:1646  */
     { (yyval.type) = Float_Type;}
-#line 1637 "compiler.tab.c" /* yacc.c:1646  */
+#line 1639 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
 #line 246 "compiler.y" /* yacc.c:1646  */
     { (yyval.type) = Const_Int_Type;}
-#line 1643 "compiler.tab.c" /* yacc.c:1646  */
+#line 1645 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
 #line 247 "compiler.y" /* yacc.c:1646  */
     { (yyval.type) = Const_Float_Type;}
-#line 1649 "compiler.tab.c" /* yacc.c:1646  */
+#line 1651 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
@@ -1659,13 +1661,14 @@ yyreduce:
             struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
             stmt->stmt_type = Equ_Type;
             stmt->stmt.assign_stmt = assign;
+
             (yyval._stmt) = stmt;
           }
-#line 1665 "compiler.tab.c" /* yacc.c:1646  */
+#line 1668 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 264 "compiler.y" /* yacc.c:1646  */
+#line 265 "compiler.y" /* yacc.c:1646  */
     {
             struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
             assign->ID = (yyvsp[-6].id);
@@ -1677,11 +1680,11 @@ yyreduce:
             stmt->stmt.assign_stmt = assign;
             (yyval._stmt) = stmt;
              }
-#line 1681 "compiler.tab.c" /* yacc.c:1646  */
+#line 1684 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 276 "compiler.y" /* yacc.c:1646  */
+#line 277 "compiler.y" /* yacc.c:1646  */
     {
                 struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
                 call->ID = (yyvsp[-3].id);
@@ -1691,11 +1694,11 @@ yyreduce:
         stmt->stmt.func_call = call;
         (yyval._stmt) = stmt;
                 }
-#line 1695 "compiler.tab.c" /* yacc.c:1646  */
+#line 1698 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 285 "compiler.y" /* yacc.c:1646  */
+#line 286 "compiler.y" /* yacc.c:1646  */
     {
                     struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
                     call->ID = (yyvsp[-4].id);
@@ -1705,33 +1708,33 @@ yyreduce:
         stmt->stmt.func_call = call;
         (yyval._stmt) = stmt;
                 }
-#line 1709 "compiler.tab.c" /* yacc.c:1646  */
+#line 1712 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 294 "compiler.y" /* yacc.c:1646  */
+#line 295 "compiler.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Return_Type;
         stmt->stmt.return_expr = NULL;
         (yyval._stmt) = stmt;
         }
-#line 1720 "compiler.tab.c" /* yacc.c:1646  */
+#line 1723 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 300 "compiler.y" /* yacc.c:1646  */
+#line 301 "compiler.y" /* yacc.c:1646  */
     {
          struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Return_Type;
         stmt->stmt.return_expr = (yyvsp[-1]._expr);
         (yyval._stmt) = stmt;
        }
-#line 1731 "compiler.tab.c" /* yacc.c:1646  */
+#line 1734 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 306 "compiler.y" /* yacc.c:1646  */
+#line 307 "compiler.y" /* yacc.c:1646  */
     {
        struct IF_STMT *if_stmt = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
        if_stmt->condition=(yyvsp[-2]._expr);
@@ -1743,11 +1746,11 @@ yyreduce:
         stmt->stmt.if_stmt = if_stmt;
         (yyval._stmt) = stmt;
     }
-#line 1747 "compiler.tab.c" /* yacc.c:1646  */
+#line 1750 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 317 "compiler.y" /* yacc.c:1646  */
+#line 318 "compiler.y" /* yacc.c:1646  */
     {
        struct IF_STMT *if_stmt = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
        if_stmt->condition=(yyvsp[-4]._expr);
@@ -1759,11 +1762,11 @@ yyreduce:
         stmt->stmt.if_stmt = if_stmt;
         (yyval._stmt) = stmt;
       }
-#line 1763 "compiler.tab.c" /* yacc.c:1646  */
+#line 1766 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 328 "compiler.y" /* yacc.c:1646  */
+#line 329 "compiler.y" /* yacc.c:1646  */
     {
             struct ASSIGN_STMT *assign1 = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
             struct ASSIGN_STMT *assign2 = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
@@ -1788,11 +1791,11 @@ yyreduce:
         stmt->stmt.for_stmt = for_stmt;
         (yyval._stmt) = stmt;
         }
-#line 1792 "compiler.tab.c" /* yacc.c:1646  */
+#line 1795 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 352 "compiler.y" /* yacc.c:1646  */
+#line 353 "compiler.y" /* yacc.c:1646  */
     {
         struct WHILE_STMT* while_stmt = (struct WHILE_STMT*) malloc (sizeof(struct WHILE_STMT));
         while_stmt->do_while = false;
@@ -1804,11 +1807,11 @@ yyreduce:
         stmt->stmt.while_stmt = while_stmt;
         (yyval._stmt) = stmt;
         }
-#line 1808 "compiler.tab.c" /* yacc.c:1646  */
+#line 1811 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 363 "compiler.y" /* yacc.c:1646  */
+#line 364 "compiler.y" /* yacc.c:1646  */
     {
         struct WHILE_STMT* while_stmt = (struct WHILE_STMT*) malloc (sizeof(struct WHILE_STMT));
         while_stmt->do_while = true;
@@ -1820,11 +1823,11 @@ yyreduce:
         stmt->stmt.while_stmt = while_stmt;
         (yyval._stmt) = stmt;
         }
-#line 1824 "compiler.tab.c" /* yacc.c:1646  */
+#line 1827 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 375 "compiler.y" /* yacc.c:1646  */
+#line 376 "compiler.y" /* yacc.c:1646  */
     {
         struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
         stmts_group->declaration = (yyvsp[-2]._declaration);
@@ -1835,11 +1838,11 @@ yyreduce:
         stmt->stmt.stmts_group = stmts_group;
         (yyval._stmt) = stmt;
             }
-#line 1839 "compiler.tab.c" /* yacc.c:1646  */
+#line 1842 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 386 "compiler.y" /* yacc.c:1646  */
+#line 387 "compiler.y" /* yacc.c:1646  */
     {
         struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
         stmts_group->declaration = NULL;
@@ -1850,11 +1853,11 @@ yyreduce:
         stmt->stmt.stmts_group = stmts_group;
         (yyval._stmt) = stmt;
             }
-#line 1854 "compiler.tab.c" /* yacc.c:1646  */
+#line 1857 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 396 "compiler.y" /* yacc.c:1646  */
+#line 397 "compiler.y" /* yacc.c:1646  */
     {
         struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
         stmts_group->declaration = (yyvsp[-1]._declaration);
@@ -1865,11 +1868,11 @@ yyreduce:
         stmt->stmt.stmts_group = stmts_group;
         (yyval._stmt) = stmt;
             }
-#line 1869 "compiler.tab.c" /* yacc.c:1646  */
+#line 1872 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 407 "compiler.y" /* yacc.c:1646  */
+#line 408 "compiler.y" /* yacc.c:1646  */
     {
         struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
         stmts_group->declaration = NULL;
@@ -1882,54 +1885,134 @@ yyreduce:
            
                 
             }
-#line 1886 "compiler.tab.c" /* yacc.c:1646  */
+#line 1889 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 440 "compiler.y" /* yacc.c:1646  */
+#line 420 "compiler.y" /* yacc.c:1646  */
+    {
+        //INTNUM = 1;
+        struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
+        id_expr->ID = (yyvsp[-1].id);
+        id_expr->expr = NULL;
+
+        struct EXPR *expr2 = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr2->expr_type = Id_Type;  
+        expr2->expression.id_expr = id_expr;
+
+        struct EXPR *expr1 = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr1->expr_type = IntNum_Type;
+        expr1->expression.int_val = 1;
+
+        struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
+        add_op->add_type = Plus_Type;
+        add_op->left_side=expr2;
+        add_op->right_side= expr1;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = Add_Type;
+        expr->expression.add_op = add_op;
+
+        struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
+        assign->ID = (yyvsp[-1].id);
+        assign->index = NULL; 
+        assign->expr = expr;
+             
+        struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
+        stmt->stmt_type = Equ_Type;
+        stmt->stmt.assign_stmt = assign;
+        printf("sfsdfsdfsdF%d\n");
+
+        (yyval._stmt) = stmt;
+    }
+#line 1929 "compiler.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 37:
+#line 454 "compiler.y" /* yacc.c:1646  */
+    {
+        //INTNUM = 1;
+        struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
+        id_expr->ID = (yyvsp[-1].id);
+        id_expr->expr = NULL;
+
+        struct EXPR *expr2 = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr2->expr_type = Id_Type;  
+        expr2->expression.id_expr = id_expr;
+
+        struct EXPR *expr1 = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr1->expr_type = IntNum_Type;
+        expr1->expression.int_val = 1;
+
+        struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
+        add_op->add_type = Minus_Type;
+        add_op->left_side=expr2;
+        add_op->right_side= expr1;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = Add_Type;
+        expr->expression.add_op = add_op;
+
+        struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
+        assign->ID = (yyvsp[-1].id);
+        assign->index = NULL; 
+        assign->expr = expr;
+             
+        struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
+        stmt->stmt_type = Equ_Type;
+        stmt->stmt.assign_stmt = assign;
+        printf("sfsdfsdfsdF%d\n");
+
+        (yyval._stmt) = stmt;
+    }
+#line 1969 "compiler.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 38:
+#line 512 "compiler.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Semi_Colon_Type;
         (yyval._stmt) = stmt;
     }
-#line 1896 "compiler.tab.c" /* yacc.c:1646  */
+#line 1979 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 37:
-#line 450 "compiler.y" /* yacc.c:1646  */
+  case 39:
+#line 522 "compiler.y" /* yacc.c:1646  */
     {
                 struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 stmts_group->declaration = (yyvsp[-2]._declaration);
                 stmts_group->stmt = (yyvsp[-1]._stmt);
                 (yyval._stmtgroup) = stmts_group;
             }
-#line 1907 "compiler.tab.c" /* yacc.c:1646  */
+#line 1990 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 38:
-#line 457 "compiler.y" /* yacc.c:1646  */
+  case 40:
+#line 529 "compiler.y" /* yacc.c:1646  */
     {
                 struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 stmts_group->declaration = NULL;
                 stmts_group->stmt = (yyvsp[-1]._stmt);
                 (yyval._stmtgroup) = stmts_group;
             }
-#line 1918 "compiler.tab.c" /* yacc.c:1646  */
+#line 2001 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 39:
-#line 463 "compiler.y" /* yacc.c:1646  */
+  case 41:
+#line 535 "compiler.y" /* yacc.c:1646  */
     {
                 struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 stmts_group->declaration = (yyvsp[-1]._declaration);
                 stmts_group->stmt = NULL;
                 (yyval._stmtgroup) = stmts_group;
             }
-#line 1929 "compiler.tab.c" /* yacc.c:1646  */
+#line 2012 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 40:
-#line 470 "compiler.y" /* yacc.c:1646  */
+  case 42:
+#line 542 "compiler.y" /* yacc.c:1646  */
     {
                 struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 stmts_group->declaration = NULL;
@@ -1938,33 +2021,33 @@ yyreduce:
            
                 
             }
-#line 1942 "compiler.tab.c" /* yacc.c:1646  */
+#line 2025 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 41:
-#line 479 "compiler.y" /* yacc.c:1646  */
+  case 43:
+#line 551 "compiler.y" /* yacc.c:1646  */
     {
             struct STMT *stmt;
             stmt = (yyvsp[0]._stmt);
             stmt->prev = NULL;
             (yyval._stmt) = stmt;
         }
-#line 1953 "compiler.tab.c" /* yacc.c:1646  */
+#line 2036 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 42:
-#line 485 "compiler.y" /* yacc.c:1646  */
+  case 44:
+#line 557 "compiler.y" /* yacc.c:1646  */
     {
             struct STMT *stmt;
             stmt = (yyvsp[0]._stmt);
             stmt->prev = (yyvsp[-1]._stmt);
             (yyval._stmt) = stmt;
         }
-#line 1964 "compiler.tab.c" /* yacc.c:1646  */
+#line 2047 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 43:
-#line 495 "compiler.y" /* yacc.c:1646  */
+  case 45:
+#line 567 "compiler.y" /* yacc.c:1646  */
     {
         struct UNI_OP *uni_op = (struct UNI_OP*) malloc (sizeof (struct UNI_OP));
         uni_op->uni_type = Neg_Type;
@@ -1975,11 +2058,11 @@ yyreduce:
         expr->expression.uni_op = uni_op;
         (yyval._expr) = expr;
     }
-#line 1979 "compiler.tab.c" /* yacc.c:1646  */
+#line 2062 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 44:
-#line 505 "compiler.y" /* yacc.c:1646  */
+  case 46:
+#line 577 "compiler.y" /* yacc.c:1646  */
     {
         struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
         add_op->add_type = Minus_Type;
@@ -1991,11 +2074,11 @@ yyreduce:
         expr->expression.add_op = add_op;
         (yyval._expr) = expr;
     }
-#line 1995 "compiler.tab.c" /* yacc.c:1646  */
+#line 2078 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 45:
-#line 516 "compiler.y" /* yacc.c:1646  */
+  case 47:
+#line 588 "compiler.y" /* yacc.c:1646  */
     {
         struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
         add_op->add_type = Plus_Type;
@@ -2007,11 +2090,11 @@ yyreduce:
         expr->expression.add_op = add_op;
         (yyval._expr) = expr;
     }
-#line 2011 "compiler.tab.c" /* yacc.c:1646  */
+#line 2094 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 46:
-#line 527 "compiler.y" /* yacc.c:1646  */
+  case 48:
+#line 599 "compiler.y" /* yacc.c:1646  */
     {
         struct MUL_OP *mul_op = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
         mul_op->mul_type = Mul_Type;
@@ -2023,11 +2106,11 @@ yyreduce:
         expr->expression.mul_op = mul_op;
         (yyval._expr) = expr;
     }
-#line 2027 "compiler.tab.c" /* yacc.c:1646  */
+#line 2110 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 47:
-#line 538 "compiler.y" /* yacc.c:1646  */
+  case 49:
+#line 610 "compiler.y" /* yacc.c:1646  */
     {
         struct MUL_OP *mul_op = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
         mul_op->mul_type = Div_Type;
@@ -2039,11 +2122,11 @@ yyreduce:
         expr->expression.mul_op = mul_op;
         (yyval._expr) = expr;
     }
-#line 2043 "compiler.tab.c" /* yacc.c:1646  */
+#line 2126 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 48:
-#line 549 "compiler.y" /* yacc.c:1646  */
+  case 50:
+#line 621 "compiler.y" /* yacc.c:1646  */
     {
         struct COM_OP *com_op = (struct COM_OP*) malloc (sizeof (struct COM_OP));
         com_op->com_type = Le_Type;
@@ -2055,11 +2138,11 @@ yyreduce:
         expr->expression.com_op = com_op;
         (yyval._expr) = expr;
     }
-#line 2059 "compiler.tab.c" /* yacc.c:1646  */
+#line 2142 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 49:
-#line 560 "compiler.y" /* yacc.c:1646  */
+  case 51:
+#line 632 "compiler.y" /* yacc.c:1646  */
     {
         struct COM_OP *com_op = (struct COM_OP*) malloc (sizeof (struct COM_OP));
         com_op->com_type = Ge_Type;
@@ -2071,11 +2154,11 @@ yyreduce:
         expr->expression.com_op = com_op;
         (yyval._expr) = expr;
     }
-#line 2075 "compiler.tab.c" /* yacc.c:1646  */
+#line 2158 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 50:
-#line 571 "compiler.y" /* yacc.c:1646  */
+  case 52:
+#line 643 "compiler.y" /* yacc.c:1646  */
     {
         struct COM_OP *com_op = (struct COM_OP*) malloc (sizeof (struct COM_OP));
         com_op->com_type = Gt_Type;
@@ -2087,11 +2170,11 @@ yyreduce:
         expr->expression.com_op = com_op;
         (yyval._expr) = expr;
     }
-#line 2091 "compiler.tab.c" /* yacc.c:1646  */
+#line 2174 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 51:
-#line 582 "compiler.y" /* yacc.c:1646  */
+  case 53:
+#line 654 "compiler.y" /* yacc.c:1646  */
     {
         struct COM_OP *com_op = (struct COM_OP*) malloc (sizeof (struct COM_OP));
         com_op->com_type = Lt_Type;
@@ -2103,11 +2186,11 @@ yyreduce:
         expr->expression.com_op = com_op;
         (yyval._expr) = expr;
     }
-#line 2107 "compiler.tab.c" /* yacc.c:1646  */
+#line 2190 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 52:
-#line 593 "compiler.y" /* yacc.c:1646  */
+  case 54:
+#line 665 "compiler.y" /* yacc.c:1646  */
     {
         struct EQL_OP *eql_op = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
         eql_op->eql_type = Eq_Type;
@@ -2119,11 +2202,11 @@ yyreduce:
         expr->expression.eql_op = eql_op;
         (yyval._expr) = expr;
     }
-#line 2123 "compiler.tab.c" /* yacc.c:1646  */
+#line 2206 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 53:
-#line 604 "compiler.y" /* yacc.c:1646  */
+  case 55:
+#line 676 "compiler.y" /* yacc.c:1646  */
     {
         struct EQL_OP *eql_op = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
         eql_op->eql_type = Ne_Type;
@@ -2135,33 +2218,33 @@ yyreduce:
         expr->expression.eql_op = eql_op;
         (yyval._expr) = expr;
     }
-#line 2139 "compiler.tab.c" /* yacc.c:1646  */
+#line 2222 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 54:
-#line 615 "compiler.y" /* yacc.c:1646  */
+  case 56:
+#line 687 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = IntNum_Type;  
         expr->expression.int_val = (yyvsp[0].intval);
         (yyval._expr) = expr;
     }
-#line 2150 "compiler.tab.c" /* yacc.c:1646  */
+#line 2233 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 55:
-#line 621 "compiler.y" /* yacc.c:1646  */
+  case 57:
+#line 693 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = FloatNum_Type;  
         expr->expression.floatval = (yyvsp[0].floatval);
         (yyval._expr) = expr;
     }
-#line 2161 "compiler.tab.c" /* yacc.c:1646  */
+#line 2244 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 56:
-#line 627 "compiler.y" /* yacc.c:1646  */
+  case 58:
+#line 699 "compiler.y" /* yacc.c:1646  */
     {
         struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
         id_expr->ID = (yyvsp[0].id);
@@ -2172,11 +2255,11 @@ yyreduce:
         expr->expression.id_expr = id_expr;
         (yyval._expr) = expr;
     }
-#line 2176 "compiler.tab.c" /* yacc.c:1646  */
+#line 2259 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 57:
-#line 637 "compiler.y" /* yacc.c:1646  */
+  case 59:
+#line 709 "compiler.y" /* yacc.c:1646  */
     {
         struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
         id_expr->ID = (yyvsp[-3].id);
@@ -2187,22 +2270,22 @@ yyreduce:
         expr->expression.id_expr = id_expr;
         (yyval._expr) = expr;
     }
-#line 2191 "compiler.tab.c" /* yacc.c:1646  */
+#line 2274 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 58:
-#line 647 "compiler.y" /* yacc.c:1646  */
+  case 60:
+#line 719 "compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Expr_Type;  
         expr->expression.bracket = (yyvsp[-1]._expr);
         (yyval._expr) = expr;
     }
-#line 2202 "compiler.tab.c" /* yacc.c:1646  */
+#line 2285 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 59:
-#line 653 "compiler.y" /* yacc.c:1646  */
+  case 61:
+#line 725 "compiler.y" /* yacc.c:1646  */
     {
         struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
         call->ID = (yyvsp[-2].id);
@@ -2213,11 +2296,11 @@ yyreduce:
         expr->expression.func_call = call;
         (yyval._expr) = expr;
     }
-#line 2217 "compiler.tab.c" /* yacc.c:1646  */
+#line 2300 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
-  case 60:
-#line 663 "compiler.y" /* yacc.c:1646  */
+  case 62:
+#line 735 "compiler.y" /* yacc.c:1646  */
     {
         struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
         call->ID = (yyvsp[-3].id);
@@ -2228,11 +2311,11 @@ yyreduce:
         expr->expression.func_call = call;
         (yyval._expr) = expr;
     }
-#line 2232 "compiler.tab.c" /* yacc.c:1646  */
+#line 2315 "compiler.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2236 "compiler.tab.c" /* yacc.c:1646  */
+#line 2319 "compiler.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2460,7 +2543,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 677 "compiler.y" /* yacc.c:1906  */
+#line 749 "compiler.y" /* yacc.c:1906  */
 
 
 

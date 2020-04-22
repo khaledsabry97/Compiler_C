@@ -9,6 +9,7 @@
 FILE *assembly_file; 
 FILE *symbol_file; 
 FILE *semantic_file;
+static int line_counter;
 void process(struct PROGRAM* head);
 void openFiles();
 void closeFiles();
@@ -29,8 +30,9 @@ void yyerror(YYLTYPE t, char *s, ...)
     fprintf(stderr, "\n");
 } 
 */
-%}
 
+%}
+%error-verbose
 %union{
     ID_TYPE type;
     char* id;
@@ -77,7 +79,9 @@ void yyerror(YYLTYPE t, char *s, ...)
 %token FLOAT
 %token CONST
 %token MINUS
+%token MM
 %token PLUS
+%token PP
 %token MUL
 %token DIV
 %token LE
@@ -237,10 +241,6 @@ Arg_List: Expr {
         }
        ;
 
-
-
-
-
 Type: INT { $$ = Int_Type;}
     | FLOAT { $$ = Float_Type;}
     | CONST INT { $$ = Const_Int_Type;}
@@ -259,6 +259,7 @@ Stmt: ID '=' Expr ';' {
             struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
             stmt->stmt_type = Equ_Type;
             stmt->stmt.assign_stmt = assign;
+
             $$ = stmt;
           }
     | ID '[' Expr ']' '=' Expr ';' {
@@ -416,7 +417,78 @@ Stmt: ID '=' Expr ';' {
            
                 
             }  
-    | /*Type Identifier ';' {
+    | ID PP {
+        //INTNUM = 1;
+        struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
+        id_expr->ID = $1;
+        id_expr->expr = NULL;
+
+        struct EXPR *expr2 = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr2->expr_type = Id_Type;  
+        expr2->expression.id_expr = id_expr;
+
+        struct EXPR *expr1 = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr1->expr_type = IntNum_Type;
+        expr1->expression.int_val = 1;
+
+        struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
+        add_op->add_type = Plus_Type;
+        add_op->left_side=expr2;
+        add_op->right_side= expr1;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = Add_Type;
+        expr->expression.add_op = add_op;
+
+        struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
+        assign->ID = $1;
+        assign->index = NULL; 
+        assign->expr = expr;
+             
+        struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
+        stmt->stmt_type = Equ_Type;
+        stmt->stmt.assign_stmt = assign;
+        printf("sfsdfsdfsdF%d\n");
+
+        $$ = stmt;
+    }| ID MM {
+        //INTNUM = 1;
+        struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
+        id_expr->ID = $1;
+        id_expr->expr = NULL;
+
+        struct EXPR *expr2 = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr2->expr_type = Id_Type;  
+        expr2->expression.id_expr = id_expr;
+
+        struct EXPR *expr1 = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr1->expr_type = IntNum_Type;
+        expr1->expression.int_val = 1;
+
+        struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
+        add_op->add_type = Minus_Type;
+        add_op->left_side=expr2;
+        add_op->right_side= expr1;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = Add_Type;
+        expr->expression.add_op = add_op;
+
+        struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
+        assign->ID = $1;
+        assign->index = NULL; 
+        assign->expr = expr;
+             
+        struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
+        stmt->stmt_type = Equ_Type;
+        stmt->stmt.assign_stmt = assign;
+        printf("sfsdfsdfsdF%d\n");
+
+        $$ = stmt;
+    }|
+    
+    
+     /*Type Identifier ';' {
         struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
         declaration->id_type = $1;
         declaration->id = $2;

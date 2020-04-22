@@ -15,14 +15,16 @@ float plusx(int n3,float n4)
 
 int main ()
 {
-    int 1x2;
+    int 1n;
     int n1;
     int n2;
     float n3;
     const int n4;
     int result;
     int value;
+    n1 ++;
     n1 = 10;
+    n1 --;
     n2 = 20;
     n3 = 30.5 ;
     n3 = 20.7 + 20;
