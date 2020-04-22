@@ -21,13 +21,13 @@ struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
     return node;
 }
 
-//scopeTail denotes curScope node
-void deleteScope(struct SCOPE** scopeTail) {
-    struct SCOPE* curScope = *scopeTail;
+//current_scope_ptr denotes curScope node
+void deleteScope(struct SCOPE** current_scope_ptr) {
+    struct SCOPE* curScope = *current_scope_ptr;
     struct SCOPE* parent_scope = curScope->parent_scope;
     if(parent_scope != NULL) {
         parent_scope->child_scope = NULL;
-        (*scopeTail) = parent_scope;
+        (*current_scope_ptr) = parent_scope;
         free(curScope);
       } 
       

@@ -393,7 +393,7 @@ struct Semantic* findSemanticIdentifier(char* identifier_name)
     while(list_of_names != NULL)
     {
         //printf("%s\n",list_of_names->identifier_name);
-        bool ret = checkScope(list_of_names->scope,scopeHead);
+        bool ret = checkScope(list_of_names->scope,head_scope_ptr);
         if (ret == true)
         {
             list_of_names->temp = NULL;
@@ -569,3 +569,5 @@ IDENTIFIER_SEMANTIC_TYPE compareTypes(IDENTIFIER_SEMANTIC_TYPE type1, IDENTIFIER
 // error: if return type of function doesn't match with the identifier
 // can do function overloading
 // check if types of arguments match with the paramter of a fucntion with the same name
+// can't reassign a constant variable
+// can't reassign a constant parameter

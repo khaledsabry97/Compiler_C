@@ -14,9 +14,9 @@ int row_no;
 ID_TYPE current_type;
 bool is_parameter = false;
 bool printed = false;
-bool print_title = false;
-bool _isOtherComp = false;
-bool is_it_group_stmt = false;
+bool title = false;
+bool outside_group_stmt = false;
+bool inside_group_stmt = false;
 struct Assembly* assemhead;
 struct Assembly *temp;
 int counter = 0;
@@ -31,10 +31,10 @@ struct SEMANTIC_STACK* temp_semantic_stack;
 struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
     struct SCOPE* node = (struct SCOPE*) malloc (sizeof(struct SCOPE));
     node->scope_type = scope_type;
-    node->do_while_count = 0;
-    node->while_count = 0;
-    node->for_count  = 0;
     node->if_count = 0;
+    node->for_count  = 0;
+    node->while_count = 0;
+    node->do_while_count = 0;
     node->stmt_group_count = 0;
     if(scope_type == Scope_Global_Type)
         sprintf(node->name, "Global Variables");
@@ -54,13 +54,12 @@ struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
     return node;
 }
 
-//scopeTail denotes curScope node
-void deleteScope(struct SCOPE** scopeTail) {
-    struct SCOPE* curScope = *scopeTail;
+void deleteScope(struct SCOPE** current_scope_ptr) {
+    struct SCOPE* curScope = *current_scope_ptr;
     struct SCOPE* parent_scope = curScope->parent_scope;
     if(parent_scope != NULL) {
         parent_scope->child_scope = NULL;
-        (*scopeTail) = parent_scope;
+        (*current_scope_ptr) = parent_scope;
         free(curScope);
       } 
       
@@ -101,7 +100,7 @@ char to_print[1200];
 //char *to_print = (char *)malloc(1000);
 
     //when printing global variable
-    if (scopeTail->scope_type == Scope_Global_Type)
+    if (current_scope_ptr->scope_type == Scope_Global_Type)
     {
         fprintf(symbol_file, "Global Variables\n");
         sprintf(to_print, "Global Variables\n");
@@ -115,7 +114,7 @@ char to_print[1200];
     fprintf(symbol_file, "%s", current_func_name);
     sprintf(to_print, "%s %s", to_print,current_func_name);
 
-    struct SCOPE *curNode = scopeHead->child_scope; //start from Function node
+    struct SCOPE *curNode = head_scope_ptr->child_scope; //start from Function node
     while (curNode->child_scope != NULL)
     {
         fprintf(symbol_file, " - ");
@@ -255,8 +254,8 @@ void processProgram(struct PROGRAM* program)
 {
     if(program == NULL)
         exit(1);
-    scopeHead = newScope(Scope_Global_Type, NULL);
-    scopeTail = scopeHead;
+    head_scope_ptr = newScope(Scope_Global_Type, NULL);
+    current_scope_ptr = head_scope_ptr;
 
     fprintf(assembly_file,"%s\n\n","START main");
     if(program->declaration != NULL)
@@ -280,10 +279,10 @@ void processDeclaration(struct DECLARATION *declaration){
     if (declaration->prev != NULL)
         processDeclaration(declaration->prev);
 
-    if (!print_title)
+    if (!title)
     {
         printTitle();
-        print_title = true;
+        title = true;
     }
 
     switch (declaration->id_type)
@@ -389,7 +388,7 @@ void processIdentifier(struct IDENTIFIER *identifier){
         }
         temp_semantic_identifier->is_assigned = false;
         temp_semantic_identifier->is_function = false;
-        temp_semantic_identifier->scope = scopeHead;
+        temp_semantic_identifier->scope = head_scope_ptr;
         temp_semantic_identifier->is_parameter = is_parameter;
     
         int count = checkSemantic(temp_semantic_identifier->identifier_name,false,temp_semantic_identifier->scope,NULL,temp_semantic_identifier->identifier_semantic_type);
@@ -452,8 +451,8 @@ void processFunction(struct FUNCTION *function){
    
 
     //list node
-    scopeTail = newScope(Scope_Func_Type, scopeTail); //append it to the end of list
-    temp_semantic->scope = scopeHead;
+    current_scope_ptr = newScope(Scope_Func_Type, current_scope_ptr); //append it to the end of list
+    temp_semantic->scope = head_scope_ptr;
     temp_semantic->function_number = current_func_number;
 
 
@@ -482,14 +481,14 @@ void processFunction(struct FUNCTION *function){
 
     }
     
-    print_title = false;
+    title = false;
 
 
     if (function->parameter != NULL && strcmp(function->ID,"main")!= 0 )
     {
 
         printTitle();
-        print_title = true;
+        title = true;
         parameter_count = 1;
         
         processParameter(function->parameter); //parameter
@@ -527,8 +526,8 @@ void processFunction(struct FUNCTION *function){
     fprintf(assembly_file, "\n\n");
 
     //deleteCurScope
-    deleteScope(&scopeTail);
-    print_title = false;}
+    deleteScope(&current_scope_ptr);
+    title = false;}
 
 
 
@@ -583,12 +582,12 @@ void processStmt(struct STMT *stmt){
 
     case If_Type:
     {
-        _isOtherComp = true;
+        outside_group_stmt = true;
         struct IF_STMT *if_stmt  = stmt->stmt.if_stmt;
         //making node for symbol table
-        scopeTail = newScope(Scope_If_Type, scopeTail);
-        print_title = false;
-        scopeTail->parent_scope->if_count++;
+        current_scope_ptr = newScope(Scope_If_Type, current_scope_ptr);
+        title = false;
+        current_scope_ptr->parent_scope->if_count++;
 
         //fprintf(assembly_file, "if (");
         fprintf(assembly_file, "\n IF%d:",counter++);
@@ -612,18 +611,18 @@ void processStmt(struct STMT *stmt){
 
 
         //deleteCurScope
-        deleteScope(&scopeTail);        
+        deleteScope(&current_scope_ptr);        
         return;
     }
 
     case For_Type:
     {
-        _isOtherComp = true;
+        outside_group_stmt = true;
         struct FOR_STMT *for_stmt = stmt->stmt.for_stmt;
          //making node for symbol table
-        scopeTail = newScope(Scope_For_Type, scopeTail);
-        print_title = false;
-        scopeTail->parent_scope->for_count++;
+        current_scope_ptr = newScope(Scope_For_Type, current_scope_ptr);
+        title = false;
+        current_scope_ptr->parent_scope->for_count++;
 
         //fprintf(assembly_file, "for (");
         int first_jump_lable = counter;
@@ -644,21 +643,21 @@ void processStmt(struct STMT *stmt){
         fprintf(assembly_file,"\n END_FOR%d:",jump_lable);
 
         //deleteCurScope
-        deleteScope(&scopeTail);
+        deleteScope(&current_scope_ptr);
 
         
         return;
     }
      case While_Type:
      {
-        _isOtherComp = true;
+        outside_group_stmt = true;
         struct WHILE_STMT *while_stmt = stmt->stmt.while_stmt;
         if (while_stmt->do_while == true)
         {
             //making node for symbol table
-            scopeTail = newScope(Scope_Do_While_Type, scopeTail);
-            print_title = false;
-            scopeTail->parent_scope->do_while_count++;
+            current_scope_ptr = newScope(Scope_Do_While_Type, current_scope_ptr);
+            title = false;
+            current_scope_ptr->parent_scope->do_while_count++;
 
             //fprintf(assembly_file, "do");
             int jump_lable = counter;
@@ -675,9 +674,9 @@ void processStmt(struct STMT *stmt){
         else
         {
             //making node for symbol table
-            scopeTail = newScope(Scope_While_Type, scopeTail);
-            print_title = false;
-            scopeTail->parent_scope->while_count++;
+            current_scope_ptr = newScope(Scope_While_Type, current_scope_ptr);
+            title = false;
+            current_scope_ptr->parent_scope->while_count++;
 
             /*fprintf(assembly_file, "while (");*/
             int first_jump_lable = counter;
@@ -698,7 +697,7 @@ void processStmt(struct STMT *stmt){
         }
 
         //deleteCurScope
-        deleteScope(&scopeTail);
+        deleteScope(&current_scope_ptr);
         return;
  
      }
@@ -709,8 +708,8 @@ void processStmt(struct STMT *stmt){
         break;
     }
     case Stmt_Group_Type:
-        if (_isOtherComp == false)
-            is_it_group_stmt = true;
+        if (outside_group_stmt == false)
+            inside_group_stmt = true;
         processStmtGroup(stmt->stmt.stmts_group);
         return;
         //break;
@@ -766,14 +765,14 @@ void processParameter(struct PARAMETER *parameter){
     }
 
 void processStmtGroup(struct STMTSGROUP *stmts_group){
-    if (is_it_group_stmt == true)
+    if (inside_group_stmt == true)
     {
         //making node for symbol table
-        scopeTail = newScope(Scope_Stmt_Group_Type, scopeTail);
-        print_title = false;
-        scopeTail->parent_scope->stmt_group_count++;
+        current_scope_ptr = newScope(Scope_Stmt_Group_Type, current_scope_ptr);
+        title = false;
+        current_scope_ptr->parent_scope->stmt_group_count++;
     }
-    _isOtherComp = false;
+    outside_group_stmt = false;
 
     fprintf(assembly_file, "\n");
     if (stmts_group->declaration != NULL)
@@ -784,12 +783,12 @@ void processStmtGroup(struct STMTSGROUP *stmts_group){
         processStmt(stmts_group->stmt);
     fprintf(assembly_file, "\n");
 
-    if (is_it_group_stmt == true)
+    if (inside_group_stmt == true)
     {
-        deleteScope(&scopeTail);
+        deleteScope(&current_scope_ptr);
     }
-    is_it_group_stmt = false;
-    _isOtherComp = false;
+    inside_group_stmt = false;
+    outside_group_stmt = false;
 }
 void processAssignStmt(struct ASSIGN_STMT *assign)
 {
@@ -938,7 +937,7 @@ void processExpr(struct EXPR *expr,bool must_return)
     case FloatNum_Type:
         //fprintf(assembly_file, "%f", expr->expression.floatval);
         temp = newAssembly();
-        sprintf(temp->str, "%d", expr->expression.floatval);
+        sprintf(temp->str, "%f", expr->expression.floatval);
         push(temp);
         //add to semantic stack
         temp_semantic_stack = newSemanticStack();

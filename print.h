@@ -18,8 +18,8 @@ struct SCOPE {
     struct SCOPE* child_scope;
 };
 
-struct SCOPE *scopeHead;
-struct SCOPE *scopeTail;
+struct SCOPE *head_scope_ptr;
+struct SCOPE *current_scope_ptr;
 char* current_func_name;
 int current_func_number;
 
@@ -27,7 +27,7 @@ int current_func_number;
 struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope);
 
 //delete node
-void deleteScope(struct SCOPE** scopeTail);
+void deleteScope(struct SCOPE** current_scope_ptr);
 
 //returns the order of current SCOPE
 int getMyOrder(SCOPE_TYPE scope_type, struct SCOPE* parent_scope);

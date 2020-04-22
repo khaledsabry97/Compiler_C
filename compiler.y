@@ -5,6 +5,7 @@
 #include "AST.h"
 #include "print.h"
 
+
 FILE *assembly_file; 
 FILE *symbol_file; 
 FILE *semantic_file;
@@ -117,6 +118,8 @@ Program: Declaration_List Function_List {
             program->declaration = $1;
             program->function = $2;
             processProgram(program);
+                        printf("finally%d\n",line_counter);
+
             $$ = program;
        }
        | Declaration_List {
@@ -124,6 +127,8 @@ Program: Declaration_List Function_List {
             program->declaration = $1;
             program->function = NULL;
             processProgram(program);
+                        printf("finally%d\n",line_counter);
+
             $$ = program;
        }
        | Function_List {
@@ -131,6 +136,7 @@ Program: Declaration_List Function_List {
             program->declaration = NULL;
             program->function = $1;
             processProgram(program);
+            printf("finally%d\n",line_counter);
             $$ = program;
        }
        ;
@@ -685,8 +691,8 @@ void process(struct PROGRAM* head) {
     
     if(head == NULL)
         exit(1);
-    scopeHead = newScope(Scope_Global_Type, NULL);
-    scopeTail = scopeHead;
+    head_scope_ptr = newScope(Scope_Global_Type, NULL);
+    current_scope_ptr = head_scope_ptr;
     if(head->declaration != NULL)
         processDeclaration(head->declaration);
     if(head->function != NULL)

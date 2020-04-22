@@ -4,7 +4,6 @@
 #include <string.h>
 #include "AST.h"
 #include "compiler.tab.h"
-
 %}
 
 
@@ -55,6 +54,9 @@ return return RETURN;
     return ID;
 }
 
-[ \t\c\n] { break;}
+[ \t\c] { break;}
+"\n" {printf("%d you baaaaad\n",line_counter++);break;}
+
+. {printf("Error at line %d : there is no such thing called %s \n",line_counter,yytext);}
 
 %%

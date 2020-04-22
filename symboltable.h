@@ -11,14 +11,14 @@ struct SCOPE {
     struct SCOPE* child_scope;
 };
 
-struct SCOPE *scopeHead, *scopeTail;
+struct SCOPE *head_scope_ptr, *current_scope_ptr;
 char* current_func_name;
 
 //make node
 struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope);
 
 //delete node
-void deleteScope(struct SCOPE** scopeTail);
+void deleteScope(struct SCOPE** current_scope_ptr);
 
 //returns the order of current SCOPE
 int getMyOrder(SCOPE_TYPE scope_type, struct SCOPE* parent_scope);
