@@ -69,10 +69,8 @@ extern int yydebug;
     WHILE = 279,
     DO = 280,
     RETURN = 281,
-    DOUBLE_QT = 282,
-    SINGLE_QT = 283,
-    UNARY = 284,
-    NO_ELSE = 285
+    UNARY = 282,
+    NO_ELSE = 283
   };
 #endif
 
@@ -81,7 +79,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 39 "compiler.y" /* yacc.c:1909  */
+#line 38 "compiler.y" /* yacc.c:1909  */
 
     ID_TYPE type;
     char* id;
@@ -104,7 +102,7 @@ union YYSTYPE
 
 
 
-#line 108 "compiler.tab.h" /* yacc.c:1909  */
+#line 106 "compiler.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

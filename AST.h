@@ -166,7 +166,6 @@ arr[0] = 5
 struct ASSIGN_STMT
 {
 	char *ID;
-	struct EXPR *index; 
 	struct EXPR *expr;  
 };
 
@@ -215,7 +214,6 @@ arr[3==3]
 struct ID_EXPR
 {
 	char *ID;
-	struct EXPR *expr;
 };
 
 

@@ -32,7 +32,6 @@ void yyerror(YYLTYPE t, char *s, ...)
     fprintf(stderr, "\n");
 } 
 */
-#define YYDEBUG 1
 
 %}
 
@@ -69,9 +68,7 @@ void yyerror(YYLTYPE t, char *s, ...)
 %type <_stmtgroup> Stmt_Group
 %type <_stmt> Stmt Stmt_List
 %type <_arg> Arg_List
-%type <_expr> Expr 
-
-;
+%type <_expr> Expr ;
 
 
 %token <id>ID
@@ -99,8 +96,7 @@ void yyerror(YYLTYPE t, char *s, ...)
 %token WHILE
 %token DO
 %token RETURN
-%token DOUBLE_QT
-%token SINGLE_QT
+
 
 
 %right '=' 
@@ -125,9 +121,9 @@ Program: Declaration_List Function_List {
             program->declaration = $1;
             program->function = $2;
             processProgram(program);
-                        printf("finally%d\n",line_counter);
+            printf("finally%d\n",line_counter);
 
-            $$ = program;
+            $$ = program; 
        }
        | Declaration_List {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
@@ -256,7 +252,6 @@ Type: INT { $$ = Int_Type;}
 Stmt: ID '=' Expr ';' { 
             struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
             assign->ID = $1;
-            assign->index = NULL; 
             assign->expr = $3;
              
             struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
@@ -264,20 +259,7 @@ Stmt: ID '=' Expr ';' {
             stmt->stmt.assign_stmt = assign;
 
             $$ = stmt;
-          }
-    | ID '[' Expr ']' '=' Expr ';' {
-            struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
-            assign->ID = $1;
-            assign->index = $3; 
-            assign->expr = $6;
-            
-            struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-            stmt->stmt_type = Equ_Type;
-            stmt->stmt.assign_stmt = assign;
-            $$ = stmt;
-             }
-            
-    | ID '(' ')' ';' {
+    } | ID '(' ')' ';' {
                 struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
                 call->ID = $1;
                 call->arg = NULL;
@@ -334,11 +316,9 @@ Stmt: ID '=' Expr ';' {
             struct ASSIGN_STMT *assign2 = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
 
             assign1->ID = $3;
-            assign1->index = NULL; 
             assign1->expr = $5;
 
             assign2->ID = $9;
-            assign2->index = NULL; 
             assign2->expr = $11;
             
           
@@ -424,7 +404,6 @@ Stmt: ID '=' Expr ';' {
         //INTNUM = 1;
         struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
         id_expr->ID = $1;
-        id_expr->expr = NULL;
 
         struct EXPR *expr2 = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr2->expr_type = Id_Type;  
@@ -445,7 +424,6 @@ Stmt: ID '=' Expr ';' {
 
         struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
         assign->ID = $1;
-        assign->index = NULL; 
         assign->expr = expr;
              
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
@@ -458,7 +436,6 @@ Stmt: ID '=' Expr ';' {
         //INTNUM = 1;
         struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
         id_expr->ID = $1;
-        id_expr->expr = NULL;
 
         struct EXPR *expr2 = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr2->expr_type = Id_Type;  
@@ -479,7 +456,6 @@ Stmt: ID '=' Expr ';' {
 
         struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
         assign->ID = $1;
-        assign->index = NULL; 
         assign->expr = expr;
              
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
@@ -488,31 +464,7 @@ Stmt: ID '=' Expr ';' {
         printf("sfsdfsdfsdF%d\n");
 
         $$ = stmt;
-    }|
-    
-    
-     /*Type Identifier ';' {
-        struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
-        declaration->id_type = $1;
-        declaration->id = $2;
-        
-        struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Declaration_Type;
-        stmt->stmt.declaration = declaration;
-        $$ = stmt;
-        }
-    | Declaration_List  Type Identifier ';' {
-        struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
-        declaration->prev = $1;
-        declaration->id_type = $2;
-        declaration->id = $3;
-
-        struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Declaration_Type;
-        stmt->stmt.declaration = declaration;
-        $$ = stmt;
-        }
-    |*/ ';' {
+    }| ';' {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Semi_Colon_Type;
         $$ = stmt;
@@ -567,17 +519,7 @@ Stmt_List: Stmt {
 
 /********************************Expressions***************************************/
 
-Expr: MINUS Expr %prec UNARY {
-        struct UNI_OP *uni_op = (struct UNI_OP*) malloc (sizeof (struct UNI_OP));
-        uni_op->uni_type = Neg_Type;
-        uni_op->expr = $2;
-
-        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Uni_Type;
-        expr->expression.uni_op = uni_op;
-        $$ = expr;
-    }
-    | Expr MINUS Expr {
+Expr: Expr MINUS Expr {
         struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
         add_op->add_type = Minus_Type;
         add_op->left_side=$1;
@@ -619,6 +561,16 @@ Expr: MINUS Expr %prec UNARY {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Mult_Type;  
         expr->expression.mul_op = mul_op;
+        $$ = expr;
+    }
+    |  MINUS Expr %prec UNARY {
+        struct UNI_OP *uni_op = (struct UNI_OP*) malloc (sizeof (struct UNI_OP));
+        uni_op->uni_type = Neg_Type;
+        uni_op->expr = $2;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = Uni_Type;
+        expr->expression.uni_op = uni_op;
         $$ = expr;
     }
     | Expr LE Expr {
@@ -702,24 +654,13 @@ Expr: MINUS Expr %prec UNARY {
     | ID {
         struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
         id_expr->ID = $1;
-        id_expr->expr = NULL;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Id_Type;  
         expr->expression.id_expr = id_expr;
         $$ = expr;
     } 
-    | ID '[' Expr ']' {
-        struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
-        id_expr->ID = $1;
-        id_expr->expr = $3;
-
-        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Id_Type;  
-        expr->expression.id_expr = id_expr;
-        $$ = expr;
-    } 
-    | '(' Expr ')' {
+    |  '(' Expr ')' {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Expr_Type;  
         expr->expression.bracket = $2;

@@ -28,8 +28,8 @@ struct SEMANTIC_STACK* temp_semantic_stack;
 
 
 //make node
-struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
-    struct SCOPE* node = (struct SCOPE*) malloc (sizeof(struct SCOPE));
+struct BLOCK* newScope(BLOCK_TYPE scope_type, struct BLOCK* parent_scope) {
+    struct BLOCK* node = (struct BLOCK*) malloc (sizeof(struct BLOCK));
     node->scope_type = scope_type;
     node->if_count = 0;
     node->for_count  = 0;
@@ -54,9 +54,9 @@ struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
     return node;
 }
 
-void deleteScope(struct SCOPE** current_scope_ptr) {
-    struct SCOPE* curScope = *current_scope_ptr;
-    struct SCOPE* parent_scope = curScope->parent_scope;
+void deleteScope(struct BLOCK** current_scope_ptr) {
+    struct BLOCK* curScope = *current_scope_ptr;
+    struct BLOCK* parent_scope = curScope->parent_scope;
     if(parent_scope != NULL) {
         parent_scope->child_scope = NULL;
         (*current_scope_ptr) = parent_scope;
@@ -66,8 +66,8 @@ void deleteScope(struct SCOPE** current_scope_ptr) {
 //    free(curScope);
 }
 
-//returns the order of current SCOPE
-int getMyOrder(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
+//returns the order of current BLOCK
+int getMyOrder(BLOCK_TYPE scope_type, struct BLOCK* parent_scope) {
     switch(scope_type) {
         case Scope_Do_While_Type:
             return (parent_scope->do_while_count);
@@ -114,7 +114,7 @@ char to_print[1200];
     fprintf(symbol_file, "%s", current_func_name);
     sprintf(to_print, "%s %s", to_print,current_func_name);
 
-    struct SCOPE *curNode = head_scope_ptr->child_scope; //start from Function node
+    struct BLOCK *curNode = head_scope_ptr->child_scope; //start from Function node
     while (curNode->child_scope != NULL)
     {
         fprintf(symbol_file, " - ");

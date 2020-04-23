@@ -8,6 +8,7 @@ static int line_counter;
 
 %}
 
+
 %%
 
 "{" |
@@ -20,16 +21,14 @@ static int line_counter;
 "." |
 "," |
 "=" {return yytext[0];}
-"\""  {return DOUBLE_QT;}
-"\'"  {return SINGLE_QT;}
 "-"     return MINUS;
 "+"     return PLUS;
 "*"     return MUL;
 "/"     return DIV;
 "<="    return LE;
 ">="    return GE;
-">"     return GT;
 "<"     return LT;
+">"     return GT;
 "=="    return EQ;
 "!="    return NE;
 "++"    return PP;

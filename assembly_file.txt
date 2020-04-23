@@ -60,6 +60,18 @@ START main
  plusx12:
  MOV $1 , RET_VAL13
  MOV RET_VAL13 , n3
+ IF14:
+ CMPG n1 , n2 , RES15 
+ JIFN RES15 , END_IF16
+
+ MOV 10 , n1
+
+ JMP END_IF17:
+ END_IF16:
+
+ MOV 10 , n2
+
+ END_IF17:
  HALT
 
 

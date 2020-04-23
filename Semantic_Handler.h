@@ -28,7 +28,7 @@ struct Semantic {
     bool is_parameter;
     int function_number;
     int value;
-    struct SCOPE* scope;
+    struct BLOCK* scope;
 };
 
 
@@ -37,10 +37,10 @@ struct Semantic* head;
 
 
 
-struct SCOPE* newScopeToSemantic(struct SCOPE* current_scope,struct SCOPE* parent_scope) {
+struct BLOCK* newScopeToSemantic(struct BLOCK* current_scope,struct BLOCK* parent_scope) {
     if (current_scope == NULL)
         return NULL;
-    struct SCOPE* node = (struct SCOPE*) malloc (sizeof(struct SCOPE));
+    struct BLOCK* node = (struct BLOCK*) malloc (sizeof(struct BLOCK));
     node->scope_type = current_scope->scope_type;
     node->do_while_count = current_scope->do_while_count;
     node->while_count = current_scope->while_count;
@@ -110,7 +110,7 @@ struct Semantic* findIdentifier(char* name,bool is_function)
 }
 
 
-bool checkScope(struct SCOPE* identifier_scope,struct SCOPE* current_scope)
+bool checkScope(struct BLOCK* identifier_scope,struct BLOCK* current_scope)
 {
     
     if(identifier_scope->child_scope == NULL)
@@ -121,7 +121,7 @@ bool checkScope(struct SCOPE* identifier_scope,struct SCOPE* current_scope)
 
 
 
-    /*struct SCOPE* temp;
+    /*struct BLOCK* temp;
 
     while(current_scope->parent_scope != NULL)
     {
@@ -237,7 +237,7 @@ bool checkScope(char* identifier_scope,char* current_scope)
 }
 */
 
-int checkSemantic(char* name, bool is_function,struct SCOPE* current_scope,struct CHECKS* checks,IDENTIFIER_SEMANTIC_TYPE identifier_semantic_type)
+int checkSemantic(char* name, bool is_function,struct BLOCK* current_scope,struct CHECKS* checks,IDENTIFIER_SEMANTIC_TYPE identifier_semantic_type)
 {
     //printf("%s\n",current_scope);
             //printf("before\n");
@@ -358,7 +358,7 @@ void printNumberOfArgs(struct SEMANTIC_STACK* args)
     printf("\n");
 }
 
-void printScopeFunctionName(struct SCOPE* scope)
+void printScopeFunctionName(struct BLOCK* scope)
 {    
     while(scope != NULL)
     {

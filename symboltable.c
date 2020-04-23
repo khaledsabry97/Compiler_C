@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include "symboltable.h"
 //make node
-struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
-    struct SCOPE* node = (struct SCOPE*) malloc (sizeof(struct SCOPE));
+struct BLOCK* newScope(BLOCK_TYPE scope_type, struct BLOCK* parent_scope) {
+    struct BLOCK* node = (struct BLOCK*) malloc (sizeof(struct BLOCK));
     node->scope_type = scope_type;
     node->do_while_count = 0;
     node->while_count = 0;
@@ -22,9 +22,9 @@ struct SCOPE* newScope(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
 }
 
 //current_scope_ptr denotes curScope node
-void deleteScope(struct SCOPE** current_scope_ptr) {
-    struct SCOPE* curScope = *current_scope_ptr;
-    struct SCOPE* parent_scope = curScope->parent_scope;
+void deleteScope(struct BLOCK** current_scope_ptr) {
+    struct BLOCK* curScope = *current_scope_ptr;
+    struct BLOCK* parent_scope = curScope->parent_scope;
     if(parent_scope != NULL) {
         parent_scope->child_scope = NULL;
         (*current_scope_ptr) = parent_scope;
@@ -34,8 +34,8 @@ void deleteScope(struct SCOPE** current_scope_ptr) {
 //    free(curScope);
 }
 
-//returns the order of current SCOPE
-int getMyOrder(SCOPE_TYPE scope_type, struct SCOPE* parent_scope) {
+//returns the order of current BLOCK
+int getMyOrder(BLOCK_TYPE scope_type, struct BLOCK* parent_scope) {
     switch(scope_type) {
         case Scope_Do_While_Type:
             return (parent_scope->do_while_count);

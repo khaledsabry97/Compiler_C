@@ -32,6 +32,15 @@ int main ()
     n4 = 10;
     value = plusx(n1, n2);
     n3 = plusx(value, n3);
+
+    if ( n1 > n2)
+    {
+        n1 = 10;
+    }
+    else
+    {
+        n2 = 10;
+    }
     
 
     return 0;
