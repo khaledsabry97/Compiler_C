@@ -60,9 +60,9 @@ void yyerror(YYLTYPE t, char *s, ...)
 
 %type <type> Type
 %type <_program> Program
-%type <_declaration>  Declaration_List
-%type <_function> Function_List
-%type <_parameter> Parameter_List 
+%type <_declaration>  Declarations
+%type <_function> Functions
+%type <_parameter> Parameters 
 %type <_stmtgroup> Stmt_Group
 %type <_stmt> Stmt Stmt_List
 %type <_arg> Arg_List
@@ -102,7 +102,7 @@ void yyerror(YYLTYPE t, char *s, ...)
 %left LE GE GT LT
 %left PLUS MINUS
 %left MUL DIV
-%right UNARY
+%right UMINUS
 %left '(' ')' 
 
 
@@ -114,7 +114,7 @@ void yyerror(YYLTYPE t, char *s, ...)
 
 /******************************************************Program*********************************************************/
 
-Program: Declaration_List Function_List {
+Program: Declarations Functions {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = $1;
             program->function = $2;
@@ -123,7 +123,7 @@ Program: Declaration_List Function_List {
 
             $$ = program; 
        }
-       | Declaration_List {
+       | Declarations {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = $1;
             program->function = NULL;
@@ -132,7 +132,7 @@ Program: Declaration_List Function_List {
 
             $$ = program;
        }
-       | Function_List {
+       | Functions {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = NULL;
             program->function = $1;
@@ -141,7 +141,7 @@ Program: Declaration_List Function_List {
             $$ = program;
        }
        ;
-Declaration_List:  Type ID ';' {
+Declarations:  Type ID ';' {
             struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             identifier->ID = $2;
             struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
@@ -149,7 +149,7 @@ Declaration_List:  Type ID ';' {
             declaration->id = identifier;
             $$ = declaration;
         }
-        | Declaration_List  Type ID ';' {
+        | Declarations  Type ID ';' {
             struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             identifier->ID = $3;
             struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
@@ -161,7 +161,7 @@ Declaration_List:  Type ID ';' {
         ;
 
           
-Function_List: Type ID '(' ')' Stmt_Group {
+Functions: Type ID '(' ')' Stmt_Group {
             struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
             function->id_type = $1;
             function->ID = $2;
@@ -169,7 +169,7 @@ Function_List: Type ID '(' ')' Stmt_Group {
             function->stmts_group = $5;
             $$ = function;
         }
-        | Function_List Type ID '(' Parameter_List ')' Stmt_Group {
+        | Functions Type ID '(' Parameters ')' Stmt_Group {
         struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
         function->prev = $1;
         function->id_type = $2;
@@ -178,7 +178,7 @@ Function_List: Type ID '(' ')' Stmt_Group {
         function->stmts_group = $7;
         $$ = function;
     }
-    | Type ID '(' Parameter_List ')' Stmt_Group {
+    | Type ID '(' Parameters ')' Stmt_Group {
             struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
             function->id_type = $1;
             function->ID = $2;
@@ -186,7 +186,7 @@ Function_List: Type ID '(' ')' Stmt_Group {
             function->stmts_group = $6;
             $$ = function;
         }
-        | Function_List Type ID '(' ')' Stmt_Group {
+        | Functions Type ID '(' ')' Stmt_Group {
         struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
         function->prev = $1;
         function->id_type = $2;
@@ -197,7 +197,7 @@ Function_List: Type ID '(' ')' Stmt_Group {
     };
 
 
-Parameter_List: Type ID {
+Parameters: Type ID {
             struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             identifier->ID = $2;
 
@@ -207,7 +207,7 @@ Parameter_List: Type ID {
             parameter->prev = NULL;
             $$ = parameter;
         }
-         | Parameter_List ',' Type ID {
+         | Parameters ',' Type ID {
             struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             identifier->ID = $4;
 
@@ -348,7 +348,7 @@ Stmt: ID '=' Expr ';' {
         $$ = stmt;
         }
         
-    | '{' Declaration_List Stmt_List '}' {
+    | '{' Declarations Stmt_List '}' {
         struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
         stmts_group->declaration = $2;
         stmts_group->stmt = $3;
@@ -369,7 +369,7 @@ Stmt: ID '=' Expr ';' {
         stmt->stmt.stmts_group = stmts_group;
         $$ = stmt;
             }
-            |'{' Declaration_List '}' {
+            |'{' Declarations '}' {
         struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
         stmts_group->declaration = $2;
         stmts_group->stmt = NULL;
@@ -466,7 +466,7 @@ Stmt: ID '=' Expr ';' {
 
 
 
-Stmt_Group: '{' Declaration_List Stmt_List '}' {
+Stmt_Group: '{' Declarations Stmt_List '}' {
                 struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 stmts_group->declaration = $2;
                 stmts_group->stmt = $3;
@@ -479,7 +479,7 @@ Stmt_Group: '{' Declaration_List Stmt_List '}' {
                 stmts_group->stmt = $2;
                 $$ = stmts_group;
             }
-            |'{' Declaration_List '}' {
+            |'{' Declarations '}' {
                 struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
                 stmts_group->declaration = $2;
                 stmts_group->stmt = NULL;
@@ -555,7 +555,7 @@ Expr: Expr MINUS Expr {
         expr->expression.mul_op = mul_op;
         $$ = expr;
     }
-    |  MINUS Expr %prec UNARY {
+    |  MINUS Expr %prec UMINUS {
         struct UNI_OP *uni_op = (struct UNI_OP*) malloc (sizeof (struct UNI_OP));
         uni_op->uni_type = Neg_Type;
         uni_op->expr = $2;

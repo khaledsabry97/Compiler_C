@@ -69,7 +69,7 @@ extern int yydebug;
     WHILE = 279,
     DO = 280,
     RETURN = 281,
-    UNARY = 282,
+    UMINUS = 282,
     NO_ELSE = 283
   };
 #endif

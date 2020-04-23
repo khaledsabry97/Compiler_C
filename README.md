@@ -20,16 +20,16 @@ This project is compiler project using flex and bison.
 
 ## 4. We follow the rule below.
 
-    Program := (Declaration_List)? (Function_List)?   // Declaration_List Function_List | Declaration_List | Function_List | ε
-    Declaration_List := (Declaration)+          // Declaration | Declaration_List Declaration
-    Function_List := (Function)+
+    Program := (Declarations)? (Functions)?   // Declarations Functions | Declarations | Functions | ε
+    Declarations := (Declaration)+          // Declaration | Declarations Declaration
+    Functions := (Function)+
     Declaration := Type Identifier_List ;
     Identifier_List := identifier (, identifier)*  // identifier | Identifier_List , identifier
     identifier := id | id [ intnum ]      // (Note) [, ] are not symbols used in regular expression
-    Function := Type id ( (Parameter_List)? ) Stmt_Group
-    Parameter_List := Type identifier (, Type identifier)*
+    Function := Type id ( (Parameters)? ) Stmt_Group
+    Parameters := Type identifier (, Type identifier)*
     Type := int | float
-    Stmt_Group := { (Declaration_List)? Stmt_List }
+    Stmt_Group := { (Declarations)? Stmt_List }
     Stmt_List := (Stmt)*
     Stmt := Assign_Stmt | Call_Stmt | Ret_Stmt | WhileStmt | For_Stmt | IfStmt | Stmt_Group | ;
     Assign_Stmt :=Assign ; 
