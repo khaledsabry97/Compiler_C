@@ -524,8 +524,8 @@ static const char *const yytname[] =
   "FLOAT", "CONST", "MINUS", "MM", "PLUS", "PP", "MUL", "DIV", "LE", "GE",
   "EQ", "NE", "GT", "LT", "IF", "ELSE", "FOR", "WHILE", "DO", "RETURN",
   "'='", "UMINUS", "'('", "')'", "NO_ELSE", "';'", "','", "'{'", "'}'",
-  "$accept", "Program", "Declarations", "Functions", "Parameters",
-  "Arg_List", "Type", "Stmt", "Stmt_Group", "Stmt_List", "Expr", YY_NULLPTR
+  "$accept", "Program", "Declarations", "Functions", "Parameters", "Args",
+  "Type", "Stmt", "Stmt_Group", "Stmt_List", "Expr", YY_NULLPTR
 };
 #endif
 

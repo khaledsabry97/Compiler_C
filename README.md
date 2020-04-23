@@ -35,7 +35,7 @@ This project is compiler project using flex and bison.
     Assign_Stmt :=Assign ; 
     Assign := id = Expr | id [ Expr ] = Expr
     Call_Stmt := Call ;
-    Call := id ( (Arg_List)? )
+    Call := id ( (Args)? )
     Ret_Stmt := return (Expr)? ; 
     
     So, Our miniC program doesn't follow the rule below.

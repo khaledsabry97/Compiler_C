@@ -65,7 +65,7 @@ void yyerror(YYLTYPE t, char *s, ...)
 %type <_parameter> Parameters 
 %type <_stmtgroup> Stmt_Group
 %type <_stmt> Stmt Stmt_List
-%type <_arg> Arg_List
+%type <_arg> Args
 %type <_expr> Expr ;
 
 
@@ -218,13 +218,13 @@ Parameters: Type ID {
             $$ = parameter;
         };
 
-Arg_List: Expr { 
+Args: Expr { 
     struct ARG *arg = (struct ARG*) malloc (sizeof (struct ARG));
     arg->expr = $1;
     arg->prev = NULL;
     $$ = arg;
     }
-    | Arg_List ',' Expr {
+    | Args ',' Expr {
     struct ARG *arg = (struct ARG*) malloc (sizeof (struct ARG));
     arg->expr = $3;
     arg->prev = $1;
@@ -260,7 +260,7 @@ Stmt: ID '=' Expr ';' {
         stmt->stmt.func_call = call;
         $$ = stmt;
                 }
-    | ID '(' Arg_List ')' ';' {
+    | ID '(' Args ')' ';' {
                     struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
                     call->ID = $1;
                     call->arg = $3;
@@ -647,7 +647,7 @@ Expr: Expr MINUS Expr {
         expr->expression.func_call = call;
         $$ = expr;
     }
-    | ID '(' Arg_List ')' {
+    | ID '(' Args ')' {
         struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
         call->ID = $1;
         call->arg = $3;
