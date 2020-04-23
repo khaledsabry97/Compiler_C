@@ -1,5 +1,4 @@
 ERROR: Constant Identifier n5 can't be initialized again
 ERROR: Identifier n1 wasn't assigned any value before to be used
 ERROR: Constant Identifier n4 can't be initialized again
-Warning: Identified a variable 1n but not assigend a value to it
 Warning: Identified a variable result but not assigend a value to it

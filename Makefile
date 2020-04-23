@@ -6,7 +6,6 @@ all:
 	./compiler < sa1.txt
 	./compiler < sa2.txt
 	./compiler < test7-while.c
-	./compiler < test9_multiple_variable_declaration.c
 	./compiler < sa3.txt
 	
 	

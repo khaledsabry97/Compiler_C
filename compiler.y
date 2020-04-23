@@ -1,10 +1,12 @@
+%error-verbose
+
 %{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "AST.h"
 #include "print.h"
-
+static int line_counter;
 
 FILE *assembly_file; 
 FILE *symbol_file; 
@@ -30,9 +32,10 @@ void yyerror(YYLTYPE t, char *s, ...)
     fprintf(stderr, "\n");
 } 
 */
+#define YYDEBUG 1
 
 %}
-%error-verbose
+
 %union{
     ID_TYPE type;
     char* id;
@@ -448,7 +451,7 @@ Stmt: ID '=' Expr ';' {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Equ_Type;
         stmt->stmt.assign_stmt = assign;
-        printf("sfsdfsdfsdF%d\n");
+        printf("sfsdfsdfsdF%d\n",line_counter);
 
         $$ = stmt;
     }| ID MM {
@@ -513,7 +516,7 @@ Stmt: ID '=' Expr ';' {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Semi_Colon_Type;
         $$ = stmt;
-    }
+    }| error ';' {printf("forget to add semicolon at \n"); yyerrok;}
     ;
 
 
@@ -546,7 +549,7 @@ Stmt_Group: '{' Declaration_List Stmt_List '}' {
                 $$ = stmts_group;
            
                 
-            }
+            }| error '}' {printf("forgot to open statemtent group\n");yyerrok;}
             ;
 Stmt_List: Stmt {
             struct STMT *stmt;

@@ -1,8 +1,7 @@
-int plusx(int n3,const int n5)
-{
+int plusx(int n3,const int n5){
     n3 = n3 + n5;
     n5 = n3 + n5;
-    return 0 ;
+    return 0;
 }
 
 float plusx(int n3,float n4)
@@ -15,7 +14,6 @@ float plusx(int n3,float n4)
 
 int main ()
 {
-    int 1n;
     int n1;
     int n2;
     float n3;

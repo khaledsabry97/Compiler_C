@@ -11,10 +11,9 @@ Function name => plusx
 
 Function name => main
      countscope_type      name     array      role
-         1       int        1n            variable
-         2       int        n1            variable
-         3       int        n2            variable
-         4     float        n3            variable
-         5constant int        n4            variable
-         6       int    result            variable
-         7       int     value            variable
+         1       int        n1            variable
+         2       int        n2            variable
+         3     float        n3            variable
+         4constant int        n4            variable
+         5       int    result            variable
+         6       int     value            variable

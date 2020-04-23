@@ -3,7 +3,7 @@
 #define bool char 
 
 
-//static int line_counter = 0;
+static int line_counter = 0;
 
 
 

@@ -4,10 +4,9 @@
 #include <string.h>
 #include "AST.h"
 #include "compiler.tab.h"
-static int line_counter = 0;
+static int line_counter;
 
 %}
-
 
 %%
 
@@ -59,9 +58,9 @@ return return RETURN;
 }
 
 [ \t\c] { break;}
-"\n" {printf("%d you baaaaad\n",line_counter++);break;}
+"\n" {printf("%d you baaaaad\n",line_counter++);  break;}
 [0-9]+[A-Za-z]+ {printf("Error at line %d : you can't start your identifier with a number %s \n",line_counter,yytext);
 yylval.id = strndup(yytext, yyleng);
     return ID;}
-. {printf("Error at line %d : there is no such thing called %s \n",line_counter,yytext);}
+
 %%
