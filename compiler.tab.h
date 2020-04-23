@@ -89,7 +89,6 @@ union YYSTYPE
 
     struct PROGRAM       *_program;
     struct DECLARATION   *_declaration;
-    struct IDENTIFIER    *_identifier;
     struct FUNCTION      *_function;
     struct PARAMETER     *_parameter;
     struct ARG           *_arg;
@@ -102,7 +101,7 @@ union YYSTYPE
 
 
 
-#line 106 "compiler.tab.h" /* yacc.c:1909  */
+#line 105 "compiler.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

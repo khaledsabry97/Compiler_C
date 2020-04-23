@@ -44,7 +44,6 @@ void yyerror(YYLTYPE t, char *s, ...)
 
     struct PROGRAM       *_program;
     struct DECLARATION   *_declaration;
-    struct IDENTIFIER    *_identifier;
     struct FUNCTION      *_function;
     struct PARAMETER     *_parameter;
     struct ARG           *_arg;
@@ -62,7 +61,6 @@ void yyerror(YYLTYPE t, char *s, ...)
 %type <type> Type
 %type <_program> Program
 %type <_declaration>  Declaration_List
-%type <_identifier> Identifier
 %type <_function> Function_List
 %type <_parameter> Parameter_List 
 %type <_stmtgroup> Stmt_Group
@@ -143,37 +141,25 @@ Program: Declaration_List Function_List {
             $$ = program;
        }
        ;
-Declaration_List:  Type Identifier ';' {
-                struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
-                declaration->id_type = $1;
-                declaration->id = $2;
-                $$ = declaration;
+Declaration_List:  Type ID ';' {
+            struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
+            identifier->ID = $2;
+            struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
+            declaration->id_type = $1;
+            declaration->id = identifier;
+            $$ = declaration;
         }
-        | Declaration_List  Type Identifier ';' {
-                struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
-                declaration->prev = $1;
-                declaration->id_type = $2;
-                declaration->id = $3;
-                $$ = declaration;
+        | Declaration_List  Type ID ';' {
+            struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
+            identifier->ID = $3;
+            struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
+            declaration->prev = $1;
+            declaration->id_type = $2;
+            declaration->id = identifier;
+            $$ = declaration;
         }
         ;
 
-
-
-
-Identifier: ID {
-            struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
-            identifier->ID = $1;
-            identifier->int_val = 0;   // zero, If scalar
-            $$ = identifier;
-          }
-          | ID '[' INTNUM ']' {
-            struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
-            identifier->ID = $1;
-            identifier->int_val = $3;   // zero, If scalar
-            $$ = identifier;
-           }
-          ;
           
 Function_List: Type ID '(' ')' Stmt_Group {
             struct FUNCTION *function = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
@@ -211,17 +197,23 @@ Function_List: Type ID '(' ')' Stmt_Group {
     };
 
 
-Parameter_List: Type Identifier {
+Parameter_List: Type ID {
+            struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
+            identifier->ID = $2;
+
             struct PARAMETER *parameter = (struct PARAMETER*) malloc (sizeof (struct PARAMETER));
             parameter->id_type = $1;
-            parameter->id = $2;
+            parameter->id = identifier;
             parameter->prev = NULL;
             $$ = parameter;
         }
-         | Parameter_List ',' Type Identifier {
+         | Parameter_List ',' Type ID {
+            struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
+            identifier->ID = $4;
+
             struct PARAMETER *parameter = (struct PARAMETER*) malloc (sizeof (struct PARAMETER));
             parameter->id_type = $3;
-            parameter->id = $4;
+            parameter->id = identifier;
             parameter->prev = $1;
             $$ = parameter;
         };
@@ -639,28 +631,7 @@ Expr: Expr MINUS Expr {
         expr->expression.eql_op = eql_op;
         $$ = expr;
     }
-    | INTNUM {
-        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = IntNum_Type;  
-        expr->expression.int_val = $1;
-        $$ = expr;
-    }    
-    | FLOATNUM {
-        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = FloatNum_Type;  
-        expr->expression.floatval = $1;
-        $$ = expr;
-    }
-    | ID {
-        struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
-        id_expr->ID = $1;
-
-        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Id_Type;  
-        expr->expression.id_expr = id_expr;
-        $$ = expr;
-    } 
-    |  '(' Expr ')' {
+    |   '(' Expr ')' {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Expr_Type;  
         expr->expression.bracket = $2;
@@ -685,7 +656,28 @@ Expr: Expr MINUS Expr {
         expr->expr_type = CallExpr_Type;  
         expr->expression.func_call = call;
         $$ = expr;
+    }|INTNUM {
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = IntNum_Type;  
+        expr->expression.int_val = $1;
+        $$ = expr;
+    }    
+    
+    | FLOATNUM {
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = FloatNum_Type;  
+        expr->expression.floatval = $1;
+        $$ = expr;
     }
+    | ID {
+        struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
+        id_expr->ID = $1;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->expr_type = Id_Type;  
+        expr->expression.id_expr = id_expr;
+        $$ = expr;
+    } 
     ;
 
 

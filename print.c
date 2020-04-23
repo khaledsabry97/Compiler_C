@@ -317,32 +317,6 @@ void processDeclaration(struct DECLARATION *declaration){
     }
 
 void processIdentifier(struct IDENTIFIER *identifier){
-    //fprintf(assembly_file, "%s", identifier->ID);
-    /*if (identifier->int_val > 0) //int arr[n]; n must be >0 to be valid
-    {
-        fprintf(assembly_file, "[%d]", identifier->int_val);
-
-        if (printed)
-        {
-            char *cur_type;
-            if (current_type == Int_Type)
-                cur_type = "int";
-            else if (current_type == Float_Type)
-                cur_type = "float";
-
-            if (is_parameter)
-                fprintf(symbol_file, "%10d%10s%10s%10d%10s\n", row_no++, cur_type, identifier->ID, identifier->int_val,"parameter");
-            else
-                fprintf(symbol_file, "%10d%10s%10s%10d%10s\n", row_no++, cur_type, identifier->ID, identifier->int_val,"variable");
-            
-        }
-    }*/
-    if (identifier->int_val < 0) // int arr[-1]; there is no n = 0 is valid
-    {
-        fprintf(stderr, "error");
-    }
-    if (identifier->int_val == 0) //n = 0 this means int x;
-    {
         if (!printed)
              return;
         
@@ -414,7 +388,7 @@ void processIdentifier(struct IDENTIFIER *identifier){
 
         
     
-    }}
+    }
 
 
 
