@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "AST.h"
+#include "Abstract_Tree.h"
 #include "compiler.tab.h"
 static int line_counter;
 

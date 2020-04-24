@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "AST.h"
+#include "Abstract_Tree.h"
 #include "print.h"
 static int line_counter;
 
@@ -19,19 +19,6 @@ void yyerror(char* text) {
 
     fprintf(stderr, "%s\n", text);
 }
-
-/*
-void yyerror(YYLTYPE t, char *s, ...)
-{
-    va_list ap;
-    va_start(ap, s);
-
-    if(t.first_line)
-        fprintf(stderr, "%d.%d-%d.%d: error: ", t.first_line, t.first_column, t.last_line, t.last_column);
-    vfprintf(stderr, s, ap);
-    fprintf(stderr, "\n");
-} 
-*/
 
 %}
 
