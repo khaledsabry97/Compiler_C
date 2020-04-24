@@ -238,25 +238,7 @@ Stmt: ID '=' Expr ';' {
             stmt->stmt.assign_stmt = assign;
 
             $$ = stmt;
-    } | ID '(' ')' ';' {
-                struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
-                call->ID = $1;
-                call->arg = NULL;
-                struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Call_Type;
-        stmt->stmt.func_call = call;
-        $$ = stmt;
-                }
-    | ID '(' Args ')' ';' {
-                    struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
-                    call->ID = $1;
-                    call->arg = $3;
-                    struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Call_Type;
-        stmt->stmt.func_call = call;
-        $$ = stmt;
-                }
-    | RETURN ';' {
+    } | RETURN ';' {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Return_Type;
         stmt->stmt.return_expr = NULL;

@@ -57,7 +57,32 @@ void removeBlock(struct BLOCK** current_block_ptr) {
     (*current_block_ptr)->parent_block->child_block = NULL;
     (*current_block_ptr) = (*current_block_ptr)->parent_block;
 }
+void makeNewBlockForStmts(BLOCK_TYPE block_type)
+{
+    outside_group_stmt = true;
+    if(block_type == Block_If_Type)
+    {
+        current_block_ptr = newBlock(current_block_ptr, Block_If_Type);
+        current_block_ptr->parent_block->if_count++;
+    }
+    else if(block_type == Block_For_Type)
+    {
+        current_block_ptr = newBlock(current_block_ptr, Block_For_Type);
+        current_block_ptr->parent_block->for_count++;
 
+    }
+    else if(block_type == Block_While_Type)
+    {
+        current_block_ptr = newBlock(current_block_ptr, Block_While_Type);
+        current_block_ptr->parent_block->while_count++;
+    }
+    else if(block_type == Block_Do_While_Type)
+    {
+        current_block_ptr = newBlock(current_block_ptr, Block_Do_While_Type);
+        current_block_ptr->parent_block->do_while_count++;
+    }
+    header = false;
+}
 
 
 
@@ -261,6 +286,19 @@ void compileIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool i
 
 
 
+void compileParameter(struct PARAMETER *parameter){
+    if(parameter == NULL)
+        return;
+    
+    compileParameter(parameter->prev);
+    compileIdentifier(parameter->id,parameter->id_type,true);
+
+    temp = pop();
+    fprintf(assembly_file,"\n MOV $%d , %s",parameter_count++,temp->str);
+
+    }
+
+
 void compileFunction(struct FUNCTION *function){
     if (function == NULL)
         return;
@@ -325,7 +363,7 @@ void compileFunction(struct FUNCTION *function){
         header = true;
         parameter_count = 1;
         
-        processParameter(function->parameter); //parameter
+        compileParameter(function->parameter); //parameter
 
     }
         //addNewSemantic(temp_semantic);
@@ -352,7 +390,7 @@ void compileFunction(struct FUNCTION *function){
     if(strcmp(function->ID,"main") != 0)
      fprintf(assembly_file,"\n CLRQ");
 
-    processStmtGroup(function->stmts_group); //compoundStmt
+    compileStmtGroup(function->stmts_group); //compoundStmt
     header = false;
     
     fprintf(assembly_file, "\n\n");
@@ -363,27 +401,14 @@ void compileFunction(struct FUNCTION *function){
 
 
 
-void processStmt(struct STMT *stmt){
-    if (stmt->prev != NULL)
-        processStmt(stmt->prev);
-    switch (stmt->stmt_type)
+void compileStmt(struct STMT *stmt){
+    if(stmt == NULL)
+        return;
+    compileStmt(stmt->prev);
+    STMT_TYPE stmt_type = stmt->stmt_type;
+
+    if(stmt_type == Return_Type )
     {
-    
-    case Call_Type: //deprecated
-        /*
-        fprintf(assembly_file, "%s(", stmt->stmt.func_call->ID);
-        if (stmt->stmt.func_call->arg != NULL)
-        {
-            struct Semantic* sem = newSemantic();
-            processArg(stmt->stmt.func_call->arg,sem);
-        }
-        fprintf(assembly_file, ")");
-        fprintf(assembly_file, ";");
-        */
-        break;
-
-
-    case Return_Type:
         if (stmt->stmt.return_expr == NULL)
         {
             if(isEmpty()) //then it's the main return
@@ -401,116 +426,73 @@ void processStmt(struct STMT *stmt){
             else
             {
 
-                //fprintf(assembly_file, "return ");
                 processExpr(stmt->stmt.return_expr,false);
                 fprintf(assembly_file,"\n BIND %s",pop()->str);
                 fprintf(assembly_file,"\n JMP %s",pop()->str);
-                //fprintf(assembly_file, ";");
-            }
-            
-         
+            } 
         }
-        break;
-
-    case If_Type:
+    }
+    else if(stmt_type == If_Type )
     {
-        outside_group_stmt = true;
         struct IF_STMT *if_stmt  = stmt->stmt.if_stmt;
-        //making node for symbol table
-        current_block_ptr = newBlock(current_block_ptr, Block_If_Type);
-        header = false;
-        current_block_ptr->parent_block->if_count++;
+        makeNewBlockForStmts(Block_If_Type);
 
-        //fprintf(assembly_file, "if (");
         fprintf(assembly_file, "\n IF%d:",counter++);
         processExpr(if_stmt->condition,true);
         int jump_lable = counter;
         struct Assembly* temp_expr = pop();
         fprintf(assembly_file, "\n JIFN %s , END_IF%d",temp_expr->str,counter++);
 
-        //fprintf(assembly_file, ")\n");
-        processStmt(if_stmt->if_stmt);
+        compileStmt(if_stmt->if_stmt);
         int sec_jump_lable = counter;
         fprintf(assembly_file,"\n JMP END_IF%d:",counter++);
         fprintf(assembly_file,"\n END_IF%d:",jump_lable);
-        if (if_stmt->else_stmt != NULL)
-        {
-            //fprintf(assembly_file, "\nelse\n");
-            processStmt(if_stmt->else_stmt);
-        }
+        removeBlock(&current_block_ptr);        
+        compileStmt(if_stmt->else_stmt);
 
         fprintf(assembly_file,"\n END_IF%d:",sec_jump_lable);
-
-
-        //deleteCurScope
-        removeBlock(&current_block_ptr);        
-        return;
     }
-
-    case For_Type:
+    else if(stmt_type == For_Type)
     {
-        outside_group_stmt = true;
         struct FOR_STMT *for_stmt = stmt->stmt.for_stmt;
-         //making node for symbol table
-        current_block_ptr = newBlock(current_block_ptr, Block_For_Type);
-        header = false;
-        current_block_ptr->parent_block->for_count++;
-
-        //fprintf(assembly_file, "for (");
+        makeNewBlockForStmts(Block_For_Type);
         int first_jump_lable = counter;
-        processAssignStmt(for_stmt->init);
+        compileAssignStmt(for_stmt->init);
         fprintf(assembly_file, "\n FOR%d:",counter++);
 
-        //fprintf(assembly_file, "; ");
         processExpr(for_stmt->condition,true);
         int jump_lable = counter;
         struct Assembly* temp_expr = pop();
         fprintf(assembly_file, "\n JIFN %s , END_FOR%d",temp_expr->str,counter++);
 
-        //fprintf(assembly_file, "; ");
-        processAssignStmt(for_stmt->inc);
-        //fprintf(assembly_file, ")\n");
-        processStmt(for_stmt->stmt);
+        compileAssignStmt(for_stmt->inc);
+        compileStmt(for_stmt->stmt);
         fprintf(assembly_file, "\n JMP FOR%d",first_jump_lable);
         fprintf(assembly_file,"\n END_FOR%d:",jump_lable);
-
-        //deleteCurScope
         removeBlock(&current_block_ptr);
-
-        
-        return;
     }
-     case While_Type:
-     {
-        outside_group_stmt = true;
+    else if(stmt_type == While_Type)
+    {
         struct WHILE_STMT *while_stmt = stmt->stmt.while_stmt;
         if (while_stmt->do_while == true)
         {
-            //making node for symbol table
-            current_block_ptr = newBlock(current_block_ptr, Block_Do_While_Type);
-            header = false;
-            current_block_ptr->parent_block->do_while_count++;
+           makeNewBlockForStmts(Block_Do_While_Type);
 
-            //fprintf(assembly_file, "do");
             int jump_lable = counter;
             fprintf(assembly_file, "\n DO_WHILE%d:",counter++);
-
-            processStmt(while_stmt->stmt);
-            //fprintf(assembly_file, "while (");
+            compileStmt(while_stmt->stmt);
             processExpr(while_stmt->condition,true);
+
             struct Assembly* temp_expr = pop();
             fprintf(assembly_file, "\n JIF %s , DO_WHILE%d",temp->str,jump_lable);
             fprintf(assembly_file,"\n END__DO_WHILE%d:",counter++);
-            //fprintf(assembly_file, ");\n");
+            removeBlock(&current_block_ptr);
+
         }
         else
         {
-            //making node for symbol table
-            current_block_ptr = newBlock(current_block_ptr, Block_While_Type);
-            header = false;
-            current_block_ptr->parent_block->while_count++;
+            makeNewBlockForStmts(Block_While_Type);
 
-            /*fprintf(assembly_file, "while (");*/
             int first_jump_lable = counter;
             fprintf(assembly_file, "\n WHILE%d:",counter++);
            
@@ -520,69 +502,38 @@ void processStmt(struct STMT *stmt){
             
             fprintf(assembly_file, "\n JIFN %s , END_WHILE%d",temp_expr->str,counter++);
 
-            //fprintf(assembly_file, ")\n");
-            processStmt(while_stmt->stmt);
+            compileStmt(while_stmt->stmt);
             fprintf(assembly_file, "\n JMP WHILE%d",first_jump_lable);
             fprintf(assembly_file,"\n END_WHILE%d:",jump_lable);
-
-
+            removeBlock(&current_block_ptr);
         }
-
-        //deleteCurScope
-        removeBlock(&current_block_ptr);
-        return;
- 
-     }
-    case Equ_Type:
-    {
-        processAssignStmt(stmt->stmt.assign_stmt);
-        //fprintf(assembly_file, ";");
-        break;
     }
-    case Stmt_Group_Type:
+    else if(stmt_type == Equ_Type )
+    {
+        compileAssignStmt(stmt->stmt.assign_stmt);
+    }
+    else if(stmt_type == Stmt_Group_Type)
+    {
         if (outside_group_stmt == false)
             inside_group_stmt = true;
-        processStmtGroup(stmt->stmt.stmts_group);
-        return;
-        //break;
-
-    case Semi_Colon_Type:
-        //fprintf(assembly_file, ";");
-        break;
+        compileStmtGroup(stmt->stmt.stmts_group);
     }
-    //fprintf(assembly_file, "\n");
     }
 
-
-void processParameter(struct PARAMETER *parameter){
-    if(parameter == NULL)
-        return;
-    
-    processParameter(parameter->prev);
-    compileIdentifier(parameter->id,parameter->id_type,true);
-
-    temp = pop();
-    fprintf(assembly_file,"\n MOV $%d , %s",parameter_count++,temp->str);
-
-    }
-
-void processStmtGroup(struct STMTSGROUP *stmts_group){
+void compileStmtGroup(struct STMTSGROUP *stmts_group){
     if (inside_group_stmt == true)
     {
-        //making node for symbol table
         current_block_ptr = newBlock(current_block_ptr, Block_Stmt_Group_Type);
-        header = false;
         current_block_ptr->parent_block->stmt_group_count++;
+        header = false;
     }
     outside_group_stmt = false;
 
     fprintf(assembly_file, "\n");
-    if (stmts_group->declaration != NULL)
-    {
-        compileDeclaration(stmts_group->declaration);
-    }
-    if (stmts_group->stmt != NULL)
-        processStmt(stmts_group->stmt);
+
+    compileDeclaration(stmts_group->declaration);
+    compileStmt(stmts_group->stmt);
+    
     fprintf(assembly_file, "\n");
 
     if (inside_group_stmt == true)
@@ -592,21 +543,10 @@ void processStmtGroup(struct STMTSGROUP *stmts_group){
     inside_group_stmt = false;
     outside_group_stmt = false;
 }
-void processAssignStmt(struct ASSIGN_STMT *assign)
+void compileAssignStmt(struct ASSIGN_STMT *assign)
 {
-    //fprintf(assembly_file, "%s ", assign->ID);
-    /*if (assign->index != NULL)
-    {
-        fprintf(assembly_file, "[");
-        processExpr(assign->index);
-        fprintf(assembly_file, "]");
-    }
-    */
-    //fprintf(assembly_file, " = ");
     processExpr(assign->expr,true);
-
-        //check if identifier was found
-
+    //check if identifier was found
     struct Semantic* semantic_temp = findSemanticIdentifier(assign->ID);
     if(semantic_temp == NULL)
         {

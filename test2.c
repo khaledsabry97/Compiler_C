@@ -38,8 +38,8 @@ int main ()
 
     if(n1 > n2)
     {
-        int n7;
-        n7 = 10;
+        int n8;
+        n8 = 10;
         n3 = n1;
     }
     else if( n1 >= n2)

@@ -68,7 +68,7 @@ START main
  CMPG n1 , n2 , RES18 
  JIFN RES18 , END_IF19
 
- MOV 10 , n7
+ MOV 10 , n8
  MOV n1 , n3
 
  JMP END_IF20:
