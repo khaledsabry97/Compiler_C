@@ -1,19 +1,13 @@
 
-Function name => plusx
+Function name => multiply
      countscope_type      name     array      role
-         1       int        n3           parameter
-         2constant int        n5           parameter
-
-Function name => plusx
-     countscope_type      name     array      role
-         1       int        n3           parameter
-         2     float        n4           parameter
+         1       int        n1           parameter
+         2       int        n2           parameter
+         3       int  multiply            variable
 
 Function name => main
      countscope_type      name     array      role
          1       int        n1            variable
-         2       int        n2            variable
-         3     float        n3            variable
-         4constant int        n4            variable
-         5       int    result            variable
-         6       int     value            variable
+         2     float        n2            variable
+         3       int        n3            variable
+         4       int        n4            variable

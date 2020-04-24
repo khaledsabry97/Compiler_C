@@ -2,76 +2,102 @@ START main
 
 
 
- plusx0:
- MOV $0 , plusx_RET1
- MOV $1 , n3
- MOV $2 , n5
+ multiply0:
+ MOV $0 , multiply_RET1
+ MOV $1 , n1
+ MOV $2 , n2
  CLRQ
 
- ADD n3 , n5 , ADD_RES2 
- MOV ADD_RES2 , n3
- ADD n3 , n5 , ADD_RES3 
- MOV ADD_RES3 , n5
- BIND 0
- JMP plusx_RET1
-
-
-
-
- plusx4:
- MOV $0 , plusx_RET5
- MOV $1 , n3
- MOV $2 , n4
- CLRQ
-
- BIND 0
- JMP plusx_RET5
+ MUL n1 , n2 , MUL_RES2 
+ MOV MUL_RES2 , multiply
+ BIND multiply
+ JMP multiply_RET1
 
 
 
 
  main:
 
- ADD n1 , 1 , ADD_RES6 
- MOV ADD_RES6 , n1
  MOV 10 , n1
- SUB n1 , 1 , SUB_RES7 
- MOV SUB_RES7 , n1
- MOV 20 , n2
- MOV 30.500000 , n3
- ADD 20.700001 , 20 , ADD_RES8 
- MOV ADD_RES8 , n3
- MOV 20 , n4
- MOV n4 , n2
- ADD n2 , n4 , ADD_RES9 
- MOV ADD_RES9 , n2
- MOV 10 , n4
- BIND plusx10
- BIND n1 , $1
- BIND n2 , $2
- JMP plusx0
- plusx10:
- MOV $1 , RET_VAL11
- MOV RET_VAL11 , value
- BIND plusx12
- BIND value , $1
- BIND n3 , $2
- JMP plusx4
- plusx12:
- MOV $1 , RET_VAL13
- MOV RET_VAL13 , n3
- IF14:
- CMPG n1 , n2 , RES15 
- JIFN RES15 , END_IF16
+ MOV 20.500000 , n2
+ ADD n1 , n2 , ADD_RES3 
+ MOV ADD_RES3 , n2
+ SUB n1 , n2 , SUB_RES4 
+ MOV SUB_RES4 , n2
+ MUL n1 , n2 , MUL_RES5 
+ MOV MUL_RES5 , n2
+ DIV n1 , n2 , DIV_RES6 
+ MOV DIV_RES6 , n2
+ IF7:
+ CMPG n1 , n2 , RES8 
+ JIFN RES8 , END_IF9
 
- MOV 10 , n1
+ MOV n1 , n3
 
- JMP END_IF17:
- END_IF16:
+ JMP END_IF10:
+ END_IF9:
+ IF11:
+ CMPGE n1 , n2 , RES12 
+ JIFN RES12 , END_IF13
 
- MOV 10 , n2
+ MOV n1 , n3
 
+ JMP END_IF14:
+ END_IF13:
+ IF15:
+ CMPE n1 , n2 , RES16 
+ JIFN RES16 , END_IF17
+
+ MOV n1 , n3
+
+ JMP END_IF18:
  END_IF17:
+ IF19:
+ CMPNE n1 , n2 , RES20 
+ JIFN RES20 , END_IF21
+
+ MOV n1 , n3
+
+ JMP END_IF22:
+ END_IF21:
+ IF23:
+ CMPL n1 , n2 , RES24 
+ JIFN RES24 , END_IF25
+
+ MOV n1 , n3
+
+ JMP END_IF26:
+ END_IF25:
+ IF27:
+ CMPLE n1 , n2 , RES28 
+ JIFN RES28 , END_IF29
+
+ MOV n1 , n3
+
+ JMP END_IF30:
+ END_IF29:
+
+ MOV n1 , n3
+
+ END_IF30:
+ END_IF26:
+ END_IF22:
+ END_IF18:
+ END_IF14:
+ END_IF10:
+ DO_WHILE31:
+
+
+ CMPG n1 , n2 , RES32 
+ JIF RES32 , DO_WHILE31
+ END__DO_WHILE33:
+ BIND multiply34
+ BIND n1 , $1
+ BIND n3 , $2
+ JMP multiply0
+ multiply34:
+ MOV $1 , RET_VAL35
+ MOV RET_VAL35 , n4
  HALT
 
 
