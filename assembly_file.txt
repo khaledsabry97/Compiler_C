@@ -34,41 +34,14 @@ START main
  MOV $0 , multiply_RET7
  MOV $1 , n1
  MOV $2 , n2
+ MOV $3 , n3
  CLRQ
 
  MUL n1 , n2 , MUL_RES8 
- MOV MUL_RES8 , multiply
+ MUL MUL_RES8 , n3 , MUL_RES9 
+ MOV MUL_RES9 , multiply
  BIND multiply
  JMP multiply_RET7
-
-
-
-
- divide9:
- MOV $0 , divide_RET10
- MOV $1 , n1
- MOV $2 , n2
- CLRQ
-
- DIV n1 , n2 , DIV_RES11 
- MOV DIV_RES11 , divide
- BIND divide
- JMP divide_RET10
-
-
-
-
- divide12:
- MOV $0 , divide_RET13
- MOV $1 , n1
- MOV $2 , n2
- CLRQ
-
- MOV 10.500000 , n2
- DIV n1 , n2 , DIV_RES14 
- MOV DIV_RES14 , divide
- BIND divide
- JMP divide_RET13
 
 
 
@@ -77,169 +50,126 @@ START main
 
  MOV 10 , n1
  MOV 20.500000 , n2
- MOV n2 , n1
- MOV n3 , n1
- MUL n1 , -1 , UNI_RES15 
- MOV UNI_RES15 , n3
- IF16:
- CMPE n1 , n2 , RES17 
- CMPG n1 , RES17 , RES18 
+ ADD n1 , n2 , ADD_RES10 
+ MOV ADD_RES10 , n2
+ SUB n1 , n2 , SUB_RES11 
+ MOV SUB_RES11 , n2
+ MUL n1 , n2 , MUL_RES12 
+ MOV MUL_RES12 , n2
+ DIV n1 , n2 , DIV_RES13 
+ MOV DIV_RES13 , n2
+ ADD n1 , 1 , ADD_RES14 
+ MOV ADD_RES14 , n1
+ SUB n1 , 1 , SUB_RES15 
+ MOV SUB_RES15 , n1
+ MUL n2 , -1 , UNI_RES16 
+ MOV UNI_RES16 , n2
+ IF17:
+ CMPG n1 , n2 , RES18 
  JIFN RES18 , END_IF19
 
  MOV n1 , n3
 
  JMP END_IF20:
  END_IF19:
- END_IF20:
- BIND multiply21
- BIND n1 , $1
- BIND n2 , $2
- multiply21:
- MOV $1 , RET_VAL22
- MOV RET_VAL22 , n4
- BIND divide23
- BIND n2 , $1
- BIND n1 , $2
- JMP divide9
- divide23:
- MOV $1 , RET_VAL24
- MOV RET_VAL24 , n5
- MOV 10 , n5
- BIND multiply25
- BIND n2 , $1
- BIND n1 , $2
- BIND n3 , $3
- multiply25:
- MOV $1 , RET_VAL26
- MOV RET_VAL26 , n2
- ADD n1 , n2 , ADD_RES27 
- MOV ADD_RES27 , n2
- SUB n1 , n2 , SUB_RES28 
- MOV SUB_RES28 , n2
- MUL n1 , n2 , MUL_RES29 
- MOV MUL_RES29 , n2
- DIV n1 , n2 , DIV_RES30 
- MOV DIV_RES30 , n2
- ADD n1 , 1 , ADD_RES31 
- MOV ADD_RES31 , n1
- SUB n1 , 1 , SUB_RES32 
- MOV SUB_RES32 , n1
- MUL n2 , -1 , UNI_RES33 
- MOV UNI_RES33 , n2
- IF34:
- CMPG n1 , n2 , RES35 
- JIFN RES35 , END_IF36
+ IF21:
+ CMPGE n1 , n2 , RES22 
+ JIFN RES22 , END_IF23
 
  MOV n1 , n3
 
- JMP END_IF37:
- END_IF36:
- IF38:
- CMPGE n1 , n2 , RES39 
- JIFN RES39 , END_IF40
+ JMP END_IF24:
+ END_IF23:
+ IF25:
+ CMPE n1 , n2 , RES26 
+ JIFN RES26 , END_IF27
 
  MOV n1 , n3
 
- JMP END_IF41:
+ JMP END_IF28:
+ END_IF27:
+ IF29:
+ CMPNE n1 , n2 , RES30 
+ JIFN RES30 , END_IF31
+
+ MOV n1 , n3
+
+ JMP END_IF32:
+ END_IF31:
+ IF33:
+ CMPL n1 , n2 , RES34 
+ JIFN RES34 , END_IF35
+
+ MOV n1 , n3
+
+ JMP END_IF36:
+ END_IF35:
+ IF37:
+ CMPLE n1 , n2 , RES38 
+ JIFN RES38 , END_IF39
+
+ MOV n1 , n3
+
+ JMP END_IF40:
+ END_IF39:
+
+ MOV n1 , n3
+
  END_IF40:
- IF42:
- CMPE n1 , n2 , RES43 
- JIFN RES43 , END_IF44
+ END_IF36:
+ END_IF32:
+ END_IF28:
+ END_IF24:
+ END_IF20:
+ WHILE41:
+ CMPG n2 , n1 , RES42 
+ JIFN RES42 , END_WHILE43
 
  MOV n1 , n3
 
- JMP END_IF45:
- END_IF44:
- IF46:
- CMPNE n1 , n2 , RES47 
- JIFN RES47 , END_IF48
+ JMP WHILE41
+ END_WHILE43:
+ DO_WHILE44:
 
  MOV n1 , n3
 
- JMP END_IF49:
- END_IF48:
- IF50:
- CMPL n1 , n2 , RES51 
- JIFN RES51 , END_IF52
-
- MOV n1 , n3
-
- JMP END_IF53:
- END_IF52:
- IF54:
- CMPLE n1 , n2 , RES55 
- JIFN RES55 , END_IF56
-
- MOV n1 , n3
-
- JMP END_IF57:
- END_IF56:
-
- MOV n1 , n3
-
- END_IF57:
- END_IF53:
- END_IF49:
- END_IF45:
- END_IF41:
- END_IF37:
- WHILE58:
- CMPG n2 , n1 , RES59 
- JIFN RES59 , END_WHILE60
-
- MOV n1 , n3
-
- JMP WHILE58
- END_WHILE60:
- DO_WHILE61:
-
- MOV n1 , n3
-
- CMPG n1 , n2 , RES62 
- JIF RES62 , DO_WHILE61
- END__DO_WHILE63:
+ CMPG n1 , n2 , RES45 
+ JIF RES45 , DO_WHILE44
+ END__DO_WHILE46:
  MOV 0 , n1
- FOR64:
- CMPL n1 , 10 , RES65 
- JIFN RES65 , END_FOR66
- ADD n1 , 1 , ADD_RES67 
- MOV ADD_RES67 , n1
+ FOR47:
+ CMPL n1 , 10 , RES48 
+ JIFN RES48 , END_FOR49
+ ADD n1 , 1 , ADD_RES50 
+ MOV ADD_RES50 , n1
 
  MOV n1 , n3
 
- JMP FOR64
- END_FOR66:
+ JMP FOR47
+ END_FOR49:
  MOV 10 , global_variable
- BIND multiply68
+ BIND multiply51
  BIND n1 , $1
  BIND n3 , $2
  JMP multiply0
- multiply68:
- MOV $1 , RET_VAL69
- MOV RET_VAL69 , n4
- BIND multiply70
+ multiply51:
+ MOV $1 , RET_VAL52
+ MOV RET_VAL52 , n4
+ BIND multiply53
  BIND n2 , $1
  BIND n3 , $2
- JMP multiply6
- multiply70:
- MOV $1 , RET_VAL71
- MOV RET_VAL71 , n2
- BIND multiply72
+ JMP multiply3
+ multiply53:
+ MOV $1 , RET_VAL54
+ MOV RET_VAL54 , n2
+ BIND multiply55
  BIND n2 , $1
  BIND n1 , $2
  BIND n3 , $3
- multiply72:
- MOV $1 , RET_VAL73
- MOV RET_VAL73 , n2
- MOV 10 , n6
- MOV n1 , n6
- BIND divide74
- BIND n2 , $1
- BIND n2 , $2
- JMP divide12
- divide74:
- MOV $1 , RET_VAL75
- MOV RET_VAL75 , n2
+ JMP multiply6
+ multiply55:
+ MOV $1 , RET_VAL56
+ MOV RET_VAL56 , n2
  HALT
 
 

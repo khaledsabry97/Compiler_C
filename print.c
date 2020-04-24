@@ -28,7 +28,7 @@ struct SEMANTIC_STACK* temp_semantic_stack;
 
 
 //make node
-struct BLOCK* newScope(BLOCK_TYPE scope_type, struct BLOCK* parent_scope) {
+struct BLOCK* newScope(BLOCK_TYPE scope_type, struct BLOCK* parent_block) {
     struct BLOCK* node = (struct BLOCK*) malloc (sizeof(struct BLOCK));
     node->scope_type = scope_type;
     node->if_count = 0;
@@ -39,16 +39,16 @@ struct BLOCK* newScope(BLOCK_TYPE scope_type, struct BLOCK* parent_scope) {
     if(scope_type == Block_Global_Type)
         sprintf(node->name, "Global Variables");
     else
-    //node->name = current_func_name; //only important for function scope
+    //node->name = current_func_name; //only important for function blcok
         sprintf(node->name, "%s",current_func_name);
 
     //sprintf(node->name,"%s",current_func_name);
 
     node->function_number = current_func_number;
-    if(parent_scope != NULL) 
-        parent_scope->child_scope = node;
-    node->parent_scope = parent_scope;
-    node->child_scope = NULL;
+    if(parent_block != NULL) 
+        parent_block->child_block = node;
+    node->parent_block = parent_block;
+    node->child_block = NULL;
 
     //printf("curr %s\n",node->name);
     return node;
@@ -56,10 +56,10 @@ struct BLOCK* newScope(BLOCK_TYPE scope_type, struct BLOCK* parent_scope) {
 
 void deleteScope(struct BLOCK** current_scope_ptr) {
     struct BLOCK* curScope = *current_scope_ptr;
-    struct BLOCK* parent_scope = curScope->parent_scope;
-    if(parent_scope != NULL) {
-        parent_scope->child_scope = NULL;
-        (*current_scope_ptr) = parent_scope;
+    struct BLOCK* parent_block = curScope->parent_block;
+    if(parent_block != NULL) {
+        parent_block->child_block = NULL;
+        (*current_scope_ptr) = parent_block;
         free(curScope);
       } 
       
@@ -67,22 +67,22 @@ void deleteScope(struct BLOCK** current_scope_ptr) {
 }
 
 //returns the order of current BLOCK
-int getMyOrder(BLOCK_TYPE scope_type, struct BLOCK* parent_scope) {
+int getMyOrder(BLOCK_TYPE scope_type, struct BLOCK* parent_block) {
     switch(scope_type) {
         case Block_Do_While_Type:
-            return (parent_scope->do_while_count);
+            return (parent_block->do_while_count);
 
         case Block_While_Type:
-            return (parent_scope->while_count);
+            return (parent_block->while_count);
 
         case Block_For_Type:
-            return (parent_scope->for_count);
+            return (parent_block->for_count);
 
         case Block_If_Type:
-            return (parent_scope->if_count);
+            return (parent_block->if_count);
 
         case Block_Stmt_Group_Type:
-            return (parent_scope->stmt_group_count);
+            return (parent_block->stmt_group_count);
     }
 }
 
@@ -114,13 +114,13 @@ char to_print[1200];
     fprintf(symbol_file, "%s", current_func_name);
     sprintf(to_print, "%s %s", to_print,current_func_name);
 
-    struct BLOCK *curNode = head_scope_ptr->child_scope; //start from Function node
-    while (curNode->child_scope != NULL)
+    struct BLOCK *curNode = head_scope_ptr->child_block; //start from Function node
+    while (curNode->child_block != NULL)
     {
         fprintf(symbol_file, " - ");
         sprintf(to_print, "%s - ", to_print);
 
-        switch (curNode->child_scope->scope_type)
+        switch (curNode->child_block->scope_type)
         {
         case Block_Do_While_Type:
             fprintf(symbol_file, "do_while");
@@ -152,10 +152,10 @@ char to_print[1200];
 
             break;
         }
-        fprintf(symbol_file, "[%d]", getMyOrder(curNode->child_scope->scope_type, curNode));
-        sprintf(to_print, "%s [%d] ", to_print,getMyOrder(curNode->child_scope->scope_type, curNode));
+        fprintf(symbol_file, "[%d]", getMyOrder(curNode->child_block->scope_type, curNode));
+        sprintf(to_print, "%s [%d] ", to_print,getMyOrder(curNode->child_block->scope_type, curNode));
 
-        curNode = curNode->child_scope;
+        curNode = curNode->child_block;
     }
     fprintf(symbol_file, "\n");
     sprintf(to_print, "%s\n ", to_print);
@@ -363,18 +363,18 @@ void processIdentifier(struct IDENTIFIER *identifier){
         }
         temp_semantic_identifier->is_assigned = false;
         temp_semantic_identifier->is_function = false;
-        temp_semantic_identifier->scope = head_scope_ptr;
+        temp_semantic_identifier->blcok = head_scope_ptr;
         temp_semantic_identifier->is_parameter = is_parameter;
     
-        int count = checkSemantic(temp_semantic_identifier->identifier_name,false,temp_semantic_identifier->scope,NULL,temp_semantic_identifier->identifier_semantic_type);
+        int count = checkSemantic(temp_semantic_identifier->identifier_name,false,temp_semantic_identifier->blcok,NULL,temp_semantic_identifier->identifier_semantic_type);
         if(count != 0)
             fprintf(semantic_file,"ERORR: variable %s has been declared before %d times before \n",temp_semantic_identifier->identifier_name,count);
         else
         {
-            printf("didn't found any variable in the smae scope\n");
+            printf("didn't found any variable in the smae blcok\n");
         }
         addNewSemantic(temp_semantic_identifier);
-        printScopeFunctionName(temp_semantic_identifier->scope);
+        printScopeFunctionName(temp_semantic_identifier->blcok);
         if(is_parameter == true)
         {
             //printf("\nnew%s\n",temp_semantic->identifier_name);
@@ -427,11 +427,11 @@ void processFunction(struct FUNCTION *function){
 
     //list node
     current_scope_ptr = newScope(Block_Func_Type, current_scope_ptr); //append it to the end of list
-    temp_semantic->scope = head_scope_ptr;
+    temp_semantic->blcok = head_scope_ptr;
     temp_semantic->function_number = current_func_number;
 
 
-    //int count = checkSemantic(function->ID,true,temp_semantic->scope,temp_check,temp_semantic->identifier_semantic_type);
+    //int count = checkSemantic(function->ID,true,temp_semantic->blcok,temp_check,temp_semantic->identifier_semantic_type);
     //if(count != 0)
         //fprintf(semantic_file,"ERORR: function %s appeared %d times before \n",function->ID,count);
     
@@ -562,7 +562,7 @@ void processStmt(struct STMT *stmt){
         //making node for symbol table
         current_scope_ptr = newScope(Block_If_Type, current_scope_ptr);
         title = false;
-        current_scope_ptr->parent_scope->if_count++;
+        current_scope_ptr->parent_block->if_count++;
 
         //fprintf(assembly_file, "if (");
         fprintf(assembly_file, "\n IF%d:",counter++);
@@ -597,7 +597,7 @@ void processStmt(struct STMT *stmt){
          //making node for symbol table
         current_scope_ptr = newScope(Block_For_Type, current_scope_ptr);
         title = false;
-        current_scope_ptr->parent_scope->for_count++;
+        current_scope_ptr->parent_block->for_count++;
 
         //fprintf(assembly_file, "for (");
         int first_jump_lable = counter;
@@ -632,7 +632,7 @@ void processStmt(struct STMT *stmt){
             //making node for symbol table
             current_scope_ptr = newScope(Block_Do_While_Type, current_scope_ptr);
             title = false;
-            current_scope_ptr->parent_scope->do_while_count++;
+            current_scope_ptr->parent_block->do_while_count++;
 
             //fprintf(assembly_file, "do");
             int jump_lable = counter;
@@ -651,7 +651,7 @@ void processStmt(struct STMT *stmt){
             //making node for symbol table
             current_scope_ptr = newScope(Block_While_Type, current_scope_ptr);
             title = false;
-            current_scope_ptr->parent_scope->while_count++;
+            current_scope_ptr->parent_block->while_count++;
 
             /*fprintf(assembly_file, "while (");*/
             int first_jump_lable = counter;
@@ -745,7 +745,7 @@ void processStmtGroup(struct STMTSGROUP *stmts_group){
         //making node for symbol table
         current_scope_ptr = newScope(Block_Stmt_Group_Type, current_scope_ptr);
         title = false;
-        current_scope_ptr->parent_scope->stmt_group_count++;
+        current_scope_ptr->parent_block->stmt_group_count++;
     }
     outside_group_stmt = false;
 

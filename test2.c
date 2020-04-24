@@ -16,7 +16,6 @@ float multiply(float n1,int n2)
 
 float multiply(float n1,int n2,int n3)
 {
-    int n6;
     float multiply;
     multiply = n1 * n2 * n3;
     return multiply;
@@ -27,7 +26,6 @@ int main ()
     float n2;
     int n3;
     int n4;
-    int n6;
     n1 = 10;
     n2 = 20.5;
     n2 = n1 + n2;
@@ -40,12 +38,10 @@ int main ()
 
     if(n1 > n2)
     {
-        int n6;
         n3 = n1;
     }
     else if( n1 >= n2)
     {
-        int n6;
         n3 = n1;
     }
     else if( n1 == n2 )

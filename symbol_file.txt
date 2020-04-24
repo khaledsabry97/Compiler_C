@@ -10,27 +10,16 @@ Function name => multiply
 
 Function name => multiply
      countscope_type      name     array      role
-         1       int        n1           parameter
+         1     float        n1           parameter
          2       int        n2           parameter
-         3       int  multiply            variable
+         3     float  multiply            variable
 
 Function name => multiply
      countscope_type      name     array      role
          1     float        n1           parameter
          2       int        n2           parameter
-         3     float  multiply            variable
-
-Function name => divide
-     countscope_type      name     array      role
-         1     float        n1           parameter
-         2       int        n2           parameter
-         3     float    divide            variable
-
-Function name => divide
-     countscope_type      name     array      role
-         1     float        n1           parameter
-         2constant float        n2           parameter
-         3     float    divide            variable
+         3       int        n3           parameter
+         4     float  multiply            variable
 
 Function name => main
      countscope_type      name     array      role
@@ -38,6 +27,3 @@ Function name => main
          2     float        n2            variable
          3       int        n3            variable
          4       int        n4            variable
-         5       int        n5            variable
-         6       int        n5            variable
-         7constant int        n6            variable

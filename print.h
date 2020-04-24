@@ -15,8 +15,8 @@ struct BLOCK {
     int function_number;
     int stmt_group_count;
     BLOCK_TYPE scope_type;
-    struct BLOCK* parent_scope;
-    struct BLOCK* child_scope;
+    struct BLOCK* parent_block;
+    struct BLOCK* child_block;
 };
 
 struct BLOCK *head_scope_ptr;
@@ -25,13 +25,13 @@ char* current_func_name;
 int current_func_number;
 
 //make node
-struct BLOCK* newScope(BLOCK_TYPE scope_type, struct BLOCK* parent_scope);
+struct BLOCK* newScope(BLOCK_TYPE scope_type, struct BLOCK* parent_block);
 
 //delete node
 void deleteScope(struct BLOCK** current_scope_ptr);
 
 //returns the order of current BLOCK
-int getMyOrder(BLOCK_TYPE scope_type, struct BLOCK* parent_scope);
+int getMyOrder(BLOCK_TYPE scope_type, struct BLOCK* parent_block);
 
 
 struct Assembly{
