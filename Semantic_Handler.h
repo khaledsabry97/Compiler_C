@@ -28,7 +28,7 @@ struct Semantic {
     bool is_parameter;
     int function_number;
     int value;
-    struct BLOCK* blcok;
+    struct BLOCK* block;
 };
 
 
@@ -47,7 +47,7 @@ struct BLOCK* newScopeToSemantic(struct BLOCK* current_block,struct BLOCK* paren
     node->for_count  = current_block->for_count;
     node->if_count = current_block->if_count;
     node->stmt_group_count = current_block->stmt_group_count;
-    //node->name = current_block->name; //only important for function blcok
+    //node->name = current_block->name; //only important for function block
     if(current_block->block_type == Block_Global_Type)
         sprintf(node->name, "Global Variables");
     else
@@ -167,7 +167,7 @@ bool checkScope(struct BLOCK* identifier_scope,struct BLOCK* current_block)
         current_block = current_block->child_block_ptr;
         if(identifier_scope == NULL)
         {
-            //printf("same blcok\n");
+            //printf("same block\n");
             return true;
 
         }
@@ -275,7 +275,7 @@ int checkSemantic(char* name, bool is_function,struct BLOCK* current_block,struc
         while(list_of_names != NULL)
         {
             printf("%s\n",list_of_names->identifier_name);
-            bool ret = checkScope(list_of_names->blcok,current_block);
+            bool ret = checkScope(list_of_names->block,current_block);
             if (ret == true)
             {
                 printf("sdfsdfsdf\n");
@@ -301,7 +301,7 @@ struct SEMANTIC_STACK* newSemanticStack()
 
 void addNewSemantic(struct Semantic* semantic)
 {
-    semantic->blcok = newScopeToSemantic(semantic->blcok,NULL);
+    semantic->block = newScopeToSemantic(semantic->block,NULL);
 
     if (head == NULL)
     {
@@ -358,12 +358,12 @@ void printNumberOfArgs(struct SEMANTIC_STACK* args)
     printf("\n");
 }
 
-void printScopeFunctionName(struct BLOCK* blcok)
+void printScopeFunctionName(struct BLOCK* block)
 {    
-    while(blcok != NULL)
+    while(block != NULL)
     {
-        printf("%s -> ",blcok->name);
-        blcok = blcok->child_block_ptr;
+        printf("%s -> ",block->name);
+        block = block->child_block_ptr;
     }
     printf("\n");
 
@@ -393,7 +393,7 @@ struct Semantic* findSemanticIdentifier(char* identifier_name)
     while(list_of_names != NULL)
     {
         //printf("%s\n",list_of_names->identifier_name);
-        bool ret = checkScope(list_of_names->blcok,head_scope_ptr);
+        bool ret = checkScope(list_of_names->block,head_scope_ptr);
         if (ret == true)
         {
             list_of_names->temp = NULL;
@@ -413,19 +413,7 @@ struct Semantic* findSemanticFunction(char* identifier_name,struct SEMANTIC_STAC
 
     while(list_of_names != NULL)
     {
-        //printf("%s %d errrorror\n",list_of_names->identifier_name,list_of_names->args_stack);
-        /*if(check_function_type == true)
-        {
-            if(list_of_names->identifier_semantic_type != semantic->identifier_semantic_type )
-            {
-                list_of_names = list_of_names->temp;
-                continue;
-            }
-            
 
-
-
-        }*/
         printNumberOfArgs(list_of_names->args_stack);
         printNumberOfArgs(temp);
         temp2 = list_of_names->args_stack;
@@ -581,5 +569,5 @@ void checkNotAssignedIdentifiers()
 // if rhs is different type from lhs
 //if rhs identifier is not assigned value before it's used
 // If identifier not declared before wether if it's on the rhs or lhs
-// tell you how many times the variable declared before in same blcok
-// If you have two names of the same type in the same blcok
+// tell you how many times the variable declared before in same block
+// If you have two names of the same type in the same block

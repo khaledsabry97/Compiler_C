@@ -22,7 +22,7 @@ extern FILE *semantic_file;
 struct BLOCK *temp_block;
 
 
-
+/******Symbol Table*******/
 struct BLOCK* newBlock(struct BLOCK* parent_block_ptr, BLOCK_TYPE block_type) {
     struct BLOCK* node = (struct BLOCK*) malloc (sizeof(struct BLOCK));
     node->if_count = 0;
@@ -34,7 +34,7 @@ struct BLOCK* newBlock(struct BLOCK* parent_block_ptr, BLOCK_TYPE block_type) {
     if(block_type == Block_Global_Type)
         sprintf(node->name, "Global Variables");
     else
-    //node->name = current_func_name; //only important for function blcok
+    //node->name = current_func_name; //only important for function block
         sprintf(node->name, "%s",current_func_name);
 
     //sprintf(node->name,"%s",current_func_name);
@@ -87,11 +87,6 @@ void makeNewBlockForStmts(BLOCK_TYPE block_type)
 
     header = false;
 }
-
-
-
-
-
 
 void printSymbolTableHeader()
 {
@@ -184,15 +179,7 @@ bool isEmpty()
 }
 
 
-
-
-
-
-
-
-
-
-
+/*****************Compilation of Program*********************/
 //start of the compilation
 void compileProgram(struct PROGRAM* program)
 {
@@ -268,18 +255,18 @@ void compileIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool i
         }
         temp_semantic_identifier->is_assigned = false;
         temp_semantic_identifier->is_function = false;
-        temp_semantic_identifier->blcok = head_scope_ptr;
+        temp_semantic_identifier->block = head_scope_ptr;
         temp_semantic_identifier->is_parameter = is_parameter;
     
-        int count = checkSemantic(temp_semantic_identifier->identifier_name,false,temp_semantic_identifier->blcok,NULL,temp_semantic_identifier->identifier_semantic_type);
+        int count = checkSemantic(temp_semantic_identifier->identifier_name,false,temp_semantic_identifier->block,NULL,temp_semantic_identifier->identifier_semantic_type);
         if(count != 0)
             fprintf(semantic_file,"ERORR: variable %s has been declared before %d times before \n",temp_semantic_identifier->identifier_name,count);
         else
         {
-            printf("didn't found any variable in the smae blcok\n");
+            printf("didn't found any variable in the smae block\n");
         }
         addNewSemantic(temp_semantic_identifier);
-        printScopeFunctionName(temp_semantic_identifier->blcok);
+        printScopeFunctionName(temp_semantic_identifier->block);
         if(is_parameter == true)
         {
             addArgsToSemantic(temp_semantic,temp_semantic_identifier->identifier_semantic_type);
@@ -328,11 +315,11 @@ void compileFunction(struct FUNCTION *function){
    
 
     current_block_ptr = newBlock(current_block_ptr,Block_Func_Type); 
-    temp_semantic->blcok = head_scope_ptr;
+    temp_semantic->block = head_scope_ptr;
     temp_semantic->function_number = current_func_number;
 
 
-    //int count = checkSemantic(function->ID,true,temp_semantic->blcok,temp_check,temp_semantic->identifier_semantic_type);
+    //int count = checkSemantic(function->ID,true,temp_semantic->block,temp_check,temp_semantic->identifier_semantic_type);
     //if(count != 0)
         //fprintf(semantic_file,"ERORR: function %s appeared %d times before \n",function->ID,count);
     
@@ -400,8 +387,24 @@ void compileFunction(struct FUNCTION *function){
   
     }
 
+void compileArgs(struct ARG *arg,struct Semantic* sem)
+{
+    if (arg == NULL)
+        return;
+
+    compileArgs(arg->prev,sem);
+    compileExpr(arg->expr,true);
+
+    temp = pop();
+    fprintf(assembly_file,"\n BIND %s , $%d",temp->str,parameter_count++);
+    printf("f-arg\n");
+    temp_semantic_stack = popSemanticStack();
+    //pushSemanticStack(temp_semantic_stack);
+    addArgsToSemantic(sem,temp_semantic_stack->identifier_semantic_type);
+}
 
 
+/*****************Compilation of statements*********************/
 void compileStmt(struct STMT *stmt){
     if(stmt == NULL)
         return;
@@ -589,23 +592,8 @@ void compileAssignStmt(struct ASSIGN_STMT *assign)
 
 }
 
-void compileArgs(struct ARG *arg,struct Semantic* sem)
-{
-    if (arg == NULL)
-        return;
 
-    compileArgs(arg->prev,sem);
-    compileExpr(arg->expr,true);
-
-    temp = pop();
-    fprintf(assembly_file,"\n BIND %s , $%d",temp->str,parameter_count++);
-    printf("f-arg\n");
-    temp_semantic_stack = popSemanticStack();
-    //pushSemanticStack(temp_semantic_stack);
-    addArgsToSemantic(sem,temp_semantic_stack->identifier_semantic_type);
-}
-
-
+/*****************Compilation of Expressions*********************/
 void compileExpr(struct EXPR *expr,bool must_return)
 {
     EXPR_TYPE expr_type = expr->expr_type;
