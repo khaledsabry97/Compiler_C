@@ -7,18 +7,18 @@ struct BLOCK {
     int if_count;
     int stmt_group_count;
     BLOCK_TYPE block_type;
-    struct BLOCK* parent_block;
-    struct BLOCK* child_block;
+    struct BLOCK* parent_block_ptr;
+    struct BLOCK* child_block_ptr;
 };
 
 struct BLOCK *head_scope_ptr, *current_block_ptr;
 char* current_func_name;
 
 //make node
-struct BLOCK* newBlock(BLOCK_TYPE block_type, struct BLOCK* parent_block);
+struct BLOCK* newBlock(BLOCK_TYPE block_type, struct BLOCK* parent_block_ptr);
 
 //delete node
 void removeBlock(struct BLOCK** current_block_ptr);
 
 //returns the order of current BLOCK
-int getMyOrder(BLOCK_TYPE block_type, struct BLOCK* parent_block);
+int getMyOrder(BLOCK_TYPE block_type, struct BLOCK* parent_block_ptr);

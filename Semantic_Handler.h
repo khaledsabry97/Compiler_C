@@ -1,4 +1,4 @@
-#include "print.h"
+#include "Compiler.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -37,7 +37,7 @@ struct Semantic* head;
 
 
 
-struct BLOCK* newScopeToSemantic(struct BLOCK* current_block,struct BLOCK* parent_block) {
+struct BLOCK* newScopeToSemantic(struct BLOCK* current_block,struct BLOCK* parent_block_ptr) {
     if (current_block == NULL)
         return NULL;
     struct BLOCK* node = (struct BLOCK*) malloc (sizeof(struct BLOCK));
@@ -57,11 +57,11 @@ struct BLOCK* newScopeToSemantic(struct BLOCK* current_block,struct BLOCK* paren
     //node->name_ = "hello";
     //sprintf(node->name, "bad");
     node->function_number = current_block->function_number;
-    node->parent_block = parent_block;
+    node->parent_block_ptr = parent_block_ptr;
     //node->name = (char*)malloc(strlen(current_block->name) + 1); 
     //strcpy(node->name, current_block->name);
     //printf("current_block %s\n",node->name);
-    node->child_block = newScopeToSemantic(current_block->child_block,node);
+    node->child_block_ptr = newScopeToSemantic(current_block->child_block_ptr,node);
     return node;
 }
 
@@ -113,7 +113,7 @@ struct Semantic* findIdentifier(char* name,bool is_function)
 bool checkScope(struct BLOCK* identifier_scope,struct BLOCK* current_block)
 {
     
-    if(identifier_scope->child_block == NULL)
+    if(identifier_scope->child_block_ptr == NULL)
     {
         //printf("global_scope");
         return true;
@@ -123,21 +123,21 @@ bool checkScope(struct BLOCK* identifier_scope,struct BLOCK* current_block)
 
     /*struct BLOCK* temp;
 
-    while(current_block->parent_block != NULL)
+    while(current_block->parent_block_ptr != NULL)
     {
         printf("1%s",current_block->name);
         temp = current_block;
-        current_block = current_block->parent_block;  
+        current_block = current_block->parent_block_ptr;  
         if (current_block == NULL)
         {
             current_block = temp;
             break; 
         }     
     }
-    while(temp->parent_block != NULL)
+    while(temp->parent_block_ptr != NULL)
     {
         printf("%s",temp->name);
-        temp = temp->parent_block;
+        temp = temp->parent_block_ptr;
 
     }*/
     
@@ -150,8 +150,8 @@ bool checkScope(struct BLOCK* identifier_scope,struct BLOCK* current_block)
     && identifier_scope->name == current_block->name )
     {
         printf("hello");
-        identifier_scope = identifier_scope->child_block;
-        current_block = current_block->child_block;
+        identifier_scope = identifier_scope->child_block_ptr;
+        current_block = current_block->child_block_ptr;
         printf("%s",identifier_scope->name);
         if(identifier_scope == NULL)
             return true;
@@ -159,12 +159,12 @@ bool checkScope(struct BLOCK* identifier_scope,struct BLOCK* current_block)
             return false;        
     }*/
 
-    printScopeFunctionName(identifier_scope->child_block);
+    printScopeFunctionName(identifier_scope->child_block_ptr);
     while(1 == 1)
     {
         //printf("%s",identifier_scope->function_number);
-        identifier_scope = identifier_scope->child_block;
-        current_block = current_block->child_block;
+        identifier_scope = identifier_scope->child_block_ptr;
+        current_block = current_block->child_block_ptr;
         if(identifier_scope == NULL)
         {
             //printf("same blcok\n");
@@ -175,15 +175,15 @@ bool checkScope(struct BLOCK* identifier_scope,struct BLOCK* current_block)
             return false;      
 
 
-        if(identifier_scope->parent_block->do_while_count != current_block->parent_block->do_while_count)
+        if(identifier_scope->parent_block_ptr->do_while_count != current_block->parent_block_ptr->do_while_count)
             return false;
-        if(identifier_scope->parent_block->for_count != current_block->parent_block->for_count)
+        if(identifier_scope->parent_block_ptr->for_count != current_block->parent_block_ptr->for_count)
             return false;
-        if(identifier_scope->parent_block->while_count != current_block->parent_block->while_count)
+        if(identifier_scope->parent_block_ptr->while_count != current_block->parent_block_ptr->while_count)
             return false;
-        if(identifier_scope->parent_block->if_count != current_block->parent_block->if_count)
+        if(identifier_scope->parent_block_ptr->if_count != current_block->parent_block_ptr->if_count)
             return false;
-        if(identifier_scope->parent_block->stmt_group_count != current_block->parent_block->stmt_group_count)
+        if(identifier_scope->parent_block_ptr->stmt_group_count != current_block->parent_block_ptr->stmt_group_count)
             return false;
         if(strcmp(identifier_scope->name,current_block->name) != 0)
             return false;
@@ -202,8 +202,8 @@ bool checkScope(struct BLOCK* identifier_scope,struct BLOCK* current_block)
 
     /*while(identifier_scope->do_while_count - current_block->do_while_count == 0 )
     {
-        identifier_scope = identifier_scope->child_block;
-        current_block = current_block->child_block;
+        identifier_scope = identifier_scope->child_block_ptr;
+        current_block = current_block->child_block_ptr;
         printf("%s",identifier_scope->name);
         if(identifier_scope == NULL)
             return true;
@@ -363,7 +363,7 @@ void printScopeFunctionName(struct BLOCK* blcok)
     while(blcok != NULL)
     {
         printf("%s -> ",blcok->name);
-        blcok = blcok->child_block;
+        blcok = blcok->child_block_ptr;
     }
     printf("\n");
 

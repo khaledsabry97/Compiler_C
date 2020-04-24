@@ -68,7 +68,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Abstract_Tree.h"
-#include "print.h"
+#include "Compiler.h"
 static int line_counter;
 
 FILE *assembly_file; 
