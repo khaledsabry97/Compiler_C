@@ -173,39 +173,36 @@ void compileProgram(struct PROGRAM* program)
     current_block_ptr = head_scope_ptr;
 
     fprintf(assembly_file,"%s\n\n","START main");
-    processDeclaration(program->declaration);
+    compileDeclaration(program->declaration);
     processFunction(program->function);
     checkNotAssignedIdentifiers();
 }
 
 
 //process declarations at the start of the block
-void processDeclaration(struct DECLARATION *declaration){
+void compileDeclaration(struct DECLARATION *declaration){
     if (declaration == NULL)
         return;
     
-    processDeclaration(declaration->prev);
+    compileDeclaration(declaration->prev);
 
     if (!header)
     {
         printSymbolTableHeader();
         header = true;
     }
-    processIdentifier(declaration->id,declaration->id_type,false);
-    }
+    compileIdentifier(declaration->id,declaration->id_type,false);
+}
 
-void processIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool is_parameter){
-
-        
-
-
+//int x could be mentioned as a paremeter or at the begining of a block
+void compileIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool is_parameter){
         struct Semantic* temp_semantic_identifier = newSemantic();
         temp_semantic_identifier->identifier_name = identifier->ID;
 
-        char *cur_type;
+        char *type;
         if (current_type == Int_Type)
         {
-            cur_type = "int";
+            type = "int";
             temp_semantic_identifier->identifier_semantic_type= Int_Semantic_Type;
             temp_semantic_identifier->is_const = false;
 
@@ -213,25 +210,28 @@ void processIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool i
         }
         else if(current_type == Float_Type)
         {
-            cur_type = "float";
+            type = "float";
             temp_semantic_identifier->identifier_semantic_type= Float_Semantic_Type;
             temp_semantic_identifier->is_const = false;
 
         }
         else if(current_type == Const_Int_Type)
         {
-            cur_type = "constant int";
+            type = "constant int";
             temp_semantic_identifier->identifier_semantic_type= Int_Semantic_Type; //to look for later because of constant
             temp_semantic_identifier->is_const = true;
 
         }
         else if(current_type == Const_Float_Type)
         {
-            cur_type = "constant float";
+            type = "constant float";
             temp_semantic_identifier->identifier_semantic_type= Float_Semantic_Type;
             temp_semantic_identifier->is_const = true;
         }
-        printSymbolTableContent(identifier->ID,cur_type,is_parameter ? "parameter" : "variable");
+        if(is_parameter)
+            printSymbolTableContent(identifier->ID,type,"parameter");
+        else
+            printSymbolTableContent(identifier->ID,type,"variable");
         
         if(is_parameter== true)
         {
@@ -255,17 +255,8 @@ void processIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool i
         printScopeFunctionName(temp_semantic_identifier->blcok);
         if(is_parameter == true)
         {
-            //printf("\nnew%s\n",temp_semantic->identifier_name);
             addArgsToSemantic(temp_semantic,temp_semantic_identifier->identifier_semantic_type);
         }
-
-                //printf("hello\n");
-
-
-
-
-        
-    
     }
 
 
@@ -580,7 +571,7 @@ void processParameter(struct PARAMETER *parameter){
         return;
     
     processParameter(parameter->prev);
-    processIdentifier(parameter->id,parameter->id_type,true);
+    compileIdentifier(parameter->id,parameter->id_type,true);
 
     temp = pop();
     fprintf(assembly_file,"\n MOV $%d , %s",parameter_count++,temp->str);
@@ -600,7 +591,7 @@ void processStmtGroup(struct STMTSGROUP *stmts_group){
     fprintf(assembly_file, "\n");
     if (stmts_group->declaration != NULL)
     {
-        processDeclaration(stmts_group->declaration);
+        compileDeclaration(stmts_group->declaration);
     }
     if (stmts_group->stmt != NULL)
         processStmt(stmts_group->stmt);

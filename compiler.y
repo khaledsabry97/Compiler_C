@@ -689,7 +689,7 @@ void process(struct PROGRAM* head) {
     head_scope_ptr = newBlock(Block_Global_Type, NULL);
     current_block_ptr = head_scope_ptr;
     if(head->declaration != NULL)
-        processDeclaration(head->declaration);
+        compileDeclaration(head->declaration);
     if(head->function != NULL)
         processFunction(head->function);
             compileProgram(head);
