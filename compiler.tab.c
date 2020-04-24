@@ -1422,7 +1422,7 @@ yyreduce:
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = (yyvsp[-1]._declaration);
             program->function = (yyvsp[0]._function);
-            processProgram(program);
+            compileProgram(program);
             printf("finally%d\n",line_counter);
 
             (yyval._program) = program; 
@@ -1436,7 +1436,7 @@ yyreduce:
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = (yyvsp[0]._declaration);
             program->function = NULL;
-            processProgram(program);
+            compileProgram(program);
                         printf("finally%d\n",line_counter);
 
             (yyval._program) = program;
@@ -1450,7 +1450,7 @@ yyreduce:
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = NULL;
             program->function = (yyvsp[0]._function);
-            processProgram(program);
+            compileProgram(program);
             printf("finally%d\n",line_counter);
             (yyval._program) = program;
        }
@@ -2504,7 +2504,7 @@ void process(struct PROGRAM* head) {
         processDeclaration(head->declaration);
     if(head->function != NULL)
         processFunction(head->function);
-            processProgram(head);
+            compileProgram(head);
 }
 */
 

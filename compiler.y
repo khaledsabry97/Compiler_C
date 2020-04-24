@@ -105,7 +105,7 @@ Program: Declarations Functions {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = $1;
             program->function = $2;
-            processProgram(program);
+            compileProgram(program);
             printf("finally%d\n",line_counter);
 
             $$ = program; 
@@ -114,7 +114,7 @@ Program: Declarations Functions {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = $1;
             program->function = NULL;
-            processProgram(program);
+            compileProgram(program);
                         printf("finally%d\n",line_counter);
 
             $$ = program;
@@ -123,7 +123,7 @@ Program: Declarations Functions {
             struct PROGRAM *program = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             program->declaration = NULL;
             program->function = $1;
-            processProgram(program);
+            compileProgram(program);
             printf("finally%d\n",line_counter);
             $$ = program;
        }
@@ -692,7 +692,7 @@ void process(struct PROGRAM* head) {
         processDeclaration(head->declaration);
     if(head->function != NULL)
         processFunction(head->function);
-            processProgram(head);
+            compileProgram(head);
 }
 */
 

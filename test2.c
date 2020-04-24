@@ -38,10 +38,13 @@ int main ()
 
     if(n1 > n2)
     {
+        int n7;
+        n7 = 10;
         n3 = n1;
     }
     else if( n1 >= n2)
     {
+        int n8;
         n3 = n1;
     }
     else if( n1 == n2 )
@@ -67,16 +70,19 @@ int main ()
 
     while (n2 > n1)
     {
+        int n8;
          n3 = n1;       
     }
     
     do
     {
+        int n8;
          n3 = n1;       
     } while (n1 > n2);
     
     for (n1 =0 ; n1 < 10; n1 = n1 + 1 )
         {
+            int n8;
          n3 = n1;       
         }
     global_variable = 10;

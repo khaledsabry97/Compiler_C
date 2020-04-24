@@ -5,11 +5,7 @@
 
 
 char *result;
-int row_no;
-ID_TYPE current_type;
-bool is_parameter = false;
-bool printed = false;
-bool title = false;
+bool header = false;
 bool outside_group_stmt = false;
 bool inside_group_stmt = false;
 struct Assembly* assemhead;
@@ -25,6 +21,7 @@ int current_func_number;
 extern FILE *assembly_file;
 extern FILE *symbol_file;
 extern FILE *semantic_file;
+struct BLOCK *temp_block;
 
 
 
@@ -61,129 +58,52 @@ void removeBlock(struct BLOCK** current_block_ptr) {
     (*current_block_ptr) = (*current_block_ptr)->parent_block;
 }
 
-//returns the order of current BLOCK
-int getMyOrder(BLOCK_TYPE block_type, struct BLOCK* parent_block) {
-    switch(block_type) {
-        case Block_Do_While_Type:
-            return (parent_block->do_while_count);
-
-        case Block_While_Type:
-            return (parent_block->while_count);
-
-        case Block_For_Type:
-            return (parent_block->for_count);
-
-        case Block_If_Type:
-            return (parent_block->if_count);
-
-        case Block_Stmt_Group_Type:
-            return (parent_block->stmt_group_count);
-    }
-}
 
 
 
 
 
 
-//char to_print[1200];
-
-
-char* printScopePath(char* to_print1)
+void printSymbolTableHeader()
 {
-char to_print[1200];
-//char *to_print = (char *)malloc(1000);
+    fprintf(symbol_file,"--------------------------------------------------------\n");
+    fprintf(symbol_file,"--------------------------------------------------------\n");
 
-    //when printing global variable
     if (current_block_ptr->block_type == Block_Global_Type)
     {
-        fprintf(symbol_file, "Global Variables\n");
-        sprintf(to_print, "Global Variables\n");
-        return to_print;
+        fprintf(symbol_file, "--------------------Global Variables--------------------");
     }
-
-    fprintf(symbol_file, "\nFunction name => ");
-    sprintf(to_print, "\nFunction name => ");
-    sprintf(to_print1, "\nFunction name => ");
-
-    fprintf(symbol_file, "%s", current_func_name);
-    sprintf(to_print, "%s %s", to_print,current_func_name);
-
-    struct BLOCK *curNode = head_scope_ptr->child_block; //start from Function node
-    while (curNode->child_block != NULL)
+    else
     {
-        fprintf(symbol_file, " - ");
-        sprintf(to_print, "%s - ", to_print);
-
-        switch (curNode->child_block->block_type)
+        fprintf(symbol_file, "------------%s", current_func_name);
+        temp_block = head_scope_ptr->child_block;
+        while (temp_block->child_block != NULL)
         {
-        case Block_Do_While_Type:
-            fprintf(symbol_file, "do_while");
-            sprintf(to_print, "%s do_while ", to_print);
+        
+        fprintf(symbol_file, " ==> ");
+        
+        if(temp_block->child_block->block_type == Block_If_Type)
+            fprintf(symbol_file, "if[%d]",temp_block->if_count);
+        else if(temp_block->child_block->block_type == Block_For_Type)
+            fprintf(symbol_file, "for[%d]", temp_block->for_count);       
+        else if(temp_block->child_block->block_type == Block_While_Type)
+            fprintf(symbol_file, "while[%d]", temp_block->while_count);
+        else if(temp_block->child_block->block_type == Block_Do_While_Type)
+            fprintf(symbol_file, "do_while[%d]",temp_block->do_while_count);
+        else if(temp_block->child_block->block_type == Block_Stmt_Group_Type)
+            fprintf(symbol_file, "group_stmt[%d]",temp_block->stmt_group_count);
 
-            break;
-
-        case Block_While_Type:
-            fprintf(symbol_file, "while");
-            sprintf(to_print, "%s while ", to_print);
-
-            break;
-
-        case Block_For_Type:
-            fprintf(symbol_file, "for");
-            sprintf(to_print, "%s for ", to_print);
-
-            break;
-
-        case Block_If_Type:
-            fprintf(symbol_file, "if");
-            sprintf(to_print, "%s if ", to_print);
-
-            break;
-
-        case Block_Stmt_Group_Type:
-            fprintf(symbol_file, "group_stmt");
-            sprintf(to_print, "%s group_stmt ", to_print);
-
-            break;
+        temp_block = temp_block->child_block;
         }
-        fprintf(symbol_file, "[%d]", getMyOrder(curNode->child_block->block_type, curNode));
-        sprintf(to_print, "%s [%d] ", to_print,getMyOrder(curNode->child_block->block_type, curNode));
-
-        curNode = curNode->child_block;
     }
-    fprintf(symbol_file, "\n");
-    sprintf(to_print, "%s\n ", to_print);
-    //char* results = (char*)malloc(sizeof(char) * strlen(to_print)+1); 
-    //strcpy(results,to_print);
-    //printf("%s \n", &to_print[0]);
-    //printf("%s \n", results);
-    //strcat(results,to_print);
-    //printf("%s \n", results);
-    //strcpy (to_print1, to_print);
-   
-
-    //printf("%s \n", to_print1);
-
-
-    return to_print1;
+    fprintf(symbol_file,"\n--------------------------------------------------------\n");
+    fprintf(symbol_file, "%5s%10s%30s\n", "variable name", "type", "paremter/variable");
 }
 
-
-
-
-
-
-
-//print symboltable
-void printTitle()
+void printSymbolTableContent(char* variable_name,char* type,char* parameter)
 {
-
-    row_no = 1;
-    char s[1000];
-    printScopePath(s);
-
-    fprintf(symbol_file, "%10s%10s%10s%10s%10s\n", "count", "block_type", "name", "array", "role");
+    fprintf(symbol_file,"--------------------------------------------------------\n");
+    fprintf(symbol_file, "%6s%18s%25s\n", variable_name, type, parameter);
 }
 
 
@@ -244,8 +164,8 @@ bool isEmpty()
 
 
 
-
-void processProgram(struct PROGRAM* program)
+//start of the compilation
+void compileProgram(struct PROGRAM* program)
 {
     if(program == NULL)
         exit(1);
@@ -253,67 +173,29 @@ void processProgram(struct PROGRAM* program)
     current_block_ptr = head_scope_ptr;
 
     fprintf(assembly_file,"%s\n\n","START main");
-    if(program->declaration != NULL)
-        processDeclaration(program->declaration);
-    if(program->function != NULL)
-        processFunction(program->function);
+    processDeclaration(program->declaration);
+    processFunction(program->function);
     checkNotAssignedIdentifiers();
 }
 
 
-
-
-
-
-
-
-
-
-
+//process declarations at the start of the block
 void processDeclaration(struct DECLARATION *declaration){
-    is_parameter = false;
-    if (declaration->prev != NULL)
-        processDeclaration(declaration->prev);
+    if (declaration == NULL)
+        return;
+    
+    processDeclaration(declaration->prev);
 
-    if (!title)
+    if (!header)
     {
-        printTitle();
-        title = true;
+        printSymbolTableHeader();
+        header = true;
+    }
+    processIdentifier(declaration->id,declaration->id_type,false);
     }
 
-    switch (declaration->id_type)
-    {
-    case Int_Type:
-        //fprintf(assembly_file, "int ");
-        current_type = Int_Type;
-        break;
-    case Float_Type:
-        //fprintf(assembly_file, "float ");
-        current_type = Float_Type;
-        break;
+void processIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool is_parameter){
 
-    case Const_Int_Type:
-        //fprintf(assembly_file, "int ");
-        current_type = Const_Int_Type;
-        break;
-    case Const_Float_Type:
-        //fprintf(assembly_file, "float ");
-        current_type = Const_Float_Type;
-        break;
-    default:
-        fprintf(stderr, "declaration does not exist.\n");
-        exit(1);
-    }
-    printed = true;
-    processIdentifier(declaration->id);
-    printed = false;
-
-    //fprintf(assembly_file, ";\n");
-    }
-
-void processIdentifier(struct IDENTIFIER *identifier){
-        if (!printed)
-             return;
         
 
 
@@ -349,7 +231,8 @@ void processIdentifier(struct IDENTIFIER *identifier){
             temp_semantic_identifier->identifier_semantic_type= Float_Semantic_Type;
             temp_semantic_identifier->is_const = true;
         }
-        fprintf(symbol_file, "%10d%10s%10s%10s%10s\n", row_no++, cur_type, identifier->ID, "", is_parameter ? "parameter" : "variable"); //row_no(x) ++row_no(x) row_no++(o)
+        printSymbolTableContent(identifier->ID,cur_type,is_parameter ? "parameter" : "variable");
+        
         if(is_parameter== true)
         {
             temp = newAssembly();
@@ -388,7 +271,8 @@ void processIdentifier(struct IDENTIFIER *identifier){
 
 
 void processFunction(struct FUNCTION *function){
-
+    if (function == NULL)
+        return;
     if (function->prev != NULL)
     {
         processFunction(function->prev);
@@ -450,14 +334,14 @@ void processFunction(struct FUNCTION *function){
 
     }
     
-    title = false;
+    header = false;
 
 
     if (function->parameter != NULL && strcmp(function->ID,"main")!= 0 )
     {
 
-        printTitle();
-        title = true;
+        printSymbolTableHeader();
+        header = true;
         parameter_count = 1;
         
         processParameter(function->parameter); //parameter
@@ -496,7 +380,7 @@ void processFunction(struct FUNCTION *function){
 
     //deleteCurScope
     removeBlock(&current_block_ptr);
-    title = false;}
+    header = false;}
 
 
 
@@ -555,7 +439,7 @@ void processStmt(struct STMT *stmt){
         struct IF_STMT *if_stmt  = stmt->stmt.if_stmt;
         //making node for symbol table
         current_block_ptr = newBlock(current_block_ptr, Block_If_Type);
-        title = false;
+        header = false;
         current_block_ptr->parent_block->if_count++;
 
         //fprintf(assembly_file, "if (");
@@ -590,7 +474,7 @@ void processStmt(struct STMT *stmt){
         struct FOR_STMT *for_stmt = stmt->stmt.for_stmt;
          //making node for symbol table
         current_block_ptr = newBlock(current_block_ptr, Block_For_Type);
-        title = false;
+        header = false;
         current_block_ptr->parent_block->for_count++;
 
         //fprintf(assembly_file, "for (");
@@ -625,7 +509,7 @@ void processStmt(struct STMT *stmt){
         {
             //making node for symbol table
             current_block_ptr = newBlock(current_block_ptr, Block_Do_While_Type);
-            title = false;
+            header = false;
             current_block_ptr->parent_block->do_while_count++;
 
             //fprintf(assembly_file, "do");
@@ -644,7 +528,7 @@ void processStmt(struct STMT *stmt){
         {
             //making node for symbol table
             current_block_ptr = newBlock(current_block_ptr, Block_While_Type);
-            title = false;
+            header = false;
             current_block_ptr->parent_block->while_count++;
 
             /*fprintf(assembly_file, "while (");*/
@@ -692,41 +576,11 @@ void processStmt(struct STMT *stmt){
 
 
 void processParameter(struct PARAMETER *parameter){
-    is_parameter = true;
-
-    if (parameter->prev != NULL)
-    {
-        processParameter(parameter->prev);
-
-        //fprintf(assembly_file, ", ");
-    }
-    switch (parameter->id_type)
-    {
-    case Int_Type:
-        //fprintf(assembly_file, "int ");
-        current_type = Int_Type;
-        break;
-    case Float_Type:
-        //fprintf(assembly_file, "float ");
-        current_type = Float_Type;
-        break;
-
-    case Const_Int_Type:
-        //fprintf(assembly_file, "int ");
-        current_type = Const_Int_Type;
-        break;
-    case Const_Float_Type:
-        //fprintf(assembly_file, "float ");
-        current_type = Const_Float_Type;
-        break;
-    default:
-        fprintf(stderr, "Declaration does not exist.\n");
-        exit(1);
-    }
-    printed = true;
-
-    processIdentifier(parameter->id);
-    printed = false;
+    if(parameter == NULL)
+        return;
+    
+    processParameter(parameter->prev);
+    processIdentifier(parameter->id,parameter->id_type,true);
 
     temp = pop();
     fprintf(assembly_file,"\n MOV $%d , %s",parameter_count++,temp->str);
@@ -738,7 +592,7 @@ void processStmtGroup(struct STMTSGROUP *stmts_group){
     {
         //making node for symbol table
         current_block_ptr = newBlock(current_block_ptr, Block_Stmt_Group_Type);
-        title = false;
+        header = false;
         current_block_ptr->parent_block->stmt_group_count++;
     }
     outside_group_stmt = false;
