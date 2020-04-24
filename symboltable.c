@@ -37,19 +37,19 @@ void deleteScope(struct BLOCK** current_scope_ptr) {
 //returns the order of current BLOCK
 int getMyOrder(BLOCK_TYPE scope_type, struct BLOCK* parent_scope) {
     switch(scope_type) {
-        case Scope_Do_While_Type:
+        case Block_Do_While_Type:
             return (parent_scope->do_while_count);
 
-        case Scope_While_Type:
+        case Block_While_Type:
             return (parent_scope->while_count);
 
-        case Scope_For_Type:
+        case Block_For_Type:
             return (parent_scope->for_count);
 
-        case Scope_If_Type:
+        case Block_If_Type:
             return (parent_scope->if_count);
 
-        case Scope_Stmt_Group_Type:
+        case Block_Stmt_Group_Type:
             return (parent_scope->stmt_group_count);
     }
 }

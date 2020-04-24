@@ -36,7 +36,7 @@ struct BLOCK* newScope(BLOCK_TYPE scope_type, struct BLOCK* parent_scope) {
     node->while_count = 0;
     node->do_while_count = 0;
     node->stmt_group_count = 0;
-    if(scope_type == Scope_Global_Type)
+    if(scope_type == Block_Global_Type)
         sprintf(node->name, "Global Variables");
     else
     //node->name = current_func_name; //only important for function scope
@@ -69,19 +69,19 @@ void deleteScope(struct BLOCK** current_scope_ptr) {
 //returns the order of current BLOCK
 int getMyOrder(BLOCK_TYPE scope_type, struct BLOCK* parent_scope) {
     switch(scope_type) {
-        case Scope_Do_While_Type:
+        case Block_Do_While_Type:
             return (parent_scope->do_while_count);
 
-        case Scope_While_Type:
+        case Block_While_Type:
             return (parent_scope->while_count);
 
-        case Scope_For_Type:
+        case Block_For_Type:
             return (parent_scope->for_count);
 
-        case Scope_If_Type:
+        case Block_If_Type:
             return (parent_scope->if_count);
 
-        case Scope_Stmt_Group_Type:
+        case Block_Stmt_Group_Type:
             return (parent_scope->stmt_group_count);
     }
 }
@@ -100,7 +100,7 @@ char to_print[1200];
 //char *to_print = (char *)malloc(1000);
 
     //when printing global variable
-    if (current_scope_ptr->scope_type == Scope_Global_Type)
+    if (current_scope_ptr->scope_type == Block_Global_Type)
     {
         fprintf(symbol_file, "Global Variables\n");
         sprintf(to_print, "Global Variables\n");
@@ -122,31 +122,31 @@ char to_print[1200];
 
         switch (curNode->child_scope->scope_type)
         {
-        case Scope_Do_While_Type:
+        case Block_Do_While_Type:
             fprintf(symbol_file, "do_while");
             sprintf(to_print, "%s do_while ", to_print);
 
             break;
 
-        case Scope_While_Type:
+        case Block_While_Type:
             fprintf(symbol_file, "while");
             sprintf(to_print, "%s while ", to_print);
 
             break;
 
-        case Scope_For_Type:
+        case Block_For_Type:
             fprintf(symbol_file, "for");
             sprintf(to_print, "%s for ", to_print);
 
             break;
 
-        case Scope_If_Type:
+        case Block_If_Type:
             fprintf(symbol_file, "if");
             sprintf(to_print, "%s if ", to_print);
 
             break;
 
-        case Scope_Stmt_Group_Type:
+        case Block_Stmt_Group_Type:
             fprintf(symbol_file, "group_stmt");
             sprintf(to_print, "%s group_stmt ", to_print);
 
@@ -254,7 +254,7 @@ void processProgram(struct PROGRAM* program)
 {
     if(program == NULL)
         exit(1);
-    head_scope_ptr = newScope(Scope_Global_Type, NULL);
+    head_scope_ptr = newScope(Block_Global_Type, NULL);
     current_scope_ptr = head_scope_ptr;
 
     fprintf(assembly_file,"%s\n\n","START main");
@@ -426,7 +426,7 @@ void processFunction(struct FUNCTION *function){
    
 
     //list node
-    current_scope_ptr = newScope(Scope_Func_Type, current_scope_ptr); //append it to the end of list
+    current_scope_ptr = newScope(Block_Func_Type, current_scope_ptr); //append it to the end of list
     temp_semantic->scope = head_scope_ptr;
     temp_semantic->function_number = current_func_number;
 
@@ -560,7 +560,7 @@ void processStmt(struct STMT *stmt){
         outside_group_stmt = true;
         struct IF_STMT *if_stmt  = stmt->stmt.if_stmt;
         //making node for symbol table
-        current_scope_ptr = newScope(Scope_If_Type, current_scope_ptr);
+        current_scope_ptr = newScope(Block_If_Type, current_scope_ptr);
         title = false;
         current_scope_ptr->parent_scope->if_count++;
 
@@ -595,7 +595,7 @@ void processStmt(struct STMT *stmt){
         outside_group_stmt = true;
         struct FOR_STMT *for_stmt = stmt->stmt.for_stmt;
          //making node for symbol table
-        current_scope_ptr = newScope(Scope_For_Type, current_scope_ptr);
+        current_scope_ptr = newScope(Block_For_Type, current_scope_ptr);
         title = false;
         current_scope_ptr->parent_scope->for_count++;
 
@@ -630,7 +630,7 @@ void processStmt(struct STMT *stmt){
         if (while_stmt->do_while == true)
         {
             //making node for symbol table
-            current_scope_ptr = newScope(Scope_Do_While_Type, current_scope_ptr);
+            current_scope_ptr = newScope(Block_Do_While_Type, current_scope_ptr);
             title = false;
             current_scope_ptr->parent_scope->do_while_count++;
 
@@ -649,7 +649,7 @@ void processStmt(struct STMT *stmt){
         else
         {
             //making node for symbol table
-            current_scope_ptr = newScope(Scope_While_Type, current_scope_ptr);
+            current_scope_ptr = newScope(Block_While_Type, current_scope_ptr);
             title = false;
             current_scope_ptr->parent_scope->while_count++;
 
@@ -743,7 +743,7 @@ void processStmtGroup(struct STMTSGROUP *stmts_group){
     if (inside_group_stmt == true)
     {
         //making node for symbol table
-        current_scope_ptr = newScope(Scope_Stmt_Group_Type, current_scope_ptr);
+        current_scope_ptr = newScope(Block_Stmt_Group_Type, current_scope_ptr);
         title = false;
         current_scope_ptr->parent_scope->stmt_group_count++;
     }

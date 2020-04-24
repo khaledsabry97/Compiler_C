@@ -1,26 +1,9 @@
 #ifndef HEAD
 #define HEAD
 #define bool char 
-
+#include"Enums.h"
 
 static int line_counter = 0;
-
-
-
-/******************************************************Enum Types*********************************************************/
-
-typedef enum {Int_Type,Float_Type,Const_Int_Type,Const_Float_Type} ID_TYPE;
-
-typedef enum {Equ_Type,If_Type,For_Type,While_Type,Call_Type,Return_Type,Declaration_Type,Stmt_Group_Type,Semi_Colon_Type} STMT_TYPE;
-
-typedef enum {Neg_Type} UNI_OP_TYPE;
-typedef enum {Plus_Type,Minus_Type} ADD_TYPE;
-typedef enum {Mul_Type,Div_Type} MUL_TYPE;
-typedef enum {Eq_Type,Ne_Type} EQCOM_TYPE;
-typedef enum {Lt_Type,Gt_Type,Le_Type,Ge_Type} COMP_TYPE;
-typedef enum {Uni_Type,Add_Type,Mult_Type,Com_Type,Eql_Type,CallExpr_Type,IntNum_Type,FloatNum_Type,Id_Type,Expr_Type} EXPR_TYPE;
-
-
 
 /******************************************************Program*********************************************************/
 //start of the program from here

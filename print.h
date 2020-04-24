@@ -1,8 +1,8 @@
 #include "Abstract_Tree.h"
+#include "Enums.h"
 #define true 1 
 #define false 0
 
-typedef enum { Scope_Global_Type, Scope_Stmt_Group_Type, Scope_Func_Type, Scope_If_Type, Scope_For_Type, Scope_Do_While_Type, Scope_While_Type} BLOCK_TYPE; //s : BLOCK
 
 struct BLOCK {
     int if_count;

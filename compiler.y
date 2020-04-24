@@ -686,7 +686,7 @@ void process(struct PROGRAM* head) {
     
     if(head == NULL)
         exit(1);
-    head_scope_ptr = newScope(Scope_Global_Type, NULL);
+    head_scope_ptr = newScope(Block_Global_Type, NULL);
     current_scope_ptr = head_scope_ptr;
     if(head->declaration != NULL)
         processDeclaration(head->declaration);

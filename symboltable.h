@@ -1,4 +1,4 @@
-typedef enum { Scope_Global_Type, Scope_Func_Type, Scope_Do_While_Type, Scope_While_Type, Scope_For_Type, Scope_If_Type, Scope_Stmt_Group_Type } BLOCK_TYPE; //s : BLOCK
+typedef enum { Block_Global_Type, Block_Func_Type, Block_Do_While_Type, Block_While_Type, Block_For_Type, Block_If_Type, Block_Stmt_Group_Type } BLOCK_TYPE; //s : BLOCK
 
 struct BLOCK {
     int do_while_count;  //_n: number

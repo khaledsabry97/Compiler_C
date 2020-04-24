@@ -48,7 +48,7 @@ struct BLOCK* newScopeToSemantic(struct BLOCK* current_scope,struct BLOCK* paren
     node->if_count = current_scope->if_count;
     node->stmt_group_count = current_scope->stmt_group_count;
     //node->name = current_scope->name; //only important for function scope
-    if(current_scope->scope_type == Scope_Global_Type)
+    if(current_scope->scope_type == Block_Global_Type)
         sprintf(node->name, "Global Variables");
     else
     sprintf(node->name, "%s",current_scope->name);
