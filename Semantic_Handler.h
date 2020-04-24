@@ -568,24 +568,18 @@ void checkNotAssignedIdentifiers()
     }
 }
 
-// you can't have two names of same type in function
-// you can have more than one function with same name but different return types
-// you can have one variable with same name if declared as global variable
-// never mix between different scopes
-// you can identify funcation with the same name of a variable no problem
-// tell you how many times the variable declared
-// tell if an identifier not declared before wether if it's on the rhs or lhs
-// error: if rhs identifier is not assigned value before it's used
-// error: if rhs is different type from lhs
-// error: if compare between integer and bool or between float and bool
-// error: if not found a function name matching the calling function
-// float [+/*-] integer => float
-// float/integer [><==] float/integer => bool
-// error: if you send an arguments and not matched with the number of another function with same name 
-// error: if you send an arguments with different types
-// error: if return type of function doesn't match with the identifier
-// can do function overloading
-// check if types of arguments match with the paramter of a fucntion with the same name
+
+
+//if not found a function name matching the calling function - (no function found)
+// if Identified a variable  but not assigend a value later
+// if send  arguments with different types - (no function found)
+// if return type of function doesn't match with the identifier - (no function found)
+// if send arguments with different number of arguments - (no function found)
 // can't reassign a constant variable
 // can't reassign a constant parameter
-// Warning:if Identified a variable  but not assigend a value later
+// if compare between bool and int/float
+// if rhs is different type from lhs
+//if rhs identifier is not assigned value before it's used
+// If identifier not declared before wether if it's on the rhs or lhs
+// tell you how many times the variable declared before in same scope
+// If you have two names of the same type in the same scope

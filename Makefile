@@ -10,4 +10,12 @@ test1:
 	make
 	./compiler < test1.c
 
+test2:
+	make
+	./compiler < test2.c
+
+test3:
+	make
+	./compiler < test3.c
+
 	

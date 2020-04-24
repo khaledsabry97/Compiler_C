@@ -1072,9 +1072,14 @@ void processExpr(struct EXPR *expr,bool must_return)
         }
         else
         {
-            temp_semantic_stack->identifier_semantic_type = Bool_Semantic_Type;
-            pushSemanticStack(temp_semantic_stack);
-
+            struct SEMANTIC_STACK* temp_semantic_stack2 = newSemanticStack();
+            temp_semantic_stack2->identifier_semantic_type = compareTypes(left_semantic->identifier_semantic_type,right_semantic->identifier_semantic_type);
+            if(temp_semantic_stack2->identifier_semantic_type == Error_Semantic_Type)
+            {
+                fprintf(semantic_file,"Error: two different identifier one is bool and other is float/int\n");
+            }
+            //temp_semantic_stack->identifier_semantic_type = Bool_Semantic_Type;
+            pushSemanticStack(temp_semantic_stack2);
         }
         
         break;
