@@ -2503,7 +2503,7 @@ void process(struct PROGRAM* head) {
     if(head->declaration != NULL)
         compileDeclaration(head->declaration);
     if(head->function != NULL)
-        processFunction(head->function);
+        compileFunction(head->function);
             compileProgram(head);
 }
 */

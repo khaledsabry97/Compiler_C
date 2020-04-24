@@ -174,7 +174,7 @@ void compileProgram(struct PROGRAM* program)
 
     fprintf(assembly_file,"%s\n\n","START main");
     compileDeclaration(program->declaration);
-    processFunction(program->function);
+    compileFunction(program->function);
     checkNotAssignedIdentifiers();
 }
 
@@ -261,35 +261,27 @@ void compileIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool i
 
 
 
-void processFunction(struct FUNCTION *function){
+void compileFunction(struct FUNCTION *function){
     if (function == NULL)
         return;
-    if (function->prev != NULL)
-    {
-        processFunction(function->prev);
-    }
+    compileFunction(function->prev);
+    
     //struct Semantic *semantic = (struct Semantic*) malloc (sizeof (struct Semantic));
     temp_semantic = newSemantic();
-    current_func_name = function->ID;     //for symboltable
+    current_func_name = function->ID;    
     printf("%s\n",current_func_name);
     //sprintf(current_func_number,function->ID);
     current_func_number = counter;
-    switch (function->id_type)
-        {
-        case Int_Type:
-            //fprintf(assembly_file, "int ");
-            temp_semantic->identifier_semantic_type = Int_Semantic_Type;
-
-            break;
-        case Float_Type:
-            //fprintf(assembly_file, "float ");
-            temp_semantic->identifier_semantic_type = Float_Semantic_Type;
-
-            break;
-        default:
-            fprintf(stderr, "Declaration does not exist.\n");
+    if(function->id_type == Int_Type )
+        temp_semantic->identifier_semantic_type = Int_Semantic_Type;
+    else if(function->id_type == Float_Type )
+        temp_semantic->identifier_semantic_type = Float_Semantic_Type;
+    else
+    {
+            fprintf(stderr, "Error in function type \n");
             exit(1);
-        }
+    }
+    
     temp_check = newCheck();
     temp_check->check_identifier_type = true;
 
@@ -326,8 +318,6 @@ void processFunction(struct FUNCTION *function){
     }
     
     header = false;
-
-
     if (function->parameter != NULL && strcmp(function->ID,"main")!= 0 )
     {
 
@@ -340,11 +330,10 @@ void processFunction(struct FUNCTION *function){
     }
         //addNewSemantic(temp_semantic);
 
-    //printf("%s\n",temp_semantic->identifier_name);
+        //printf("%s\n",temp_semantic->identifier_name);
 
 
         printf("hello\n");
-
 
         if(findSemanticFunction(function->ID,temp_semantic->args_stack) != NULL)
         {
@@ -363,15 +352,14 @@ void processFunction(struct FUNCTION *function){
     if(strcmp(function->ID,"main") != 0)
      fprintf(assembly_file,"\n CLRQ");
 
-    //fprintf(assembly_file, ")\n");                //function name
     processStmtGroup(function->stmts_group); //compoundStmt
-
+    header = false;
     
     fprintf(assembly_file, "\n\n");
 
-    //deleteCurScope
     removeBlock(&current_block_ptr);
-    header = false;}
+  
+    }
 
 
 
