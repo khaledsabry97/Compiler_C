@@ -41,14 +41,14 @@ struct BLOCK* newScopeToSemantic(struct BLOCK* current_block,struct BLOCK* paren
     if (current_block == NULL)
         return NULL;
     struct BLOCK* node = (struct BLOCK*) malloc (sizeof(struct BLOCK));
-    node->scope_type = current_block->scope_type;
+    node->block_type = current_block->block_type;
     node->do_while_count = current_block->do_while_count;
     node->while_count = current_block->while_count;
     node->for_count  = current_block->for_count;
     node->if_count = current_block->if_count;
     node->stmt_group_count = current_block->stmt_group_count;
     //node->name = current_block->name; //only important for function blcok
-    if(current_block->scope_type == Block_Global_Type)
+    if(current_block->block_type == Block_Global_Type)
         sprintf(node->name, "Global Variables");
     else
     sprintf(node->name, "%s",current_block->name);

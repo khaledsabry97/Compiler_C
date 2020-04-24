@@ -3,13 +3,8 @@
 #include "Semantic_Handler.h"
 #include <string.h>
 
-extern FILE *assembly_file;
-extern FILE *symbol_file;
-extern FILE *semantic_file;
 
 char *result;
-
-//global variable for making symboltable
 int row_no;
 ID_TYPE current_type;
 bool is_parameter = false;
@@ -24,21 +19,24 @@ int parameter_count = 1;
 struct CHECKS* temp_check;
 struct Semantic* temp_semantic;
 struct SEMANTIC_STACK* temp_semantic_stack;
-struct BLOCK *current_scope_ptr;
+struct BLOCK *current_block_ptr;
 char* current_func_name;
 int current_func_number;
+extern FILE *assembly_file;
+extern FILE *symbol_file;
+extern FILE *semantic_file;
 
 
-//make node
-struct BLOCK* newScope(BLOCK_TYPE scope_type, struct BLOCK* parent_block) {
+
+struct BLOCK* newBlock(struct BLOCK* parent_block, BLOCK_TYPE block_type) {
     struct BLOCK* node = (struct BLOCK*) malloc (sizeof(struct BLOCK));
-    node->scope_type = scope_type;
     node->if_count = 0;
     node->for_count  = 0;
     node->while_count = 0;
     node->do_while_count = 0;
     node->stmt_group_count = 0;
-    if(scope_type == Block_Global_Type)
+    node->block_type = block_type;
+    if(block_type == Block_Global_Type)
         sprintf(node->name, "Global Variables");
     else
     //node->name = current_func_name; //only important for function blcok
@@ -56,21 +54,16 @@ struct BLOCK* newScope(BLOCK_TYPE scope_type, struct BLOCK* parent_block) {
     return node;
 }
 
-void deleteScope(struct BLOCK** current_scope_ptr) {
-    struct BLOCK* curScope = *current_scope_ptr;
-    struct BLOCK* parent_block = curScope->parent_block;
-    if(parent_block != NULL) {
-        parent_block->child_block = NULL;
-        (*current_scope_ptr) = parent_block;
-        free(curScope);
-      } 
-      
-//    free(curScope);
+void removeBlock(struct BLOCK** current_block_ptr) {
+    if((*current_block_ptr)->parent_block == NULL)
+        return; 
+    (*current_block_ptr)->parent_block->child_block = NULL;
+    (*current_block_ptr) = (*current_block_ptr)->parent_block;
 }
 
 //returns the order of current BLOCK
-int getMyOrder(BLOCK_TYPE scope_type, struct BLOCK* parent_block) {
-    switch(scope_type) {
+int getMyOrder(BLOCK_TYPE block_type, struct BLOCK* parent_block) {
+    switch(block_type) {
         case Block_Do_While_Type:
             return (parent_block->do_while_count);
 
@@ -102,7 +95,7 @@ char to_print[1200];
 //char *to_print = (char *)malloc(1000);
 
     //when printing global variable
-    if (current_scope_ptr->scope_type == Block_Global_Type)
+    if (current_block_ptr->block_type == Block_Global_Type)
     {
         fprintf(symbol_file, "Global Variables\n");
         sprintf(to_print, "Global Variables\n");
@@ -122,7 +115,7 @@ char to_print[1200];
         fprintf(symbol_file, " - ");
         sprintf(to_print, "%s - ", to_print);
 
-        switch (curNode->child_block->scope_type)
+        switch (curNode->child_block->block_type)
         {
         case Block_Do_While_Type:
             fprintf(symbol_file, "do_while");
@@ -154,8 +147,8 @@ char to_print[1200];
 
             break;
         }
-        fprintf(symbol_file, "[%d]", getMyOrder(curNode->child_block->scope_type, curNode));
-        sprintf(to_print, "%s [%d] ", to_print,getMyOrder(curNode->child_block->scope_type, curNode));
+        fprintf(symbol_file, "[%d]", getMyOrder(curNode->child_block->block_type, curNode));
+        sprintf(to_print, "%s [%d] ", to_print,getMyOrder(curNode->child_block->block_type, curNode));
 
         curNode = curNode->child_block;
     }
@@ -190,7 +183,7 @@ void printTitle()
     char s[1000];
     printScopePath(s);
 
-    fprintf(symbol_file, "%10s%10s%10s%10s%10s\n", "count", "scope_type", "name", "array", "role");
+    fprintf(symbol_file, "%10s%10s%10s%10s%10s\n", "count", "block_type", "name", "array", "role");
 }
 
 
@@ -256,8 +249,8 @@ void processProgram(struct PROGRAM* program)
 {
     if(program == NULL)
         exit(1);
-    head_scope_ptr = newScope(Block_Global_Type, NULL);
-    current_scope_ptr = head_scope_ptr;
+    head_scope_ptr = newBlock(NULL, Block_Global_Type);
+    current_block_ptr = head_scope_ptr;
 
     fprintf(assembly_file,"%s\n\n","START main");
     if(program->declaration != NULL)
@@ -427,8 +420,7 @@ void processFunction(struct FUNCTION *function){
 
    
 
-    //list node
-    current_scope_ptr = newScope(Block_Func_Type, current_scope_ptr); //append it to the end of list
+    current_block_ptr = newBlock(current_block_ptr,Block_Func_Type); 
     temp_semantic->blcok = head_scope_ptr;
     temp_semantic->function_number = current_func_number;
 
@@ -503,7 +495,7 @@ void processFunction(struct FUNCTION *function){
     fprintf(assembly_file, "\n\n");
 
     //deleteCurScope
-    deleteScope(&current_scope_ptr);
+    removeBlock(&current_block_ptr);
     title = false;}
 
 
@@ -562,9 +554,9 @@ void processStmt(struct STMT *stmt){
         outside_group_stmt = true;
         struct IF_STMT *if_stmt  = stmt->stmt.if_stmt;
         //making node for symbol table
-        current_scope_ptr = newScope(Block_If_Type, current_scope_ptr);
+        current_block_ptr = newBlock(current_block_ptr, Block_If_Type);
         title = false;
-        current_scope_ptr->parent_block->if_count++;
+        current_block_ptr->parent_block->if_count++;
 
         //fprintf(assembly_file, "if (");
         fprintf(assembly_file, "\n IF%d:",counter++);
@@ -588,7 +580,7 @@ void processStmt(struct STMT *stmt){
 
 
         //deleteCurScope
-        deleteScope(&current_scope_ptr);        
+        removeBlock(&current_block_ptr);        
         return;
     }
 
@@ -597,9 +589,9 @@ void processStmt(struct STMT *stmt){
         outside_group_stmt = true;
         struct FOR_STMT *for_stmt = stmt->stmt.for_stmt;
          //making node for symbol table
-        current_scope_ptr = newScope(Block_For_Type, current_scope_ptr);
+        current_block_ptr = newBlock(current_block_ptr, Block_For_Type);
         title = false;
-        current_scope_ptr->parent_block->for_count++;
+        current_block_ptr->parent_block->for_count++;
 
         //fprintf(assembly_file, "for (");
         int first_jump_lable = counter;
@@ -620,7 +612,7 @@ void processStmt(struct STMT *stmt){
         fprintf(assembly_file,"\n END_FOR%d:",jump_lable);
 
         //deleteCurScope
-        deleteScope(&current_scope_ptr);
+        removeBlock(&current_block_ptr);
 
         
         return;
@@ -632,9 +624,9 @@ void processStmt(struct STMT *stmt){
         if (while_stmt->do_while == true)
         {
             //making node for symbol table
-            current_scope_ptr = newScope(Block_Do_While_Type, current_scope_ptr);
+            current_block_ptr = newBlock(current_block_ptr, Block_Do_While_Type);
             title = false;
-            current_scope_ptr->parent_block->do_while_count++;
+            current_block_ptr->parent_block->do_while_count++;
 
             //fprintf(assembly_file, "do");
             int jump_lable = counter;
@@ -651,9 +643,9 @@ void processStmt(struct STMT *stmt){
         else
         {
             //making node for symbol table
-            current_scope_ptr = newScope(Block_While_Type, current_scope_ptr);
+            current_block_ptr = newBlock(current_block_ptr, Block_While_Type);
             title = false;
-            current_scope_ptr->parent_block->while_count++;
+            current_block_ptr->parent_block->while_count++;
 
             /*fprintf(assembly_file, "while (");*/
             int first_jump_lable = counter;
@@ -674,7 +666,7 @@ void processStmt(struct STMT *stmt){
         }
 
         //deleteCurScope
-        deleteScope(&current_scope_ptr);
+        removeBlock(&current_block_ptr);
         return;
  
      }
@@ -745,9 +737,9 @@ void processStmtGroup(struct STMTSGROUP *stmts_group){
     if (inside_group_stmt == true)
     {
         //making node for symbol table
-        current_scope_ptr = newScope(Block_Stmt_Group_Type, current_scope_ptr);
+        current_block_ptr = newBlock(current_block_ptr, Block_Stmt_Group_Type);
         title = false;
-        current_scope_ptr->parent_block->stmt_group_count++;
+        current_block_ptr->parent_block->stmt_group_count++;
     }
     outside_group_stmt = false;
 
@@ -762,7 +754,7 @@ void processStmtGroup(struct STMTSGROUP *stmts_group){
 
     if (inside_group_stmt == true)
     {
-        deleteScope(&current_scope_ptr);
+        removeBlock(&current_block_ptr);
     }
     inside_group_stmt = false;
     outside_group_stmt = false;

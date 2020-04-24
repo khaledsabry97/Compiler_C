@@ -1,28 +1,28 @@
 Global Variables
-     countscope_type      name     array      role
+     countblock_type      name     array      role
          1       intglobal_variable            variable
 
 Function name => multiply
-     countscope_type      name     array      role
+     countblock_type      name     array      role
          1       int        n1           parameter
          2       int        n2           parameter
          3       int  multiply            variable
 
 Function name => multiply
-     countscope_type      name     array      role
+     countblock_type      name     array      role
          1     float        n1           parameter
          2       int        n2           parameter
          3     float  multiply            variable
 
 Function name => multiply
-     countscope_type      name     array      role
+     countblock_type      name     array      role
          1     float        n1           parameter
          2       int        n2           parameter
          3       int        n3           parameter
          4     float  multiply            variable
 
 Function name => main
-     countscope_type      name     array      role
+     countblock_type      name     array      role
          1       int        n1            variable
          2     float        n2            variable
          3       int        n3            variable

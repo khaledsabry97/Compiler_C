@@ -2498,8 +2498,8 @@ void process(struct PROGRAM* head) {
     
     if(head == NULL)
         exit(1);
-    head_scope_ptr = newScope(Block_Global_Type, NULL);
-    current_scope_ptr = head_scope_ptr;
+    head_scope_ptr = newBlock(Block_Global_Type, NULL);
+    current_block_ptr = head_scope_ptr;
     if(head->declaration != NULL)
         processDeclaration(head->declaration);
     if(head->function != NULL)

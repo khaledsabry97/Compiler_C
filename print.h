@@ -16,7 +16,7 @@ struct BLOCK {
     //char* name_;
     int function_number;
     int stmt_group_count;
-    BLOCK_TYPE scope_type;
+    BLOCK_TYPE block_type;
     struct BLOCK* parent_block;
     struct BLOCK* child_block;
 };
