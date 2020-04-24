@@ -4,6 +4,8 @@
 #define false 0
 
 
+struct BLOCK *head_scope_ptr;
+
 struct BLOCK {
     int if_count;
     int for_count;
@@ -18,20 +20,6 @@ struct BLOCK {
     struct BLOCK* parent_block;
     struct BLOCK* child_block;
 };
-
-struct BLOCK *head_scope_ptr;
-struct BLOCK *current_scope_ptr;
-char* current_func_name;
-int current_func_number;
-
-//make node
-struct BLOCK* newScope(BLOCK_TYPE scope_type, struct BLOCK* parent_block);
-
-//delete node
-void deleteScope(struct BLOCK** current_scope_ptr);
-
-//returns the order of current BLOCK
-int getMyOrder(BLOCK_TYPE scope_type, struct BLOCK* parent_block);
 
 
 struct Assembly{
@@ -62,19 +50,7 @@ struct Assembly{
 
 
 
-//struct Semantic;
 
 
-void processProgram        (struct PROGRAM* program);
-void processDeclaration   (struct DECLARATION* declaration);
-void processIdentifier    (struct IDENTIFIER* identifier);
-void processFunction      (struct FUNCTION* function);
-void processParameter     (struct PARAMETER* parameter);
-//void processArg           (struct ARG* arg, struct Semantic* sem);
 
-void processAssignStmt    (struct ASSIGN_STMT* assign);
-void processStmtGroup  (struct STMTSGROUP* stmts_group);
-void processStmt          (struct STMT* stmt);
-
-void processExpr          (struct EXPR *expr,bool must_return);
 

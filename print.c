@@ -24,7 +24,9 @@ int parameter_count = 1;
 struct CHECKS* temp_check;
 struct Semantic* temp_semantic;
 struct SEMANTIC_STACK* temp_semantic_stack;
-
+struct BLOCK *current_scope_ptr;
+char* current_func_name;
+int current_func_number;
 
 
 //make node
