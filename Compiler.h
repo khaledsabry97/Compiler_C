@@ -4,12 +4,12 @@
 #define false 0
 
 
-struct BLOCK *head_scope_ptr;
+struct BLOCK *head_block_ptr;
 
 struct BLOCK {
     struct BLOCK* parent_block_ptr;
     struct BLOCK* child_block_ptr;
-    
+
     int if_count;
     int for_count;
     int while_count;    

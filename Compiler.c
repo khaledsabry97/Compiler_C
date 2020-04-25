@@ -100,7 +100,7 @@ void printSymbolTableHeader()
     else
     {
         fprintf(symbol_file, "------------%s", current_func_name);
-        temp_block = head_scope_ptr->child_block_ptr;
+        temp_block = head_block_ptr->child_block_ptr;
         while (temp_block->child_block_ptr != NULL)
         {
         
@@ -185,8 +185,8 @@ void compileProgram(struct PROGRAM* program)
 {
     if(program == NULL)
         exit(1);
-    head_scope_ptr = newBlock(NULL, Block_Global_Type);
-    current_block_ptr = head_scope_ptr;
+    head_block_ptr = newBlock(NULL, Block_Global_Type);
+    current_block_ptr = head_block_ptr;
 
     fprintf(assembly_file,"%s\n\n","START main");
     compileDeclaration(program->declaration);
@@ -255,7 +255,7 @@ void compileIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool i
         }
         temp_semantic_identifier->is_assigned = false;
         temp_semantic_identifier->is_function = false;
-        temp_semantic_identifier->block = head_scope_ptr;
+        temp_semantic_identifier->block = head_block_ptr;
         temp_semantic_identifier->is_parameter = is_parameter;
     
         int count = checkSemantic(temp_semantic_identifier->identifier_name,false,temp_semantic_identifier->block,NULL,temp_semantic_identifier->identifier_semantic_type);
@@ -315,7 +315,7 @@ void compileFunction(struct FUNCTION *function){
    
 
     current_block_ptr = newBlock(current_block_ptr,Block_Func_Type); 
-    temp_semantic->block = head_scope_ptr;
+    temp_semantic->block = head_block_ptr;
     temp_semantic->function_number = current_func_number;
 
 

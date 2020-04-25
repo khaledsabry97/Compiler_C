@@ -82,8 +82,6 @@ void yyerror(char* text) {
 %token DO
 %token RETURN
 
-
-
 %right '=' 
 %left EQ NE
 %left LE GE GT LT
@@ -91,7 +89,6 @@ void yyerror(char* text) {
 %left MUL DIV
 %right UMINUS
 %left '(' ')' 
-
 
 %nonassoc NO_ELSE
 %nonassoc ELSE
@@ -317,52 +314,15 @@ Stmt: ID '=' Expr ';' {
         $$ = stmt;
         }
         
-    | '{' Declarations Stmt_List '}' {
-        struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-        stmts_group->declaration = $2;
-        stmts_group->stmt = $3;
-        
+    | Stmt_Group {
+
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Stmt_Group_Type;
-        stmt->stmt.stmts_group = stmts_group;
+        stmt->stmt.stmts_group = $1;
         $$ = stmt;
             }
-            | 
-             '{' Stmt_List '}'  {
-        struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-        stmts_group->declaration = NULL;
-        stmts_group->stmt = $2;
-        
-        struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Stmt_Group_Type;
-        stmt->stmt.stmts_group = stmts_group;
-        $$ = stmt;
-            }
-            |'{' Declarations '}' {
-        struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-        stmts_group->declaration = $2;
-        stmts_group->stmt = NULL;
-        
-        struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Stmt_Group_Type;
-        stmt->stmt.stmts_group = stmts_group;
-        $$ = stmt;
-            }
-            |
-             '{' '}' {
-        struct STMTSGROUP *stmts_group = (struct STMTSGROUP*) malloc (sizeof (struct STMTSGROUP));
-        stmts_group->declaration = NULL;
-        stmts_group->stmt = NULL;
-        
-        struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
-        stmt->stmt_type = Stmt_Group_Type;
-        stmt->stmt.stmts_group = stmts_group;
-        $$ = stmt;
-           
-                
-            }  
+             
     | ID PP {
-        //INTNUM = 1;
         struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
         id_expr->ID = $1;
 
@@ -668,8 +628,8 @@ void process(struct PROGRAM* head) {
     
     if(head == NULL)
         exit(1);
-    head_scope_ptr = newBlock(Block_Global_Type, NULL);
-    current_block_ptr = head_scope_ptr;
+    head_block_ptr = newBlock(Block_Global_Type, NULL);
+    current_block_ptr = head_block_ptr;
     if(head->declaration != NULL)
         compileDeclaration(head->declaration);
     if(head->function != NULL)

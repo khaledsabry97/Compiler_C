@@ -393,7 +393,7 @@ struct Semantic* findSemanticIdentifier(char* identifier_name)
     while(list_of_names != NULL)
     {
         //printf("%s\n",list_of_names->identifier_name);
-        bool ret = checkScope(list_of_names->block,head_scope_ptr);
+        bool ret = checkScope(list_of_names->block,head_block_ptr);
         if (ret == true)
         {
             list_of_names->temp = NULL;

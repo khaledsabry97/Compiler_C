@@ -11,16 +11,14 @@ static int line_counter;
 
 %%
 
-"{" |
-"}" |
-"[" |
-"]" |
-"(" |
-")" |
-";" |
-"." |
-"," |
-"=" {return yytext[0];}
+"{" return '{';
+"}" return '}';
+"(" return '(';
+")" return ')';
+";" return ';';
+"." return '.';
+"," return ',';
+"=" return '=';
 "-"     return MINUS;
 "+"     return PLUS;
 "*"     return MUL;
