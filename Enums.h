@@ -11,4 +11,8 @@ typedef enum {Neg_Type,Plus_Type,Minus_Type,Mul_Type,Div_Type,Lt_Type,Gt_Type,Le
 /******************************************************Block Types*********************************************************/
 typedef enum { Block_Global_Type, Block_Stmt_Group_Type, Block_Func_Type, Block_If_Type, Block_For_Type, Block_Do_While_Type, Block_While_Type} BLOCK_TYPE;
 
+/******************************************************Semantic Types*********************************************************/
+
+typedef enum { Int_Semantic_Type, Float_Semantic_Type,Bool_Semantic_Type,Error_Semantic_Type } IDENTIFIER_SEMANTIC_TYPE; 
+
 #endif

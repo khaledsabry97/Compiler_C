@@ -1,8 +1,8 @@
 #include "Compiler.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "Enums.h"
 
-typedef enum { Int_Semantic_Type, Float_Semantic_Type,Bool_Semantic_Type,Error_Semantic_Type } IDENTIFIER_SEMANTIC_TYPE; 
 struct CHECKS
 {
     bool check_identifier_name;
