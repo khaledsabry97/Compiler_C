@@ -744,7 +744,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
         }
         pushSemanticStack(temp_semantic_stack);
     }
-    else if(expr_type == Lt_Type || expr_type == Gt_Type ||expr_type == Le_Type ||expr_type == Ge_Type)
+    else if(expr_type == Lt_Type || expr_type == Gt_Type ||expr_type == Le_Type ||expr_type == Ge_Type || expr_type == Eq_Type || expr_type == Ne_Type)
     {
         compileExpr(expr->left_side,true);
         compileExpr(expr->right_side,true);
@@ -763,48 +763,10 @@ void compileExpr(struct EXPR *expr,bool must_return)
             fprintf(assembly_file, "\n CMPLE %s , %s , RES%d ",left->str,right->str,counter++);
         else if(expr->expr_type == Ge_Type)
             fprintf(assembly_file, "\n CMPGE %s , %s , RES%d ",left->str,right->str,counter++);
-
-        struct SEMANTIC_STACK* left_semantic = popSemanticStack();
-        struct SEMANTIC_STACK* right_semantic = popSemanticStack();
-        temp_semantic_stack = newSemanticStack();
-        if(left_semantic->identifier_semantic_type == Error_Semantic_Type || right_semantic->identifier_semantic_type == Error_Semantic_Type)
-        {
-            printf("er\n");
-        }
-        else
-        {
-            struct SEMANTIC_STACK* temp_semantic_stack2 = newSemanticStack();
-            temp_semantic_stack2->identifier_semantic_type = compareTypes(left_semantic->identifier_semantic_type,right_semantic->identifier_semantic_type);
-            if(temp_semantic_stack2->identifier_semantic_type == Error_Semantic_Type)
-            {
-                fprintf(semantic_file,"WARNING: two different identifier one is bool and other is float/int\n");
-            }
-            //temp_semantic_stack->identifier_semantic_type = Bool_Semantic_Type;
-            pushSemanticStack(temp_semantic_stack2);
-        }
-        
-    }
-    else if(expr_type == Eq_Type || expr_type == Ne_Type )
-    {
-        compileExpr(expr->left_side,true);
-        compileExpr(expr->right_side,true);
-        struct Assembly* right = pop();
-        struct Assembly* left = pop();
-        int ret_counter = counter;
-        temp = newAssembly();
-        sprintf(temp->str, "RES%d", ret_counter);
-        push(temp);
-
-        if (expr->expr_type == Eq_Type)
-        {
+        else if (expr->expr_type == Eq_Type)
             fprintf(assembly_file, "\n CMPE %s , %s , RES%d ",left->str,right->str,counter++);
-
-        }
         else
-        {
             fprintf(assembly_file, "\n CMPNE %s , %s , RES%d ",left->str,right->str,counter++);
-        }
-
 
         struct SEMANTIC_STACK* left_semantic = popSemanticStack();
         struct SEMANTIC_STACK* right_semantic = popSemanticStack();
@@ -815,9 +777,23 @@ void compileExpr(struct EXPR *expr,bool must_return)
         }
         else
         {
-            temp_semantic_stack->identifier_semantic_type = Bool_Semantic_Type;
-            pushSemanticStack(temp_semantic_stack);
-
+            if(expr_type == Eq_Type || expr_type == Ne_Type)
+            {
+                temp_semantic_stack->identifier_semantic_type = Bool_Semantic_Type;
+                pushSemanticStack(temp_semantic_stack);
+            }
+            else
+            {
+                struct SEMANTIC_STACK* temp_semantic_stack2 = newSemanticStack();
+                temp_semantic_stack2->identifier_semantic_type = compareTypes(left_semantic->identifier_semantic_type,right_semantic->identifier_semantic_type);
+                if(temp_semantic_stack2->identifier_semantic_type == Error_Semantic_Type)
+                {
+                    fprintf(semantic_file,"WARNING: two different identifier one is bool and other is float/int\n");
+                }
+                //temp_semantic_stack->identifier_semantic_type = Bool_Semantic_Type;
+                pushSemanticStack(temp_semantic_stack2);
+            }
+          
         }
         
     }
