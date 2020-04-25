@@ -1,12 +1,12 @@
 
 Function name => plus
-     countscope_type      name     array      role
+     countblock_type      name     array      role
          1       int        n1           parameter
          2       int        n2           parameter
          3       int       sum            variable
 
 Function name => main
-     countscope_type      name     array      role
+     countblock_type      name     array      role
          1       int        n1            variable
          2       int        n2            variable
          3       int         x            variable

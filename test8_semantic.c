@@ -17,7 +17,7 @@ int main ()
 
     for ( count = 10 ; count < 100 ; count = count + 1 )
     {
-        //check it can use outside declaration in other scopes
+        //check it can use outside declaration in other blocks
         no_value = 10;
     }
 

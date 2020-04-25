@@ -69,9 +69,9 @@ struct PARAMETER
 
 
 /*
-the sent arg in the function : doSomething(3,4==4)
+the sent arg in the function : doSomething(3,4+4)
 - prev : 3
-- expr : 4==4
+- expr : 4+4
 */
 struct ARG
 {
@@ -103,7 +103,7 @@ struct IF_STMT
 {
 	struct EXPR *condition;
 	struct STMT *if_stmt;
-	struct STMT *else_stmt; // NUll, if 'else' not exist
+	struct STMT *else_stmt; 
 };
 
 
@@ -139,9 +139,8 @@ struct WHILE_STMT
 
 /*
 ASSIGN_STMT Operation
-arr[0] = 5
-- id => arr
-- index => 0 and it could be null if you said " arr = 5"
+x = 5
+- id => x
 - expr => 5
 */
 struct ASSIGN_STMT
@@ -175,7 +174,7 @@ struct STMT
 	STMT_TYPE stmt_type;
 	union {
 		struct FUNC_CALL *func_call; 
-		struct EXPR *return_expr; // return expr
+		struct EXPR *return_expr; 
 		struct IF_STMT *if_stmt; 
 		struct FOR_STMT *for_stmt; 
 		struct WHILE_STMT *while_stmt;
@@ -259,13 +258,13 @@ group all the expressions in the language
 */
 struct EXPR
 {
-	EXPR_TYPE expr_type;   // EXPR type (enumeration type)
+	EXPR_TYPE expr_type; 
 	union
 	{
 		int int_val; 
 		float floatval; 
 		struct FUNC_CALL *func_call;
-		struct EXPR *bracket; // (expr)
+		struct EXPR *bracket;
 		struct ID_EXPR *id_expr; 
 
 		struct UNI_OP *uni_op; 

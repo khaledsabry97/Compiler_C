@@ -266,7 +266,7 @@ void compileIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool i
             printf("didn't found any variable in the smae block\n");
         }
         addNewSemantic(temp_semantic_identifier);
-        printScopeFunctionName(temp_semantic_identifier->block);
+        printBlockFunctionName(temp_semantic_identifier->block);
         if(is_parameter == true)
         {
             addArgsToSemantic(temp_semantic,temp_semantic_identifier->identifier_semantic_type);
