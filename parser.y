@@ -90,7 +90,7 @@ void yyerror(char* text) {
 %right UMINUS
 %left '(' ')' 
 
-%nonassoc NO_ELSE
+%nonassoc IFX
 %nonassoc ELSE
 
 %start Program
@@ -123,7 +123,7 @@ Program: Declarations Functions {
             compileProgram(program);
             printf("finally%d\n",line_counter);
             $$ = program;
-       }
+       }| %empty
        ;
 Declarations:  Type ID ';' {
             struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
@@ -247,7 +247,7 @@ Stmt: ID '=' Expr ';' {
         stmt->stmt.return_expr = $2;
         $$ = stmt;
        } 
-    | IF '(' Expr ')' Stmt %prec NO_ELSE {
+    | IF '(' Expr ')' Stmt %prec IFX {
        struct IF_STMT *if_stmt = (struct IF_STMT*) malloc (sizeof(struct IF_STMT));
        if_stmt->condition=$3;
        if_stmt->if_stmt=$5;
