@@ -1,6 +1,6 @@
 all:
-	flex Compiler.l 
 	bison -d Compiler.y
+	flex Compiler.l 
 	gcc -o Compiler Compiler.tab.c Compiler.c lex.yy.c -g -lfl 
 
 
