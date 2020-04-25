@@ -1,2 +1,0 @@
-WARNING: variable n8 has been declared before 1 times before 
-WARNING: Identified a variable n8 but not assigend a value to it

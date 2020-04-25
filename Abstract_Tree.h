@@ -25,17 +25,10 @@ struct DECLARATION
 	struct DECLARATION *prev;
 
 	ID_TYPE id_type;
-	struct IDENTIFIER *id;
+	char *ID;
+
 };
 
-/*
-identifier like : int number
-- ID: number
-*/
-struct IDENTIFIER
-{
-	char *ID;
-};
 
 /*
 - prev: previous function
@@ -64,7 +57,7 @@ struct PARAMETER
 	struct PARAMETER *prev;
 
 	ID_TYPE id_type;
-	struct IDENTIFIER *id;
+	char *ID;
 };
 
 
@@ -81,12 +74,6 @@ struct ARG
 };
 
 /*********************************************** Statements **************************************************/
-
-/*
-calling a function : doSomething(3)
-- ID: doSomthing
-- arg: 3
-*/
 
 
 /*

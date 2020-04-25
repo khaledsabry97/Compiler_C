@@ -6,7 +6,6 @@
 #include <string.h>
 #include "Abstract_Tree.h"
 #include "Compiler.h"
-static int line_counter;
 
 FILE *assembly_file; 
 FILE *symbol_file; 
@@ -126,20 +125,16 @@ Program: Declarations Functions {
        }| %empty
        ;
 Declarations:  Type ID ';' {
-            struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
-            identifier->ID = $2;
             struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
             declaration->id_type = $1;
-            declaration->id = identifier;
+            declaration->ID = $2;
             $$ = declaration;
         }
         | Declarations  Type ID ';' {
-            struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
-            identifier->ID = $3;
             struct DECLARATION *declaration = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
             declaration->prev = $1;
             declaration->id_type = $2;
-            declaration->id = identifier;
+            declaration->ID = $3;
             $$ = declaration;
         }
         ;
@@ -182,22 +177,16 @@ Functions: Type ID '(' ')' Stmt_Group {
 
 
 Parameters: Type ID {
-            struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
-            identifier->ID = $2;
-
             struct PARAMETER *parameter = (struct PARAMETER*) malloc (sizeof (struct PARAMETER));
             parameter->id_type = $1;
-            parameter->id = identifier;
+            parameter->ID = $2;
             parameter->prev = NULL;
             $$ = parameter;
         }
          | Parameters ',' Type ID {
-            struct IDENTIFIER *identifier = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
-            identifier->ID = $4;
-
             struct PARAMETER *parameter = (struct PARAMETER*) malloc (sizeof (struct PARAMETER));
             parameter->id_type = $3;
-            parameter->id = identifier;
+            parameter->ID = $4;
             parameter->prev = $1;
             $$ = parameter;
         };

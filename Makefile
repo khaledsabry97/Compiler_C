@@ -19,8 +19,5 @@ test3:
 	make
 	./compiler < test3.c
 
-test4:
-	make
-	./compiler < test4.c
 
 	

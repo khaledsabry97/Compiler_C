@@ -138,7 +138,6 @@ START main
  ADD n1 , 1 , ADD_RES47 
  MOV ADD_RES47 , n1
 
- MOV 20 , n8
  MOV n1 , n3
 
  JMP FOR44

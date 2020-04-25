@@ -205,13 +205,13 @@ void compileDeclaration(struct DECLARATION *declaration){
     if (header == false)
         printSymbolTableHeader();
     header = true;
-    compileIdentifier(declaration->id,declaration->id_type,false);
+    compileIdentifier(declaration->ID,declaration->id_type,false);
 }
 
 //int x could be mentioned as a paremeter or at the begining of a block
-void compileIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool is_parameter){
+void compileIdentifier(char* identifier,ID_TYPE current_type,bool is_parameter){
         struct Semantic* temp_semantic_identifier = newSemantic();
-        temp_semantic_identifier->identifier_name = identifier->ID;
+        temp_semantic_identifier->identifier_name = identifier;
 
         char *type;
         if (current_type == Int_Type)
@@ -243,14 +243,14 @@ void compileIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool i
             temp_semantic_identifier->is_const = true;
         }
         if(is_parameter)
-            printSymbolTableContent(identifier->ID,type,"parameter");
+            printSymbolTableContent(identifier,type,"parameter");
         else
-            printSymbolTableContent(identifier->ID,type,"variable");
+            printSymbolTableContent(identifier,type,"variable");
         
         if(is_parameter== true)
         {
             temp = newAssembly();
-            sprintf(temp->str, identifier->ID);
+            sprintf(temp->str, identifier);
             push(temp);
         }
         temp_semantic_identifier->is_assigned = false;
@@ -280,7 +280,7 @@ void compileParameter(struct PARAMETER *parameter){
         return;
     
     compileParameter(parameter->prev);
-    compileIdentifier(parameter->id,parameter->id_type,true);
+    compileIdentifier(parameter->ID,parameter->id_type,true);
 
     temp = pop();
     fprintf(assembly_file,"\n MOV $%d , %s",parameter_count++,temp->str);
