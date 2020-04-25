@@ -413,7 +413,7 @@ void compileStmt(struct STMT *stmt){
 
     if(stmt_type == Return_Type )
     {
-        if (stmt->stmt.return_expr == NULL)
+        if (stmt->return_expr == NULL)
         {
             if(isEmpty()) //then it's the main return
                 fprintf(assembly_file,"\n HALT");
@@ -430,7 +430,7 @@ void compileStmt(struct STMT *stmt){
             else
             {
 
-                compileExpr(stmt->stmt.return_expr,false);
+                compileExpr(stmt->return_expr,false);
                 fprintf(assembly_file,"\n BIND %s",pop()->str);
                 fprintf(assembly_file,"\n JMP %s",pop()->str);
             } 
@@ -438,7 +438,7 @@ void compileStmt(struct STMT *stmt){
     }
     else if(stmt_type == If_Type )
     {
-        struct IF_STMT *if_stmt  = stmt->stmt.if_stmt;
+        struct IF_STMT *if_stmt  = stmt->if_stmt;
         makeNewBlockForStmts(Block_If_Type);
 
         fprintf(assembly_file, "\n IF%d:",counter++);
@@ -458,7 +458,7 @@ void compileStmt(struct STMT *stmt){
     }
     else if(stmt_type == For_Type)
     {
-        struct FOR_STMT *for_stmt = stmt->stmt.for_stmt;
+        struct FOR_STMT *for_stmt = stmt->for_stmt;
         makeNewBlockForStmts(Block_For_Type);
         int first_jump_lable = counter;
         compileAssignStmt(for_stmt->init);
@@ -477,7 +477,7 @@ void compileStmt(struct STMT *stmt){
     }
     else if(stmt_type == While_Type)
     {
-        struct WHILE_STMT *while_stmt = stmt->stmt.while_stmt;
+        struct WHILE_STMT *while_stmt = stmt->while_stmt;
         if (while_stmt->do_while == true)
         {
            makeNewBlockForStmts(Block_Do_While_Type);
@@ -514,13 +514,13 @@ void compileStmt(struct STMT *stmt){
     }
     else if(stmt_type == Equ_Type )
     {
-        compileAssignStmt(stmt->stmt.assign_stmt);
+        compileAssignStmt(stmt->assign_stmt);
     }
     else if(stmt_type == Stmt_Group_Type)
     {
         if (outside_group_stmt == false)
             inside_group_stmt = true;
-        compileStmtGroup(stmt->stmt.stmts_group);
+        compileStmtGroup(stmt->stmts_group);
     }
     }
 
@@ -600,19 +600,18 @@ void compileExpr(struct EXPR *expr,bool must_return)
     if(expr_type == Id_Type )
     {
         
-        struct ID_EXPR *id_expr = expr->expression.id_expr;
         
         temp = newAssembly();
-        printf("%s\n",id_expr->ID);
+        printf("%s\n",expr->ID);
         printf("damn\n");
-        sprintf(temp->str, "%s", id_expr->ID);
+        sprintf(temp->str, "%s", expr->ID);
         push(temp);
 
         //check identifier is found
-        temp_semantic = findSemanticIdentifier(id_expr->ID);
+        temp_semantic = findSemanticIdentifier(expr->ID);
         if(temp_semantic == NULL )
         {
-                fprintf(semantic_file,"WARNING: Identifier %s wasn't declared before to be used\n",id_expr->ID);
+                fprintf(semantic_file,"WARNING: Identifier %s wasn't declared before to be used\n",expr->ID);
                  //add to semantic stack
             temp_semantic_stack = newSemanticStack();
             temp_semantic_stack->identifier_semantic_type = Error_Semantic_Type;
@@ -621,7 +620,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
 
         else if(temp_semantic->is_assigned == false && temp_semantic->is_parameter == false)
         {
-            fprintf(semantic_file,"WARNING: Identifier %s wasn't assigned any value before to be used\n",id_expr->ID);
+            fprintf(semantic_file,"WARNING: Identifier %s wasn't assigned any value before to be used\n",expr->ID);
                  //add to semantic stack
             temp_semantic_stack = newSemanticStack();
             temp_semantic_stack->identifier_semantic_type = temp_semantic->identifier_semantic_type;
@@ -632,7 +631,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
              //add to semantic stack
             temp_semantic_stack = newSemanticStack();
             temp_semantic_stack->identifier_semantic_type = temp_semantic->identifier_semantic_type;
-            printf("\n%s : %d\n",id_expr->ID,temp_semantic->identifier_semantic_type);
+            printf("\n%s : %d\n",expr->ID,temp_semantic->identifier_semantic_type);
             pushSemanticStack(temp_semantic_stack);
             
         }
@@ -640,7 +639,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
     else if(expr_type == IntNum_Type)
     {
         temp = newAssembly();
-        sprintf(temp->str, "%d", expr->expression.int_val);
+        sprintf(temp->str, "%d", expr->int_val);
         push(temp);
         //add to semantic stack
         printf("j");
@@ -651,16 +650,16 @@ void compileExpr(struct EXPR *expr,bool must_return)
     else if(expr_type == FloatNum_Type)
     {
         temp = newAssembly();
-        sprintf(temp->str, "%f", expr->expression.floatval);
+        sprintf(temp->str, "%f", expr->floatval);
         push(temp);
         //add to semantic stack
         temp_semantic_stack = newSemanticStack();
         temp_semantic_stack->identifier_semantic_type = Float_Semantic_Type;
         pushSemanticStack(temp_semantic_stack);
     }
-    else if(expr_type == Uni_Type)
+    else if(expr_type == Neg_Type)
     {
-        compileExpr(expr->expression.uni_op->expr,true);
+        compileExpr(expr->right_side,true);
         struct Assembly* right = pop();
         int ret_counter = counter;
         temp = newAssembly();
@@ -673,16 +672,16 @@ void compileExpr(struct EXPR *expr,bool must_return)
         temp_semantic_stack = popSemanticStack();
         pushSemanticStack(temp_semantic_stack);
     }
-    else if(expr_type == Add_Type)
+    else if(expr_type == Plus_Type || expr_type == Minus_Type)
     {
-        compileExpr(expr->expression.add_op->left_side,true);
-        compileExpr(expr->expression.add_op->right_side,true);
+        compileExpr(expr->left_side,true);
+        compileExpr(expr->right_side,true);
 
         struct Assembly* right = pop();
         struct Assembly* left = pop();
         int ret_counter = counter;
         temp = newAssembly();
-        if (expr->expression.add_op->add_type == Plus_Type)
+        if (expr->expr_type == Plus_Type)
         {
 
             sprintf(temp->str, "ADD_RES%d", ret_counter);
@@ -712,15 +711,15 @@ void compileExpr(struct EXPR *expr,bool must_return)
         }
         pushSemanticStack(temp_semantic_stack);
     }
-    else if(expr_type == Mult_Type )
+    else if(expr_type == Mul_Type ||  expr_type == Div_Type )
     {
-        compileExpr(expr->expression.mul_op->left_side,true);
-        compileExpr(expr->expression.mul_op->right_side,true);
+        compileExpr(expr->left_side,true);
+        compileExpr(expr->right_side,true);
         struct Assembly* right = pop();
         struct Assembly* left = pop();
         int ret_counter = counter;
         temp = newAssembly();
-        if (expr->expression.mul_op->mul_type == Mul_Type)
+        if (expr->expr_type == Mul_Type)
         {
             sprintf(temp->str, "MUL_RES%d", ret_counter);
             fprintf(assembly_file, "\n MUL %s , %s , MUL_RES%d ",left->str,right->str,counter++);
@@ -745,10 +744,10 @@ void compileExpr(struct EXPR *expr,bool must_return)
         }
         pushSemanticStack(temp_semantic_stack);
     }
-    else if(expr_type == Com_Type )
+    else if(expr_type == Lt_Type || expr_type == Gt_Type ||expr_type == Le_Type ||expr_type == Ge_Type)
     {
-        compileExpr(expr->expression.com_op->left_side,true);
-        compileExpr(expr->expression.com_op->right_side,true);
+        compileExpr(expr->left_side,true);
+        compileExpr(expr->right_side,true);
 
         struct Assembly* right = pop();
         struct Assembly* left = pop();
@@ -756,14 +755,13 @@ void compileExpr(struct EXPR *expr,bool must_return)
         temp = newAssembly();
         sprintf(temp->str, "RES%d", ret_counter);
         push(temp);
-        COMP_TYPE com_type = expr->expression.com_op->com_type;
-        if(com_type == Lt_Type)
+        if(expr->expr_type == Lt_Type)
             fprintf(assembly_file, "\n CMPL %s , %s , RES%d ",left->str,right->str,counter++);
-        else if(com_type == Gt_Type)
+        else if(expr->expr_type == Gt_Type)
             fprintf(assembly_file, "\n CMPG %s , %s , RES%d ",left->str,right->str,counter++);
-        else if(com_type == Le_Type)
+        else if(expr->expr_type == Le_Type)
             fprintf(assembly_file, "\n CMPLE %s , %s , RES%d ",left->str,right->str,counter++);
-        else if(com_type == Ge_Type)
+        else if(expr->expr_type == Ge_Type)
             fprintf(assembly_file, "\n CMPGE %s , %s , RES%d ",left->str,right->str,counter++);
 
         struct SEMANTIC_STACK* left_semantic = popSemanticStack();
@@ -786,10 +784,10 @@ void compileExpr(struct EXPR *expr,bool must_return)
         }
         
     }
-    else if(expr_type == Eql_Type )
+    else if(expr_type == Eq_Type || expr_type == Ne_Type )
     {
-        compileExpr(expr->expression.eql_op->left_side,true);
-        compileExpr(expr->expression.eql_op->right_side,true);
+        compileExpr(expr->left_side,true);
+        compileExpr(expr->right_side,true);
         struct Assembly* right = pop();
         struct Assembly* left = pop();
         int ret_counter = counter;
@@ -797,7 +795,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
         sprintf(temp->str, "RES%d", ret_counter);
         push(temp);
 
-        if (expr->expression.eql_op->eql_type == Eq_Type)
+        if (expr->expr_type == Eq_Type)
         {
             fprintf(assembly_file, "\n CMPE %s , %s , RES%d ",left->str,right->str,counter++);
 
@@ -823,18 +821,17 @@ void compileExpr(struct EXPR *expr,bool must_return)
         }
         
     }
-    else if(expr_type == CallExpr_Type)
+    else if(expr_type == Call_Type)
     {
-        struct FUNC_CALL *call = expr->expression.func_call;
         int jump_lable = counter;
-        fprintf(assembly_file,"\n BIND %s%d",call->ID,counter++);
+        fprintf(assembly_file,"\n BIND %s%d",expr->ID,counter++);
 
         struct Semantic* semantic = newSemantic();
 
     
-        if (call->arg != NULL)
+        if (expr->arg != NULL)
             parameter_count = 1;
-        compileArgs(call->arg,semantic);
+        compileArgs(expr->arg,semantic);
 
 
         
@@ -863,7 +860,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
         
         //printf("args%d\n",args_stack);
         
-        temp_semantic = findSemanticFunction(call->ID,semantic->args_stack);
+        temp_semantic = findSemanticFunction(expr->ID,semantic->args_stack);
         temp_semantic_stack = newSemanticStack();
         printf("%d\n",temp_semantic);
         if (temp_semantic == NULL)
@@ -876,12 +873,12 @@ void compileExpr(struct EXPR *expr,bool must_return)
         {
             printf("found%d\n",temp_semantic->identifier_semantic_type);
             temp_semantic_stack->identifier_semantic_type = temp_semantic->identifier_semantic_type;
-            fprintf(assembly_file, "\n JMP %s%d", call->ID,temp_semantic->function_number);
+            fprintf(assembly_file, "\n JMP %s%d", expr->ID,temp_semantic->function_number);
 
         }
         pushSemanticStack(temp_semantic_stack);
 
-        fprintf(assembly_file,"\n %s%d:",call->ID,jump_lable);
+        fprintf(assembly_file,"\n %s%d:",expr->ID,jump_lable);
         int sec_counter = counter;
         if (must_return == true)
         {
@@ -893,7 +890,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
     }
     else if(expr_type == Expr_Type)
     {
-        compileExpr(expr->expression.bracket,false);
+        compileExpr(expr->expr,false);
     }
 }
 

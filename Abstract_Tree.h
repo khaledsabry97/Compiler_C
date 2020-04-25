@@ -64,7 +64,6 @@ struct PARAMETER
 	struct PARAMETER *prev;
 
 	ID_TYPE id_type;
-	struct IDENTIFIER *id;
 };
 
 
@@ -87,11 +86,6 @@ calling a function : doSomething(3)
 - ID: doSomthing
 - arg: 3
 */
-struct FUNC_CALL
-{
-	char *ID;
-	struct ARG *arg;
-};
 
 
 /*
@@ -172,85 +166,19 @@ struct STMT
 	struct STMT *prev;
 
 	STMT_TYPE stmt_type;
-	union {
-		struct FUNC_CALL *func_call; 
-		struct EXPR *return_expr; 
-		struct IF_STMT *if_stmt; 
-		struct FOR_STMT *for_stmt; 
-		struct WHILE_STMT *while_stmt;
-		struct ASSIGN_STMT *assign_stmt;
-		struct STMTSGROUP *stmts_group; 
-		struct DECLARATION* declaration;
-	} stmt; 
+
+	struct EXPR *return_expr; 
+	struct IF_STMT *if_stmt; 
+	struct FOR_STMT *for_stmt; 
+	struct WHILE_STMT *while_stmt;
+	struct ASSIGN_STMT *assign_stmt;
+	struct STMTSGROUP *stmts_group; 
+	struct DECLARATION* declaration;
 };
 
 
 
 /********************************Expressions***************************************/
-
-/* 
-arr[3==3]
-*/
-struct ID_EXPR
-{
-	char *ID;
-};
-
-
-/*
--3 or +3 or - expr
-*/
-struct UNI_OP
-{
-	UNI_OP_TYPE uni_type;
-	struct EXPR *expr;
-};
-
-/*
-3+4 or (3*2) + (4*2)
-int + int or expr + expr
-*/
-struct ADD_OP
-{
-	ADD_TYPE add_type;
-	struct EXPR *left_side;
-	struct EXPR *right_side;
-};
-
-/*
-expr * expr
-3*3
-(4+2)*(4+3)
-left_side * right_side
-*/
-struct MUL_OP
-{
-	MUL_TYPE mul_type;
-	struct EXPR *left_side;
-	struct EXPR *right_side;
-};
-
-
-
-/*
-3==2
-*/
-struct EQL_OP
-{
-	EQCOM_TYPE eql_type;
-	struct EXPR *left_side;
-	struct EXPR *right_side;
-};
-
-/*
-5>=3
-*/
-struct COM_OP
-{
-	COMP_TYPE com_type;
-	struct EXPR *left_side;
-	struct EXPR *right_side;
-};
 
 
 /*
@@ -259,22 +187,16 @@ group all the expressions in the language
 struct EXPR
 {
 	EXPR_TYPE expr_type; 
-	union
-	{
-		int int_val; 
-		float floatval; 
-		struct FUNC_CALL *func_call;
-		struct EXPR *bracket;
-		struct ID_EXPR *id_expr; 
+	struct EXPR *left_side;
+	struct EXPR *right_side;
+	struct EXPR *expr;
 
-		struct UNI_OP *uni_op; 
-		struct ADD_OP *add_op; 
-		struct MUL_OP *mul_op; 
+	char *ID;
+	int int_val; 
+	float floatval; 
 
-		struct EQL_OP *eql_op; 
-		struct COM_OP *com_op; 
+	struct ARG *arg;
 
-	} expression;
 };
 
 

@@ -232,19 +232,19 @@ Stmt: ID '=' Expr ';' {
              
             struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
             stmt->stmt_type = Equ_Type;
-            stmt->stmt.assign_stmt = assign;
+            stmt->assign_stmt = assign;
 
             $$ = stmt;
     } | RETURN ';' {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Return_Type;
-        stmt->stmt.return_expr = NULL;
+        stmt->return_expr = NULL;
         $$ = stmt;
         }
        | RETURN Expr ';' {
          struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Return_Type;
-        stmt->stmt.return_expr = $2;
+        stmt->return_expr = $2;
         $$ = stmt;
        } 
     | IF '(' Expr ')' Stmt %prec IFX {
@@ -255,7 +255,7 @@ Stmt: ID '=' Expr ';' {
        
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = If_Type;
-        stmt->stmt.if_stmt = if_stmt;
+        stmt->if_stmt = if_stmt;
         $$ = stmt;
     }
       | IF '(' Expr ')' Stmt ELSE Stmt{
@@ -266,7 +266,7 @@ Stmt: ID '=' Expr ';' {
        
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = If_Type;
-        stmt->stmt.if_stmt = if_stmt;
+        stmt->if_stmt = if_stmt;
         $$ = stmt;
       }
     | FOR '(' ID '=' Expr ';' Expr ';' ID '=' Expr ')' Stmt {
@@ -288,7 +288,7 @@ Stmt: ID '=' Expr ';' {
            
            struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = For_Type;
-        stmt->stmt.for_stmt = for_stmt;
+        stmt->for_stmt = for_stmt;
         $$ = stmt;
         } 
     | WHILE '(' Expr ')'  Stmt  {
@@ -299,7 +299,7 @@ Stmt: ID '=' Expr ';' {
 
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = While_Type;
-        stmt->stmt.while_stmt = while_stmt;
+        stmt->while_stmt = while_stmt;
         $$ = stmt;
         }
          | DO  Stmt  WHILE '(' Expr ')' ';' {
@@ -310,7 +310,7 @@ Stmt: ID '=' Expr ';' {
            
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = While_Type;
-        stmt->stmt.while_stmt = while_stmt;
+        stmt->while_stmt = while_stmt;
         $$ = stmt;
         }
         
@@ -318,30 +318,23 @@ Stmt: ID '=' Expr ';' {
 
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Stmt_Group_Type;
-        stmt->stmt.stmts_group = $1;
+        stmt->stmts_group = $1;
         $$ = stmt;
             }
              
     | ID PP {
-        struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
-        id_expr->ID = $1;
-
         struct EXPR *expr2 = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr2->expr_type = Id_Type;  
-        expr2->expression.id_expr = id_expr;
+        expr2->ID = $1;
 
         struct EXPR *expr1 = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr1->expr_type = IntNum_Type;
-        expr1->expression.int_val = 1;
-
-        struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
-        add_op->add_type = Plus_Type;
-        add_op->left_side=expr2;
-        add_op->right_side= expr1;
+        expr1->int_val = 1;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Add_Type;
-        expr->expression.add_op = add_op;
+        expr->expr_type = Plus_Type;
+        expr->left_side=expr2;
+        expr->right_side= expr1;
 
         struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
         assign->ID = $1;
@@ -349,31 +342,23 @@ Stmt: ID '=' Expr ';' {
              
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Equ_Type;
-        stmt->stmt.assign_stmt = assign;
+        stmt->assign_stmt = assign;
         printf("sfsdfsdfsdF%d\n",line_counter);
 
         $$ = stmt;
     }| ID MM {
-        //INTNUM = 1;
-        struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
-        id_expr->ID = $1;
-
         struct EXPR *expr2 = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr2->expr_type = Id_Type;  
-        expr2->expression.id_expr = id_expr;
+        expr2->ID = $1;
 
         struct EXPR *expr1 = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr1->expr_type = IntNum_Type;
-        expr1->expression.int_val = 1;
-
-        struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
-        add_op->add_type = Minus_Type;
-        add_op->left_side=expr2;
-        add_op->right_side= expr1;
+        expr1->int_val = 1;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Add_Type;
-        expr->expression.add_op = add_op;
+        expr->expr_type = Minus_Type;
+        expr->left_side=expr2;
+        expr->right_side= expr1;
 
         struct ASSIGN_STMT *assign = (struct ASSIGN_STMT*) malloc (sizeof (struct ASSIGN_STMT));
         assign->ID = $1;
@@ -381,7 +366,7 @@ Stmt: ID '=' Expr ';' {
              
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->stmt_type = Equ_Type;
-        stmt->stmt.assign_stmt = assign;
+        stmt->assign_stmt = assign;
         printf("sfsdfsdfsdF%d\n");
 
         $$ = stmt;
@@ -441,170 +426,119 @@ Stmt_List: Stmt {
 /********************************Expressions***************************************/
 
 Expr: Expr MINUS Expr {
-        struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
-        add_op->add_type = Minus_Type;
-        add_op->left_side=$1;
-        add_op->right_side=$3;
+
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Add_Type;
-        expr->expression.add_op = add_op;
+        expr->expr_type = Minus_Type;
+        expr->left_side=$1;
+        expr->right_side=$3;
         $$ = expr;
     }
     | Expr PLUS Expr {
-        struct ADD_OP *add_op = (struct ADD_OP*) malloc (sizeof (struct ADD_OP));
-        add_op->add_type = Plus_Type;
-        add_op->left_side=$1;
-        add_op->right_side=$3;
-
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Add_Type;
-        expr->expression.add_op = add_op;
+        expr->expr_type = Plus_Type;
+        expr->left_side=$1;
+        expr->right_side=$3;
         $$ = expr;
     }
     | Expr MUL Expr {
-        struct MUL_OP *mul_op = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
-        mul_op->mul_type = Mul_Type;
-        mul_op->left_side=$1;
-        mul_op->right_side=$3;
-
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Mult_Type;  
-        expr->expression.mul_op = mul_op;
+        expr->expr_type = Mul_Type;  
+        expr->left_side=$1;
+        expr->right_side=$3;
         $$ = expr;
     }
     | Expr DIV Expr {
-        struct MUL_OP *mul_op = (struct MUL_OP*) malloc (sizeof (struct MUL_OP));
-        mul_op->mul_type = Div_Type;
-        mul_op->left_side=$1;
-        mul_op->right_side=$3;
-
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Mult_Type;  
-        expr->expression.mul_op = mul_op;
+        expr->expr_type = Div_Type;  
+        expr->left_side=$1;
+        expr->right_side=$3;
         $$ = expr;
     }
     |  MINUS Expr %prec UMINUS {
-        struct UNI_OP *uni_op = (struct UNI_OP*) malloc (sizeof (struct UNI_OP));
-        uni_op->uni_type = Neg_Type;
-        uni_op->expr = $2;
-
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Uni_Type;
-        expr->expression.uni_op = uni_op;
+        expr->expr_type = Neg_Type;
+        expr->right_side = $2;
         $$ = expr;
     }
     | Expr LE Expr {
-        struct COM_OP *com_op = (struct COM_OP*) malloc (sizeof (struct COM_OP));
-        com_op->com_type = Le_Type;
-        com_op->left_side=$1;
-        com_op->right_side=$3;
-
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Com_Type;  
-        expr->expression.com_op = com_op;
+        expr->expr_type = Le_Type;  
+        expr->left_side=$1;
+        expr->right_side=$3;
         $$ = expr;
     }
     | Expr GE Expr {
-        struct COM_OP *com_op = (struct COM_OP*) malloc (sizeof (struct COM_OP));
-        com_op->com_type = Ge_Type;
-        com_op->left_side=$1;
-        com_op->right_side=$3;
-
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Com_Type;  
-        expr->expression.com_op = com_op;
+        expr->expr_type = Ge_Type;  
+        expr->left_side=$1;
+        expr->right_side=$3;
         $$ = expr;
     }
     | Expr GT Expr {
-        struct COM_OP *com_op = (struct COM_OP*) malloc (sizeof (struct COM_OP));
-        com_op->com_type = Gt_Type;
-        com_op->left_side=$1;
-        com_op->right_side=$3;
-
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Com_Type;  
-        expr->expression.com_op = com_op;
+        expr->expr_type = Gt_Type;  
+        expr->left_side=$1;
+        expr->right_side=$3;
         $$ = expr;
     }
     | Expr LT Expr {
-        struct COM_OP *com_op = (struct COM_OP*) malloc (sizeof (struct COM_OP));
-        com_op->com_type = Lt_Type;
-        com_op->left_side=$1;
-        com_op->right_side=$3;
-
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Com_Type;  
-        expr->expression.com_op = com_op;
+        expr->expr_type = Lt_Type;  
+        expr->left_side=$1;
+        expr->right_side=$3;
         $$ = expr;
     }
     | Expr EQ Expr {
-        struct EQL_OP *eql_op = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
-        eql_op->eql_type = Eq_Type;
-        eql_op->left_side=$1;
-        eql_op->right_side=$3;
-
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Eql_Type;  
-        expr->expression.eql_op = eql_op;
+        expr->expr_type = Eq_Type;  
+        expr->left_side=$1;
+        expr->right_side=$3;
         $$ = expr;
     }
     | Expr NE Expr {
-        struct EQL_OP *eql_op = (struct EQL_OP*) malloc (sizeof (struct EQL_OP));
-        eql_op->eql_type = Ne_Type;
-        eql_op->left_side=$1;
-        eql_op->right_side=$3;
-
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = Eql_Type;  
-        expr->expression.eql_op = eql_op;
+        expr->expr_type = Ne_Type;  
+        expr->left_side=$1;
+        expr->right_side=$3;
         $$ = expr;
     }
     |   '(' Expr ')' {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Expr_Type;  
-        expr->expression.bracket = $2;
+        expr->expr = $2;
         $$ = expr;
     }
     | ID '(' ')' {
-        struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
-        call->ID = $1;
-        call->arg = NULL;
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = CallExpr_Type;  
-        expr->expression.func_call = call;
+        expr->expr_type = Call_Type;  
+        expr->ID = $1;
         $$ = expr;
     }
     | ID '(' Args ')' {
-        struct FUNC_CALL *call = (struct FUNC_CALL*) malloc (sizeof (struct FUNC_CALL));
-        call->ID = $1;
-        call->arg = $3;
-
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->expr_type = CallExpr_Type;  
-        expr->expression.func_call = call;
+        expr->expr_type = Call_Type;  
+        expr->ID = $1;
+        expr->arg = $3;
         $$ = expr;
     }|INTNUM {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = IntNum_Type;  
-        expr->expression.int_val = $1;
+        expr->int_val = $1;
         $$ = expr;
     }    
     
     | FLOATNUM {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = FloatNum_Type;  
-        expr->expression.floatval = $1;
+        expr->floatval = $1;
         $$ = expr;
     }
     | ID {
-        struct ID_EXPR *id_expr = (struct ID_EXPR*)malloc(sizeof (struct ID_EXPR));
-        id_expr->ID = $1;
-
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Id_Type;  
-        expr->expression.id_expr = id_expr;
+        expr->ID = $1;
         $$ = expr;
     } 
     ;

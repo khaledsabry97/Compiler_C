@@ -1,11 +1,11 @@
 all:
-	flex lexer.l 
-	bison -d parser.y
-	gcc -o compiler compiler.tab.c Compiler.c lex.yy.c -g -lfl 
+	flex Compiler.l 
+	bison -d Compiler.y
+	gcc -o Compiler Compiler.tab.c Compiler.c lex.yy.c -g -lfl 
 
 
 clean:
-	rm -rf lex.yy.c compiler.tab.c compiler.tab.h compiler assembly_file.txt symbol_file.txt semantic_file.txt
+	rm -rf lex.yy.c Compiler.tab.c Compiler.tab.h Compiler assembly_file.txt symbol_file.txt semantic_file.txt
 
 test1:
 	make
