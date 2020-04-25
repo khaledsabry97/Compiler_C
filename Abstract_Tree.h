@@ -64,6 +64,7 @@ struct PARAMETER
 	struct PARAMETER *prev;
 
 	ID_TYPE id_type;
+	struct IDENTIFIER *id;
 };
 
 
@@ -166,7 +167,7 @@ struct STMT
 	struct STMT *prev;
 
 	STMT_TYPE stmt_type;
-
+	
 	struct EXPR *return_expr; 
 	struct IF_STMT *if_stmt; 
 	struct FOR_STMT *for_stmt; 
