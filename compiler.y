@@ -623,20 +623,6 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-/*
-void process(struct PROGRAM* head) {
-    
-    if(head == NULL)
-        exit(1);
-    head_block_ptr = newBlock(Block_Global_Type, NULL);
-    current_block_ptr = head_block_ptr;
-    if(head->declaration != NULL)
-        compileDeclaration(head->declaration);
-    if(head->function != NULL)
-        compileFunction(head->function);
-            compileProgram(head);
-}
-*/
 
 
 void openFiles()
@@ -647,7 +633,6 @@ void openFiles()
 }
 void closeFiles()
 {
-    //fprintf(assembly_file, "\n");
     pclose(assembly_file);
     pclose(symbol_file);
     pclose(semantic_file);

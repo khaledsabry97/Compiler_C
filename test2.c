@@ -78,6 +78,12 @@ int main ()
         int n8;
         n8 = 12;
          n3 = n1;       
+         for (n1 =0 ; n1 < 10; n1 = n1 + 1 )
+        {
+            int n8;
+            n8 = 20;
+         n3 = n1;       
+        }
     }
     
     do
