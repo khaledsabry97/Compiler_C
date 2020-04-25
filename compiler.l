@@ -56,7 +56,7 @@ return return RETURN;
 
 [ \t\c] { break;}
 "\n" {printf("%d you baaaaad\n",line_counter++);  break;}
-[0-9]+[A-Za-z]+ {printf("Error at line %d : you can't start your identifier with a number %s \n",line_counter,yytext);
+[0-9]+[A-Za-z]+ {printf("WARNING at line %d : you can't start your identifier with a number %s \n",line_counter,yytext);
 yylval.id = strndup(yytext, yyleng);
     return ID;}
 

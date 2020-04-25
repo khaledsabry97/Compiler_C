@@ -959,7 +959,7 @@ YY_RULE_SETUP
 case 35:
 YY_RULE_SETUP
 #line 59 "compiler.l"
-{printf("Error at line %d : you can't start your identifier with a number %s \n",line_counter,yytext);
+{printf("WARNING at line %d : you can't start your identifier with a number %s \n",line_counter,yytext);
 yylval.id = strndup(yytext, yyleng);
     return ID;}
 	YY_BREAK

@@ -260,7 +260,7 @@ void compileIdentifier(struct IDENTIFIER *identifier,ID_TYPE current_type,bool i
     
         int count = checkSemantic(temp_semantic_identifier->identifier_name,false,temp_semantic_identifier->block,NULL,temp_semantic_identifier->identifier_semantic_type);
         if(count != 0)
-            fprintf(semantic_file,"ERORR: variable %s has been declared before %d times before \n",temp_semantic_identifier->identifier_name,count);
+            fprintf(semantic_file,"WARNING: variable %s has been declared before %d times before \n",temp_semantic_identifier->identifier_name,count);
         else
         {
             printf("didn't found any variable in the smae block\n");
@@ -305,7 +305,7 @@ void compileFunction(struct FUNCTION *function){
         temp_semantic->identifier_semantic_type = Float_Semantic_Type;
     else
     {
-            fprintf(stderr, "Error in function type \n");
+            fprintf(stderr, "WARNING in function type \n");
             exit(1);
     }
     
@@ -321,7 +321,7 @@ void compileFunction(struct FUNCTION *function){
 
     //int count = checkSemantic(function->ID,true,temp_semantic->block,temp_check,temp_semantic->identifier_semantic_type);
     //if(count != 0)
-        //fprintf(semantic_file,"ERORR: function %s appeared %d times before \n",function->ID,count);
+        //fprintf(semantic_file,"WARNING: function %s appeared %d times before \n",function->ID,count);
     
     temp_semantic->identifier_name = function->ID;
     temp_semantic->is_function = true;
@@ -364,7 +364,7 @@ void compileFunction(struct FUNCTION *function){
         if(findSemanticFunction(function->ID,temp_semantic->args_stack) != NULL)
         {
             printf("hello\n");
-            fprintf(semantic_file,"ERORR: function %s appeared before with the name and argument numbers and its types and order \n",function->ID);
+            fprintf(semantic_file,"WARNING: function %s appeared before with the name and argument numbers and its types and order \n",function->ID);
         }
         else
         {
@@ -549,7 +549,7 @@ void compileAssignStmt(struct ASSIGN_STMT *assign)
     struct Semantic* semantic_temp = findSemanticIdentifier(assign->ID);
     if(semantic_temp == NULL)
         {
-            fprintf(semantic_file,"ERROR: Identifier %s wasn't declared before to use it in an assignment\n",assign->ID);
+            fprintf(semantic_file,"WARNING: Identifier %s wasn't declared before to use it in an assignment\n",assign->ID);
         }
     else
     {
@@ -562,22 +562,22 @@ void compileAssignStmt(struct ASSIGN_STMT *assign)
         {
             if(temp_semantic_stack->identifier_semantic_type == Error_Semantic_Type)
             {
-            fprintf(semantic_file,"ERROR: Solve previous error\n",assign->ID);
+            fprintf(semantic_file,"WARNING: Solve previous error\n",assign->ID);
 
             }
             else
-            fprintf(semantic_file,"ERROR: Identifier %s is not the same type of the assignment\n",assign->ID);
+            fprintf(semantic_file,"WARNING: Identifier %s is not the same type of the assignment\n",assign->ID);
         }
         else
         {
             if(semantic_temp->is_const == true && semantic_temp->is_assigned == true)
             {
-                fprintf(semantic_file,"ERROR: Constant Identifier %s can't be initialized again\n",assign->ID);
+                fprintf(semantic_file,"WARNING: Constant Identifier %s can't be initialized again\n",assign->ID);
 
             }
             else if(semantic_temp->is_const == true && semantic_temp->is_parameter == true)
             {
-                fprintf(semantic_file,"ERROR: Constant Identifier %s can't be initialized again\n",assign->ID);
+                fprintf(semantic_file,"WARNING: Constant Identifier %s can't be initialized again\n",assign->ID);
 
             }
             else
@@ -612,7 +612,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
         temp_semantic = findSemanticIdentifier(id_expr->ID);
         if(temp_semantic == NULL )
         {
-                fprintf(semantic_file,"ERROR: Identifier %s wasn't declared before to be used\n",id_expr->ID);
+                fprintf(semantic_file,"WARNING: Identifier %s wasn't declared before to be used\n",id_expr->ID);
                  //add to semantic stack
             temp_semantic_stack = newSemanticStack();
             temp_semantic_stack->identifier_semantic_type = Error_Semantic_Type;
@@ -621,7 +621,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
 
         else if(temp_semantic->is_assigned == false && temp_semantic->is_parameter == false)
         {
-            fprintf(semantic_file,"ERROR: Identifier %s wasn't assigned any value before to be used\n",id_expr->ID);
+            fprintf(semantic_file,"WARNING: Identifier %s wasn't assigned any value before to be used\n",id_expr->ID);
                  //add to semantic stack
             temp_semantic_stack = newSemanticStack();
             temp_semantic_stack->identifier_semantic_type = temp_semantic->identifier_semantic_type;
@@ -707,7 +707,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
         temp_semantic_stack->identifier_semantic_type = compareTypes(left_semantic->identifier_semantic_type,right_semantic->identifier_semantic_type);
         if(temp_semantic_stack->identifier_semantic_type == Error_Semantic_Type)
         {
-            fprintf(semantic_file,"Error: two different identifier one is bool and other is float/int\n");
+            fprintf(semantic_file,"WARNING: two different identifier one is bool and other is float/int\n");
 
         }
         pushSemanticStack(temp_semantic_stack);
@@ -740,7 +740,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
         temp_semantic_stack->identifier_semantic_type = compareTypes(left_semantic->identifier_semantic_type,right_semantic->identifier_semantic_type);
         if(temp_semantic_stack->identifier_semantic_type == Error_Semantic_Type)
         {
-            fprintf(semantic_file,"Error: two different identifier one is bool and other is float/int\n");
+            fprintf(semantic_file,"WARNING: two different identifier one is bool and other is float/int\n");
 
         }
         pushSemanticStack(temp_semantic_stack);
@@ -779,7 +779,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
             temp_semantic_stack2->identifier_semantic_type = compareTypes(left_semantic->identifier_semantic_type,right_semantic->identifier_semantic_type);
             if(temp_semantic_stack2->identifier_semantic_type == Error_Semantic_Type)
             {
-                fprintf(semantic_file,"Error: two different identifier one is bool and other is float/int\n");
+                fprintf(semantic_file,"WARNING: two different identifier one is bool and other is float/int\n");
             }
             //temp_semantic_stack->identifier_semantic_type = Bool_Semantic_Type;
             pushSemanticStack(temp_semantic_stack2);
@@ -869,7 +869,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
         if (temp_semantic == NULL)
         {
             printf("why\n");
-            fprintf(semantic_file,"ERROR: didn't found any function matching the types or number of arguments\n");
+            fprintf(semantic_file,"WARNING: didn't found any function matching the types or number of arguments\n");
             temp_semantic_stack->identifier_semantic_type = Error_Semantic_Type;
         }
         else

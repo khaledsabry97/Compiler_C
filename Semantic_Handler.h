@@ -548,7 +548,7 @@ void checkNotAssignedIdentifiers()
     {
         if (temp->is_assigned == false && temp->is_function == false && temp->is_parameter == false)
         {
-            fprintf(semantic_file,"Warning: Identified a variable %s but not assigend a value to it\n",temp->identifier_name);
+            fprintf(semantic_file,"WARNING: Identified a variable %s but not assigend a value to it\n",temp->identifier_name);
         }
         head = temp;
         temp = temp->next;
