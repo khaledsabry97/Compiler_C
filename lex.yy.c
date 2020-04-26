@@ -715,7 +715,7 @@ YY_DECL
 		}
 
 	{
-#line 11 "Compiler.l"
+#line 12 "Compiler.l"
 
 
 #line 722 "lex.yy.c"
@@ -777,152 +777,152 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 13 "Compiler.l"
+#line 14 "Compiler.l"
 return '{';
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 14 "Compiler.l"
+#line 15 "Compiler.l"
 return '}';
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 15 "Compiler.l"
+#line 16 "Compiler.l"
 return '(';
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 16 "Compiler.l"
+#line 17 "Compiler.l"
 return ')';
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 17 "Compiler.l"
+#line 18 "Compiler.l"
 return ';';
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 18 "Compiler.l"
+#line 19 "Compiler.l"
 return '.';
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 19 "Compiler.l"
+#line 20 "Compiler.l"
 return ',';
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 20 "Compiler.l"
+#line 21 "Compiler.l"
 return '=';
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 21 "Compiler.l"
+#line 22 "Compiler.l"
 return MINUS;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 22 "Compiler.l"
+#line 23 "Compiler.l"
 return PLUS;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 23 "Compiler.l"
+#line 24 "Compiler.l"
 return MUL;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 24 "Compiler.l"
+#line 25 "Compiler.l"
 return DIV;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 25 "Compiler.l"
+#line 26 "Compiler.l"
 return LE;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 26 "Compiler.l"
+#line 27 "Compiler.l"
 return GE;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 27 "Compiler.l"
+#line 28 "Compiler.l"
 return LT;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 28 "Compiler.l"
+#line 29 "Compiler.l"
 return GT;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 29 "Compiler.l"
+#line 30 "Compiler.l"
 return EQ;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 30 "Compiler.l"
+#line 31 "Compiler.l"
 return NE;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 31 "Compiler.l"
+#line 32 "Compiler.l"
 return PP;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 32 "Compiler.l"
+#line 33 "Compiler.l"
 return MM;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 33 "Compiler.l"
+#line 34 "Compiler.l"
 return INT;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 34 "Compiler.l"
+#line 35 "Compiler.l"
 return FLOAT;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 35 "Compiler.l"
+#line 36 "Compiler.l"
 return CONST;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 36 "Compiler.l"
+#line 37 "Compiler.l"
 return IF;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 37 "Compiler.l"
+#line 38 "Compiler.l"
 return ELSE;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 38 "Compiler.l"
+#line 39 "Compiler.l"
 return DO;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 39 "Compiler.l"
+#line 40 "Compiler.l"
 return WHILE;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 40 "Compiler.l"
+#line 41 "Compiler.l"
 return FOR;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 41 "Compiler.l"
+#line 42 "Compiler.l"
 return RETURN;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 43 "Compiler.l"
+#line 44 "Compiler.l"
 {
     yylval.intval = atoi(yytext);
     return INTNUM;
@@ -930,7 +930,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 47 "Compiler.l"
+#line 48 "Compiler.l"
 {
     yylval.floatval = atof(yytext);
     return FLOATNUM;
@@ -938,7 +938,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 51 "Compiler.l"
+#line 52 "Compiler.l"
 {
     yylval.id = strndup(yytext, yyleng);
     return ID;
@@ -946,25 +946,25 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 56 "Compiler.l"
+#line 57 "Compiler.l"
 { break;}
 	YY_BREAK
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
-#line 57 "Compiler.l"
+#line 58 "Compiler.l"
 {printf("%d Parsing\n",line_counter++);  break;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 58 "Compiler.l"
+#line 59 "Compiler.l"
 {printf("WARNING at line %d : you can't start your identifier with a number %s \n",line_counter,yytext);
 yylval.id = strndup(yytext, yyleng);
     return ID;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 62 "Compiler.l"
+#line 63 "Compiler.l"
 ECHO;
 	YY_BREAK
 #line 971 "lex.yy.c"
@@ -1972,6 +1972,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 62 "Compiler.l"
+#line 63 "Compiler.l"
 
 

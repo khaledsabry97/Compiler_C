@@ -73,7 +73,7 @@
 FILE *assembly_file; 
 FILE *symbol_file; 
 FILE *semantic_file;
-static int line_counter;
+extern int line_counter;
 void process(struct PROGRAM* head);
 void openFiles();
 void closeFiles();

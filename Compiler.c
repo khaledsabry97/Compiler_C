@@ -90,16 +90,16 @@ void makeNewBlockForStmts(BLOCK_TYPE block_type)
 
 void printSymbolTableHeader()
 {
-    fprintf(symbol_file,"--------------------------------------------------------\n");
-    fprintf(symbol_file,"--------------------------------------------------------\n");
+    fprintf(symbol_file,"------------------------------------------------------------------\n");
+    fprintf(symbol_file,"\n------------------------------------------------------------------\n");
 
     if (current_block_ptr->block_type == Block_Global_Type)
     {
-        fprintf(symbol_file, "--------------------Global Variables--------------------");
+        fprintf(symbol_file, "-------------------------Global Variables-------------------------");
     }
     else
     {
-        fprintf(symbol_file, "------------%s", current_func_name);
+        fprintf(symbol_file, "==========================>  %s", current_func_name);
         temp_block = head_block_ptr->child_block_ptr;
         while (temp_block->child_block_ptr != NULL)
         {
@@ -120,14 +120,14 @@ void printSymbolTableHeader()
         temp_block = temp_block->child_block_ptr;
         }
     }
-    fprintf(symbol_file,"\n--------------------------------------------------------\n");
-    fprintf(symbol_file, "%5s%10s%30s\n", "variable name", "type", "paremter/variable");
+    fprintf(symbol_file,"\n------------------------------------------------------------------\n");
+    fprintf(symbol_file, "%s     |     %s       |    %s\n", "variable name", "type", "parameter/variable");
 }
 
 void printSymbolTableContent(char* variable_name,char* type,char* parameter)
 {
-    fprintf(symbol_file,"--------------------------------------------------------\n");
-    fprintf(symbol_file, "%6s%18s%25s\n", variable_name, type, parameter);
+    fprintf(symbol_file,"------------------------------------------------------------------\n");
+    fprintf(symbol_file, "%s                 |    %s   |             %s\n", variable_name, type, parameter);
 }
 
 

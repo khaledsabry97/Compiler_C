@@ -7,6 +7,7 @@
 
 %}
 
+extern int line_counter;
 
 %%
 
