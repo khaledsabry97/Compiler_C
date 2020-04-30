@@ -6,7 +6,7 @@ Written a C compiler to run c code using flex and bison tool, add also a semanti
 </p>
 
 
-# Project Component
+# Project Components
 •	Lexer 
 
 •	Parser 
@@ -32,7 +32,7 @@ Test 3
 -	run it by writing in terminal  make test3
 
 
-# Outputs of Compiler:-
+# Outputs of Compiler
 -	symbol_file 
 
 -	assembly_file
