@@ -19,7 +19,6 @@ struct BLOCK {
     char name[1000];
     //char* name_;
     int function_number;
-
     BLOCK_TYPE block_type;
 };
 

@@ -494,9 +494,9 @@ static const yytype_uint16 yyrline[] =
        0,   100,   100,   109,   118,   125,   127,   133,   143,   151,
      160,   168,   179,   186,   194,   200,   208,   209,   210,   211,
      217,   227,   233,   239,   250,   261,   283,   294,   306,   314,
-     338,   362,   366,   372,   379,   385,   392,   399,   401,   407,
-     417,   426,   433,   440,   447,   453,   460,   467,   474,   481,
-     488,   495,   501,   508,   514,   521,   527
+     338,   362,   366,   372,   379,   385,   392,   400,   404,   410,
+     420,   429,   436,   443,   450,   456,   463,   470,   477,   484,
+     491,   498,   504,   511,   517,   524,   530
 };
 #endif
 
@@ -1843,35 +1843,37 @@ yyreduce:
     break;
 
   case 37:
-#line 399 "Compiler.y" /* yacc.c:1646  */
-    {printf("forgot to open statemtent group\n");yyerrok;}
-#line 1849 "Compiler.tab.c" /* yacc.c:1646  */
+#line 400 "Compiler.y" /* yacc.c:1646  */
+    {printf("forgot to open statemtent group\n");
+            yyerrok;
+            }
+#line 1851 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 401 "Compiler.y" /* yacc.c:1646  */
+#line 404 "Compiler.y" /* yacc.c:1646  */
     {
             struct STMT *stmt;
             stmt = (yyvsp[0]._stmt);
             stmt->prev = NULL;
             (yyval._stmt) = stmt;
         }
-#line 1860 "Compiler.tab.c" /* yacc.c:1646  */
+#line 1862 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 407 "Compiler.y" /* yacc.c:1646  */
+#line 410 "Compiler.y" /* yacc.c:1646  */
     {
             struct STMT *stmt;
             stmt = (yyvsp[0]._stmt);
             stmt->prev = (yyvsp[-1]._stmt);
             (yyval._stmt) = stmt;
         }
-#line 1871 "Compiler.tab.c" /* yacc.c:1646  */
+#line 1873 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 417 "Compiler.y" /* yacc.c:1646  */
+#line 420 "Compiler.y" /* yacc.c:1646  */
     {
 
 
@@ -1881,11 +1883,11 @@ yyreduce:
         expr->right_side=(yyvsp[0]._expr);
         (yyval._expr) = expr;
     }
-#line 1885 "Compiler.tab.c" /* yacc.c:1646  */
+#line 1887 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 426 "Compiler.y" /* yacc.c:1646  */
+#line 429 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Plus_Type;
@@ -1893,11 +1895,11 @@ yyreduce:
         expr->right_side=(yyvsp[0]._expr);
         (yyval._expr) = expr;
     }
-#line 1897 "Compiler.tab.c" /* yacc.c:1646  */
+#line 1899 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 433 "Compiler.y" /* yacc.c:1646  */
+#line 436 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Mul_Type;  
@@ -1905,11 +1907,11 @@ yyreduce:
         expr->right_side=(yyvsp[0]._expr);
         (yyval._expr) = expr;
     }
-#line 1909 "Compiler.tab.c" /* yacc.c:1646  */
+#line 1911 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 440 "Compiler.y" /* yacc.c:1646  */
+#line 443 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Div_Type;  
@@ -1917,22 +1919,22 @@ yyreduce:
         expr->right_side=(yyvsp[0]._expr);
         (yyval._expr) = expr;
     }
-#line 1921 "Compiler.tab.c" /* yacc.c:1646  */
+#line 1923 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 447 "Compiler.y" /* yacc.c:1646  */
+#line 450 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Neg_Type;
         expr->right_side = (yyvsp[0]._expr);
         (yyval._expr) = expr;
     }
-#line 1932 "Compiler.tab.c" /* yacc.c:1646  */
+#line 1934 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 453 "Compiler.y" /* yacc.c:1646  */
+#line 456 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Le_Type;  
@@ -1940,11 +1942,11 @@ yyreduce:
         expr->right_side=(yyvsp[0]._expr);
         (yyval._expr) = expr;
     }
-#line 1944 "Compiler.tab.c" /* yacc.c:1646  */
+#line 1946 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 460 "Compiler.y" /* yacc.c:1646  */
+#line 463 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Ge_Type;  
@@ -1952,11 +1954,11 @@ yyreduce:
         expr->right_side=(yyvsp[0]._expr);
         (yyval._expr) = expr;
     }
-#line 1956 "Compiler.tab.c" /* yacc.c:1646  */
+#line 1958 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 467 "Compiler.y" /* yacc.c:1646  */
+#line 470 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Gt_Type;  
@@ -1964,11 +1966,11 @@ yyreduce:
         expr->right_side=(yyvsp[0]._expr);
         (yyval._expr) = expr;
     }
-#line 1968 "Compiler.tab.c" /* yacc.c:1646  */
+#line 1970 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 474 "Compiler.y" /* yacc.c:1646  */
+#line 477 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Lt_Type;  
@@ -1976,11 +1978,11 @@ yyreduce:
         expr->right_side=(yyvsp[0]._expr);
         (yyval._expr) = expr;
     }
-#line 1980 "Compiler.tab.c" /* yacc.c:1646  */
+#line 1982 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 481 "Compiler.y" /* yacc.c:1646  */
+#line 484 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Eq_Type;  
@@ -1988,11 +1990,11 @@ yyreduce:
         expr->right_side=(yyvsp[0]._expr);
         (yyval._expr) = expr;
     }
-#line 1992 "Compiler.tab.c" /* yacc.c:1646  */
+#line 1994 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 488 "Compiler.y" /* yacc.c:1646  */
+#line 491 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Ne_Type;  
@@ -2000,22 +2002,22 @@ yyreduce:
         expr->right_side=(yyvsp[0]._expr);
         (yyval._expr) = expr;
     }
-#line 2004 "Compiler.tab.c" /* yacc.c:1646  */
+#line 2006 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 495 "Compiler.y" /* yacc.c:1646  */
+#line 498 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Expr_Type;  
         expr->expr = (yyvsp[-1]._expr);
         (yyval._expr) = expr;
     }
-#line 2015 "Compiler.tab.c" /* yacc.c:1646  */
+#line 2017 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 501 "Compiler.y" /* yacc.c:1646  */
+#line 504 "Compiler.y" /* yacc.c:1646  */
     {
 
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
@@ -2023,11 +2025,11 @@ yyreduce:
         expr->ID = (yyvsp[-2].id);
         (yyval._expr) = expr;
     }
-#line 2027 "Compiler.tab.c" /* yacc.c:1646  */
+#line 2029 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 508 "Compiler.y" /* yacc.c:1646  */
+#line 511 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Call_Type;  
@@ -2035,44 +2037,44 @@ yyreduce:
         expr->arg = (yyvsp[-1]._arg);
         (yyval._expr) = expr;
     }
-#line 2039 "Compiler.tab.c" /* yacc.c:1646  */
+#line 2041 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 514 "Compiler.y" /* yacc.c:1646  */
+#line 517 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = IntNum_Type;  
         expr->int_val = (yyvsp[0].intval);
         (yyval._expr) = expr;
     }
-#line 2050 "Compiler.tab.c" /* yacc.c:1646  */
+#line 2052 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 521 "Compiler.y" /* yacc.c:1646  */
+#line 524 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = FloatNum_Type;  
         expr->floatval = (yyvsp[0].floatval);
         (yyval._expr) = expr;
     }
-#line 2061 "Compiler.tab.c" /* yacc.c:1646  */
+#line 2063 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 527 "Compiler.y" /* yacc.c:1646  */
+#line 530 "Compiler.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->expr_type = Id_Type;  
         expr->ID = (yyvsp[0].id);
         (yyval._expr) = expr;
     }
-#line 2072 "Compiler.tab.c" /* yacc.c:1646  */
+#line 2074 "Compiler.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2076 "Compiler.tab.c" /* yacc.c:1646  */
+#line 2078 "Compiler.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2300,7 +2302,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 537 "Compiler.y" /* yacc.c:1906  */
+#line 540 "Compiler.y" /* yacc.c:1906  */
 
 
 

@@ -9,9 +9,8 @@ struct Assembly *temp;
 int counter = 0;
 int parameter_count = 1;
 struct CHECKS* temp_check;
-struct Semantic* temp_semantic;
+struct SEMANTIC* temp_semantic;
 struct SEMANTIC_STACK* temp_semantic_stack;
-struct BLOCK *current_block_ptr;
 bool outside_group_stmt = false;
 bool inside_group_stmt = false;
 char* current_func_name;
@@ -19,6 +18,7 @@ int current_func_number;
 extern FILE *assembly_file;
 extern FILE *symbol_file;
 extern FILE *semantic_file;
+struct BLOCK *current_block_ptr;
 struct BLOCK *temp_block;
 
 
@@ -81,7 +81,6 @@ void makeNewBlockForStmts(BLOCK_TYPE block_type)
     }
     else if(block_type == Block_Stmt_Group_Type)
     {
-        printf("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n");
         current_block_ptr = newBlock(current_block_ptr, Block_Stmt_Group_Type);
         current_block_ptr->parent_block_ptr->stmt_group_count++;
     }
@@ -211,7 +210,7 @@ void compileDeclaration(struct DECLARATION *declaration){
 
 //int x could be mentioned as a paremeter or at the begining of a block
 void compileIdentifier(char* identifier,ID_TYPE current_type,bool is_parameter){
-        struct Semantic* temp_semantic_identifier = newSemantic();
+        struct SEMANTIC* temp_semantic_identifier = newSemantic();
         temp_semantic_identifier->identifier_name = identifier;
 
         char *type;
@@ -294,7 +293,7 @@ void compileFunction(struct FUNCTION *function){
         return;
     compileFunction(function->prev);
     
-    //struct Semantic *semantic = (struct Semantic*) malloc (sizeof (struct Semantic));
+    //struct SEMANTIC *semantic = (struct SEMANTIC*) malloc (sizeof (struct SEMANTIC));
     temp_semantic = newSemantic();
     current_func_name = function->ID;    
     printf("%s\n",current_func_name);
@@ -388,7 +387,7 @@ void compileFunction(struct FUNCTION *function){
   
     }
 
-void compileArgs(struct ARG *arg,struct Semantic* sem)
+void compileArgs(struct ARG *arg,struct SEMANTIC* sem)
 {
     if (arg == NULL)
         return;
@@ -547,7 +546,7 @@ void compileAssignStmt(struct ASSIGN_STMT *assign)
 {
     compileExpr(assign->expr,true);
     //check if identifier was found
-    struct Semantic* semantic_temp = findSemanticIdentifier(assign->ID);
+    struct SEMANTIC* semantic_temp = findSemanticIdentifier(assign->ID);
     if(semantic_temp == NULL)
         {
             fprintf(semantic_file,"WARNING: Identifier %s wasn't declared before to use it in an assignment\n",assign->ID);
@@ -803,7 +802,7 @@ void compileExpr(struct EXPR *expr,bool must_return)
         int jump_lable = counter;
         fprintf(assembly_file,"\n BIND %s%d",expr->ID,counter++);
 
-        struct Semantic* semantic = newSemantic();
+        struct SEMANTIC* semantic = newSemantic();
 
     
         if (expr->arg != NULL)

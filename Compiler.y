@@ -396,7 +396,10 @@ Stmt_Group: '{' Declarations Stmt_List '}' {
                 $$ = stmts_group;
            
                 
-            }| error '}' {printf("forgot to open statemtent group\n");yyerrok;}
+            }
+            | error '}' {printf("forgot to open statemtent group\n");
+            yyerrok;
+            }
             ;
 Stmt_List: Stmt {
             struct STMT *stmt;

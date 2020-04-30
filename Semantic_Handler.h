@@ -15,9 +15,9 @@ struct SEMANTIC_STACK {
 
 };
 
-struct Semantic {
-    struct Semantic* temp;
-    struct Semantic* next;
+struct SEMANTIC {
+    struct SEMANTIC* temp;
+    struct SEMANTIC* next;
 
     struct SEMANTIC_STACK* args_stack;
     IDENTIFIER_SEMANTIC_TYPE identifier_semantic_type;
@@ -33,7 +33,7 @@ struct Semantic {
 
 
 
-struct Semantic* head;
+struct SEMANTIC* head;
 
 
 
@@ -67,15 +67,15 @@ struct BLOCK* newBlockToSemantic(struct BLOCK* current_block,struct BLOCK* paren
 
 
 //return a list of same identifier name
-struct Semantic* findIdentifier(char* name,bool is_function)
+struct SEMANTIC* findIdentifier(char* name,bool is_function)
 {
-    struct Semantic* temp = head;
+    struct SEMANTIC* temp = head;
     if (temp == NULL)
     {
         return NULL;
     }
-    struct Semantic* new_list= NULL;
-    struct Semantic* new_list_head= NULL;
+    struct SEMANTIC* new_list= NULL;
+    struct SEMANTIC* new_list_head= NULL;
 
     while(temp != NULL)
     {
@@ -242,7 +242,7 @@ int checkSemantic(char* name, bool is_function,struct BLOCK* current_block,struc
     //printf("%s\n",current_block);
             //printf("before\n");
 
-    struct Semantic* list_of_names = findIdentifier(name,is_function);
+    struct SEMANTIC* list_of_names = findIdentifier(name,is_function);
     int count = 0;
     if(is_function == true)
     {
@@ -299,7 +299,7 @@ struct SEMANTIC_STACK* newSemanticStack()
 }
 
 
-void addNewSemantic(struct Semantic* semantic)
+void addNewSemantic(struct SEMANTIC* semantic)
 {
     semantic->block = newBlockToSemantic(semantic->block,NULL);
 
@@ -308,7 +308,7 @@ void addNewSemantic(struct Semantic* semantic)
         head = semantic;
         return;
     }
-    struct Semantic* temp = head;
+    struct SEMANTIC* temp = head;
     while(temp->next != NULL)
     {
         temp = temp->next;
@@ -319,7 +319,7 @@ void addNewSemantic(struct Semantic* semantic)
 
 }
 
-void addArgsToSemantic(struct Semantic* semantic, IDENTIFIER_SEMANTIC_TYPE identifier_semantic_type)
+void addArgsToSemantic(struct SEMANTIC* semantic, IDENTIFIER_SEMANTIC_TYPE identifier_semantic_type)
 {
             printf("%dhello\n",semantic->args_stack);
 
@@ -377,9 +377,9 @@ struct CHECKS* newCheck()
         return (struct CHECKS*) malloc (sizeof (struct CHECKS));
 }
 
-struct Semantic* newSemantic()
+struct SEMANTIC* newSemantic()
 {
-    struct Semantic* semantics = (struct Semantic*) malloc (sizeof (struct Semantic));
+    struct SEMANTIC* semantics = (struct SEMANTIC*) malloc (sizeof (struct SEMANTIC));
     semantics->args_stack = NULL;
     semantics->next = NULL;
     semantics->temp = NULL;
@@ -387,9 +387,9 @@ struct Semantic* newSemantic()
 }
 
 
-struct Semantic* findSemanticIdentifier(char* identifier_name)
+struct SEMANTIC* findSemanticIdentifier(char* identifier_name)
 {
-    struct Semantic* list_of_names = findIdentifier(identifier_name,false);
+    struct SEMANTIC* list_of_names = findIdentifier(identifier_name,false);
     while(list_of_names != NULL)
     {
         //printf("%s\n",list_of_names->identifier_name);
@@ -405,9 +405,9 @@ struct Semantic* findSemanticIdentifier(char* identifier_name)
     return NULL;
 }
 
-struct Semantic* findSemanticFunction(char* identifier_name,struct SEMANTIC_STACK* semantic_stack)
+struct SEMANTIC* findSemanticFunction(char* identifier_name,struct SEMANTIC_STACK* semantic_stack)
 {
-    struct Semantic* list_of_names = findIdentifier(identifier_name,true);
+    struct SEMANTIC* list_of_names = findIdentifier(identifier_name,true);
     struct SEMANTIC_STACK* temp = semantic_stack;
     struct SEMANTIC_STACK* temp2;
 
@@ -543,7 +543,7 @@ extern FILE *semantic_file;
 
 void checkNotAssignedIdentifiers()
 {
-    struct Semantic* temp = head;
+    struct SEMANTIC* temp = head;
     while(temp!=NULL)
     {
         if (temp->is_assigned == false && temp->is_function == false && temp->is_parameter == false)
