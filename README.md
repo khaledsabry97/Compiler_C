@@ -1,5 +1,5 @@
 # Compiler_C
-Written a C compiler to run c code using flex and bison tool, add also a semantic analyzer, Quadrable language generation and symbol table.
+Written a C compiler to run c code using flex and bison tool, add also a semantic analyzer, Quadraple language generation and symbol table.
 
 <p align="center">
   <img src="https://github.com/khaledsabry97/Compiler_C/blob/master/Compiler_C_logo.png">
