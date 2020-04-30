@@ -81,6 +81,7 @@ void makeNewBlockForStmts(BLOCK_TYPE block_type)
     }
     else if(block_type == Block_Stmt_Group_Type)
     {
+        printf("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n");
         current_block_ptr = newBlock(current_block_ptr, Block_Stmt_Group_Type);
         current_block_ptr->parent_block_ptr->stmt_group_count++;
     }
