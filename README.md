@@ -13,7 +13,7 @@ Written a C compiler to run c code using flex and bison tool, add also a semanti
 
 •	Symbol Table
 
-•	Quadrable “assembly” language generation
+•	Quadruple “assembly” language generation
 
 •	Semantic analysis
 
